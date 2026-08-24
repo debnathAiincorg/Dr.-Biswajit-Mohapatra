@@ -132,7 +132,7 @@
      it just does so instantly instead of animating. */
   .hero-full-content > * {
     opacity: 0;
-    animation: heroFadeUp 0.7s var(--ease) forwards;
+    animation: heroFadeUp 0.75s var(--ease-out) forwards;
   }
   .hero-full-content .eyebrow { animation-delay: 0.1s; }
   .hero-full-content h1 { animation-delay: 0.2s; }
@@ -149,18 +149,6 @@
   @keyframes heroImgSettle {
     from { transform: scale(1.06); }
     to { transform: scale(1); }
-  }
-
-  /* Hover polish, scoped to the homepage only — other pages keep their
-     existing .btn / .card hover behavior unchanged. */
-  .page-home .btn:hover, .page-home .btn:focus-visible {
-    box-shadow: 0 8px 20px rgba(20, 14, 10, 0.22);
-  }
-  #gallery .card {
-    transition: transform 0.35s var(--ease), opacity 0.6s var(--ease);
-  }
-  #gallery .card:hover {
-    transform: translateY(-6px);
   }
 
   /* Newsletter/panel band recolored to match the reference's measured panel
@@ -313,11 +301,11 @@
         <h2 class="reveal">Lab Notes</h2>
         <p class="reveal">Occasional updates on publications, talks, and lab milestones &mdash; four recent placeholder items below.</p>
 
-        <ul class="row-list with-cta reveal">
-          <li><a href="#"><span class="row-title">New paper accepted at the International Symposium on Speech Processing</span><span class="row-meta">Jun 2026</span></a></li>
-          <li><a href="#"><span class="row-title">Speech Lab welcomes two new PhD students</span><span class="row-meta">May 2026</span></a></li>
-          <li><a href="#"><span class="row-title">Dr. Mohapatra named Fellow of the Fictional Linguistics Society</span><span class="row-meta">Apr 2026</span></a></li>
-          <li><a href="#"><span class="row-title">Lab receives placeholder grant for spoken dialogue research</span><span class="row-meta">Mar 2026</span></a></li>
+        <ul class="row-list with-cta">
+          <li class="reveal"><a href="#"><span class="row-title">New paper accepted at the International Symposium on Speech Processing</span><span class="row-meta">Jun 2026</span></a></li>
+          <li class="reveal"><a href="#"><span class="row-title">Speech Lab welcomes two new PhD students</span><span class="row-meta">May 2026</span></a></li>
+          <li class="reveal"><a href="#"><span class="row-title">Dr. Mohapatra named Fellow of the Fictional Linguistics Society</span><span class="row-meta">Apr 2026</span></a></li>
+          <li class="reveal"><a href="#"><span class="row-title">Lab receives placeholder grant for spoken dialogue research</span><span class="row-meta">Mar 2026</span></a></li>
         </ul>
 
         <a class="btn btn-primary reveal" href="#">Subscribe to Lab Updates</a>
