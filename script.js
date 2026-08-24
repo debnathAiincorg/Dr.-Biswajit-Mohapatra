@@ -1,7 +1,25 @@
 (function () {
   var header = document.getElementById('siteHeader');
+
+  // Hysteresis rather than one threshold. The scrolled header condenses, which
+  // shortens the document by the padding it gives up (~12px); on a page with
+  // only a little scroll room the browser then clamps scrollY back below a
+  // single threshold, the header expands, the room returns -- and it flickers
+  // indefinitely (observed on education.html). This band is wider than the
+  // padding given up, so neither state can undo itself.
+  var CONDENSE_AT = 24;
+  var EXPAND_AT = 8;
+  // classList.add/remove rewrites the class attribute even when the token is
+  // already in the desired state, so track it and only touch the DOM on an
+  // actual change rather than on every scroll frame.
+  var condensed = false;
   var onScroll = function () {
-    header.classList.toggle('is-scrolled', window.scrollY > 12);
+    var y = window.scrollY;
+    var next = condensed ? y >= EXPAND_AT : y > CONDENSE_AT;
+    if (next !== condensed) {
+      condensed = next;
+      header.classList.toggle('is-scrolled', condensed);
+    }
   };
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });

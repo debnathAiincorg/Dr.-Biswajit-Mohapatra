@@ -41,6 +41,13 @@
     text-transform: none;
     color: #fff;
   }
+  /* The home header is an absolute overlay that scrolls away with the hero,
+     so the shared condense-on-scroll would retitle a bar the reader is
+     already losing. Held at full height here. */
+  .page-home .site-header.is-scrolled .header-inner {
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
+  }
   .page-home .nav-links a { color: #fff; }
   .page-home .nav-links a::after { background: #fff; }
   .page-home .nav-links a:hover, .page-home .nav-links a:focus-visible { background-color: rgba(255, 255, 255, 0.16); }

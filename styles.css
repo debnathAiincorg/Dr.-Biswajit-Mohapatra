@@ -28,6 +28,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 90px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
@@ -172,6 +173,15 @@ h1, h2, h3 {
   gap: 0.5rem;
   max-width: none;
   margin: 0;
+  transition: padding 0.32s var(--ease);
+}
+/* Scrolled state also tightens the bar vertically, so the header visibly
+   settles into a compact strip rather than only gaining a hairline. Padding is
+   the only animated property here: the logo and nav keep their size, which
+   keeps the 14-item nav's fit at the 1250px breakpoint exactly as measured. */
+.site-header.is-scrolled .header-inner {
+  padding-top: 0.72rem;
+  padding-bottom: 0.72rem;
 }
 .logo {
   font-family: var(--font-serif);
@@ -182,6 +192,7 @@ h1, h2, h3 {
   white-space: nowrap;
   flex-shrink: 0;
   margin-right: auto;
+  animation: nav-logo-in 0.5s var(--ease-out) backwards;
 }
 
 /* On narrow screens the uppercase serif wordmark at full size pushes the
@@ -212,7 +223,12 @@ h1, h2, h3 {
   padding: 0.35rem 0.05rem;
   border-radius: var(--radius);
   background-color: transparent;
-  transition: background-color 0.18s var(--ease);
+  transition:
+    background-color 0.18s var(--ease),
+    color 0.18s var(--ease),
+    transform 0.18s var(--ease);
+  animation: nav-item-in 0.45s var(--ease-out) backwards;
+  animation-delay: calc(110ms + var(--nav-i, 0) * 30ms);
 }
 .nav-links a::after {
   content: "";
@@ -222,11 +238,13 @@ h1, h2, h3 {
   bottom: 0;
   height: 1px;
   background: var(--terracotta);
-  transition: left 0.25s var(--ease), right 0.25s var(--ease);
+  transition: left 0.28s var(--ease-out), right 0.28s var(--ease-out);
 }
 .nav-links a:hover,
 .nav-links a:focus-visible {
   background-color: rgba(181, 80, 46, 0.12);
+  color: var(--terracotta);
+  transform: translateY(-1px);
 }
 .nav-links a:hover::after,
 .nav-links a:focus-visible::after,
@@ -242,6 +260,13 @@ h1, h2, h3 {
   gap: 1rem;
   flex-shrink: 0;
 }
+.header-actions > * {
+  animation: nav-item-in 0.45s var(--ease-out) backwards;
+  animation-delay: calc(110ms + var(--nav-i, 0) * 30ms);
+}
+.header-actions > *:nth-child(1) { --nav-i: 14; }
+.header-actions > *:nth-child(2) { --nav-i: 15; }
+.header-actions > *:nth-child(3) { --nav-i: 16; }
 .social-icon {
   width: 36px;
   height: 36px;
@@ -288,13 +313,39 @@ h1, h2, h3 {
 .mobile-panel {
   display: none;
   flex-direction: column;
-  padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem;
-  border-top: 1px solid var(--line);
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+  border-top: 0 solid var(--line);
   background: var(--paper);
-  max-height: calc(100vh - 66px);
-  overflow-y: auto;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition:
+    max-height 0.42s var(--ease-out),
+    padding 0.42s var(--ease-out),
+    border-top-width 0.42s var(--ease-out),
+    opacity 0.22s var(--ease),
+    visibility 0s linear 0.42s;
 }
-.mobile-panel a {
+.mobile-panel.is-open {
+  padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem;
+  border-top-width: 1px;
+  max-height: calc(100vh - 66px);
+  opacity: 1;
+  overflow-y: auto;
+  visibility: visible;
+  transition:
+    max-height 0.42s var(--ease-out),
+    padding 0.42s var(--ease-out),
+    border-top-width 0.42s var(--ease-out),
+    opacity 0.3s var(--ease),
+    visibility 0s;
+}
+/* Child combinator, not a descendant selector: these style the panel's nav
+   rows, and .mobile-socials holds two <a class="social-icon"> further down the
+   panel. As a descendant selector this outranked .social-icon and squared off
+   the round icons (border-radius) and replaced their ink hover fill. */
+.mobile-panel > a {
   padding: 0.85rem 0;
   font-size: 0.92rem;
   font-weight: 600;
@@ -304,16 +355,56 @@ h1, h2, h3 {
   background-color: transparent;
   transition: background-color 0.18s var(--ease);
 }
-.mobile-panel a:hover,
-.mobile-panel a:focus-visible {
+.mobile-panel > a:hover,
+.mobile-panel > a:focus-visible {
   background-color: rgba(181, 80, 46, 0.1);
 }
-.mobile-panel a[aria-current="page"] { color: var(--terracotta); }
+.mobile-panel > a[aria-current="page"] { color: var(--terracotta); }
+.mobile-panel.is-open > a,
+.mobile-panel.is-open .mobile-socials {
+  animation: nav-item-in 0.4s var(--ease-out) backwards;
+  animation-delay: calc(90ms + var(--nav-i, 0) * 26ms);
+}
 .mobile-panel .mobile-socials {
   display: flex;
   gap: 0.9rem;
   padding-top: 1.25rem;
 }
+
+/* ---------- Header motion ----------
+   Two animations share one set of keyframes and one --nav-i index:
+   the header's entrance on page load (this is a multi-page site, so each
+   navigation replays it), and the mobile panel's stagger when it opens.
+   CSS has no loop, so the 14 nav destinations are enumerated once below and
+   read by both. Fill mode is `backwards`, not `both`: the elements stay
+   hidden through their delay, then hand the properties back to the normal
+   cascade once done, so the nav links' hover transform still works.
+   Only opacity and transform animate, both compositor-only.
+   Reduced motion is handled by the global rule at the top of this file. */
+@keyframes nav-item-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes nav-logo-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.nav-links a:nth-child(1),  .mobile-panel > *:nth-child(1)  { --nav-i: 0; }
+.nav-links a:nth-child(2),  .mobile-panel > *:nth-child(2)  { --nav-i: 1; }
+.nav-links a:nth-child(3),  .mobile-panel > *:nth-child(3)  { --nav-i: 2; }
+.nav-links a:nth-child(4),  .mobile-panel > *:nth-child(4)  { --nav-i: 3; }
+.nav-links a:nth-child(5),  .mobile-panel > *:nth-child(5)  { --nav-i: 4; }
+.nav-links a:nth-child(6),  .mobile-panel > *:nth-child(6)  { --nav-i: 5; }
+.nav-links a:nth-child(7),  .mobile-panel > *:nth-child(7)  { --nav-i: 6; }
+.nav-links a:nth-child(8),  .mobile-panel > *:nth-child(8)  { --nav-i: 7; }
+.nav-links a:nth-child(9),  .mobile-panel > *:nth-child(9)  { --nav-i: 8; }
+.nav-links a:nth-child(10), .mobile-panel > *:nth-child(10) { --nav-i: 9; }
+.nav-links a:nth-child(11), .mobile-panel > *:nth-child(11) { --nav-i: 10; }
+.nav-links a:nth-child(12), .mobile-panel > *:nth-child(12) { --nav-i: 11; }
+.nav-links a:nth-child(13), .mobile-panel > *:nth-child(13) { --nav-i: 12; }
+.nav-links a:nth-child(14), .mobile-panel > *:nth-child(14) { --nav-i: 13; }
+.mobile-panel > *:nth-child(15) { --nav-i: 14; }
 
 /* ---------- Nav collapse: raised breakpoint for 14 items ----------
    Second tightening pass: reduced nav font-size (0.72rem->0.68rem), nav/header
@@ -327,7 +418,9 @@ h1, h2, h3 {
 @media (max-width: 1249px) {
   .nav-links, .header-actions .social-icon { display: none; }
   .burger { display: flex; }
-  .mobile-panel.is-open { display: flex; }
+  .mobile-panel { display: flex; }
+  /* The nav links this delay was meant to trail are hidden here. */
+  .header-actions > * { animation-delay: 140ms; }
 }
 
 /* ---------- Section rhythm ---------- */
