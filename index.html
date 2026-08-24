@@ -98,20 +98,19 @@
     color: rgba(255, 255, 255, 0.88);
     margin-bottom: 2.1rem;
   }
-  /* Both hero CTAs match the reference: identical cream/black style, not primary vs outline. */
-  .hero-full-content .btn {
-    background: #EEE4DD;
-    color: #000;
-    border: none;
-    border-radius: 0;
-    font-weight: 300;
-    font-size: 1rem;
-    letter-spacing: 0.02em;
-    padding: 1.1rem 1.85rem;
+  /* Hero CTAs restored to the site's own terracotta-primary / white-outline
+     pairing per feedback, instead of matching indranooyi.com's identical
+     cream buttons. .btn-primary uses the sitewide terracotta styling
+     unchanged; .btn-outline just needs white text/border to read on the
+     dark hero photo. */
+  .hero-full-content .btn-outline {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
   }
-  .hero-full-content .btn:hover, .hero-full-content .btn:focus-visible {
+  .hero-full-content .btn-outline:hover, .hero-full-content .btn-outline:focus-visible {
     background: #fff;
-    color: #000;
+    color: var(--ink);
+    border-color: #fff;
   }
 
   @media (max-width: 640px) {
