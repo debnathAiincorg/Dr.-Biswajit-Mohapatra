@@ -1,6 +1,6 @@
 :root {
-  --paper: #F6F0E4;
-  --paper-dim: #EEE4CF;
+  --paper: #EEE4DD;
+  --paper-dim: #EEE4DD;
   --ink: #2B2622;
   --ink-soft: #6B6259;
   --line: #DBCFB4;
@@ -598,7 +598,7 @@ h1, h2, h3 {
 
 /* ---------- Footer ---------- */
 .site-footer {
-  padding: clamp(2.5rem, 5vw, 3.5rem) 0 2.5rem;
+  padding: 1.1rem 0;
   border-top: 1px solid var(--line);
 }
 .footer-inner {
