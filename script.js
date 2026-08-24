@@ -50,7 +50,11 @@
   // revealed as they enter the viewport.
   var MAX_STAGGER_STEPS = 8;
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var revealTargets = document.querySelectorAll('.card, .reveal');
+  // .footer-rule is a reveal target that animates only its drawn hairline, not
+  // the element itself, so it is listed here rather than carrying .reveal --
+  // .reveal would fade and shift the whole footer bar, which is not the effect.
+  // about.html has no .footer-rule element, so this is a no-op there.
+  var revealTargets = document.querySelectorAll('.card, .reveal, .footer-rule');
 
   if (prefersReducedMotion || !('IntersectionObserver' in window)) {
     revealTargets.forEach(function (el) { el.classList.add('is-visible'); });

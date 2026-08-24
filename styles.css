@@ -8,7 +8,9 @@
   --terracotta-deep: #8F3D22;
   --on-terracotta: #FAF4E8;
   --container: 1300px;
-  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  /* --font-serif is gone: nothing renders in a serif any more, and the 13
+     pages that used to load Playfair Display no longer request it. Leaving the
+     token behind would hand anyone who used it a silent Georgia fallback. */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   --radius: 1px;
   --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -94,9 +96,13 @@ ul { list-style: none; }
   color: var(--terracotta);
 }
 
+/* All-sans body typography, taken from about.html (the reference page), which
+   already restates exactly these values in its own .page-home h1,h2,h3 block.
+   Headings used to be Playfair 700 here while about.html rendered them as
+   Inter 600, which was the whole of the heading mismatch between the two. */
 h1, h2, h3 {
-  font-family: var(--font-serif);
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-weight: 600;
   line-height: 1.1;
   color: var(--ink);
 }
@@ -183,28 +189,28 @@ h1, h2, h3 {
   padding-top: 0.72rem;
   padding-bottom: 0.72rem;
 }
+/* Wordmark typography is taken from about.html, the reference page, so the
+   header reads identically on all 14 pages: mixed-case Inter at 1.4rem/500
+   with 0.02em tracking, not the uppercase Playfair wordmark this rule used to
+   carry. about.html restates these same values in its own .page-home .logo
+   block and is unaffected either way; only color still differs there, because
+   that header sits on a dark hero photo and this one sits on cream. */
 .logo {
-  font-family: var(--font-serif);
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-weight: 500;
   font-size: 1.4rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
   white-space: nowrap;
   flex-shrink: 0;
   margin-right: auto;
   animation: nav-logo-in 0.5s var(--ease-out) backwards;
 }
 
-/* On narrow screens the uppercase serif wordmark at full size pushes the
-   burger button past the viewport edge, so it steps down. about.html's own
-   logo needs no equivalent rule: it renders in mixed-case sans, which is
-   materially narrower at the same font-size. */
-@media (max-width: 480px) {
-  .logo {
-    font-size: 1.05rem;
-    letter-spacing: 0.06em;
-  }
-}
+/* The narrow-screen font-size stepdown that used to live here is gone: it
+   existed because the uppercase serif wordmark ran the burger button off the
+   viewport edge. Mixed-case sans is materially narrower at the same size and
+   fits at 390px, which is why about.html never needed the stepdown either. */
 
 .nav-links {
   display: flex;
@@ -504,7 +510,7 @@ h1, h2, h3 {
   color: var(--terracotta);
 }
 .row-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 1.05rem;
 }
@@ -603,7 +609,7 @@ h1, h2, h3 {
 }
 .card:hover .photo-figure img { transform: scale(1.045); }
 .photo-caption {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-style: normal;
   font-size: 0.92rem;
   line-height: 1.6;
@@ -675,8 +681,13 @@ h1, h2, h3 {
   text-align: center;
 }
 .contact-inner p { color: var(--ink-soft); }
+/* contact.html only, so about.html has no counterpart to copy: it gets the
+   same sans face as every other text element rather than being left as the one
+   serif holdout sitewide. Its 1.15rem size is unchanged. It was also asking
+   for Playfair 400, a weight the page never loaded, so it was rendering
+   synthesized anyway. */
 .contact-detail {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 1.15rem;
   margin: 1.5rem 0 0.4rem;
 }
@@ -686,6 +697,64 @@ h1, h2, h3 {
 .site-footer {
   padding: 1.1rem 0;
   border-top: 1px solid var(--line);
+}
+
+/* Footer reveal. Opt-in through .footer-rule, so about.html -- which carries
+   no such class -- keeps exactly the static footer it has today.
+
+   The hairline draws itself left to right as the footer arrives: the gesture
+   .card-rule already uses on card hover, scaled up to the seam that closes the
+   page, so this is the existing motion vocabulary rather than a new one. The
+   border is held at 1px transparent instead of being removed and the drawn
+   line is a pseudo-element sitting exactly where the border was, so the
+   footer's box height does not change by a pixel. scaleX rather than
+   .card-rule's width, so a full-width line animates on the compositor. */
+.site-footer.footer-rule {
+  position: relative;
+  border-top-color: transparent;
+}
+.site-footer.footer-rule::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.7s var(--ease-out);
+}
+.site-footer.footer-rule.is-visible::before {
+  transform: scaleX(1);
+}
+
+/* The footer's content is driven from the footer's own .is-visible class
+   instead of carrying .reveal, and that is a correctness requirement rather
+   than a preference: the shared observer in script.js uses rootMargin
+   '0px 0px -60px 0px', and the footer's inner content sits entirely inside
+   that excluded band at the document bottom -- measured intersection ratio
+   0.000 against a 0.12 threshold, at every scroll position, because the footer
+   is the last thing on the page. Marked .reveal it would never fire and the
+   footer text would simply stay invisible. The footer box itself is tall
+   enough to clear the cut, so it observes reliably. Driving the children from
+   the parent also makes their order deterministic, rather than depending on
+   how the observer happens to sort two elements that share a top edge. */
+.site-footer.footer-rule .footer-text,
+.site-footer.footer-rule .footer-socials {
+  opacity: 0;
+  transform: translateY(var(--reveal-shift));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out),
+    transform var(--reveal-duration) var(--ease-out);
+}
+/* Line first, then the content settles beneath it. */
+.site-footer.footer-rule .footer-text { transition-delay: 0.12s; }
+.site-footer.footer-rule .footer-socials { transition-delay: calc(0.12s + var(--reveal-stagger)); }
+.site-footer.footer-rule.is-visible .footer-text,
+.site-footer.footer-rule.is-visible .footer-socials {
+  opacity: 1;
+  transform: none;
 }
 .footer-inner {
   display: flex;
@@ -702,6 +771,20 @@ h1, h2, h3 {
 @media (max-width: 640px) {
   .footer-inner { flex-direction: column-reverse; text-align: center; }
   .footer-text { text-align: center; }
+  /* column-reverse lifts the socials above the text, so the cascade swaps to
+     keep running top-to-bottom rather than jumping back up the bar. */
+  .site-footer.footer-rule .footer-socials { transition-delay: 0.12s; }
+  .site-footer.footer-rule .footer-text { transition-delay: calc(0.12s + var(--reveal-stagger)); }
+}
+
+/* No JavaScript: .is-visible is never added, so everything above would stay at
+   scaleX(0)/opacity 0 -- the footer would lose its top border and its text.
+   This has to sit after those rules, not up in the reveal section, because it
+   matches them at equal specificity and only source order separates them. */
+@media (scripting: none) {
+  .site-footer.footer-rule::before { transform: scaleX(1); }
+  .site-footer.footer-rule .footer-text,
+  .site-footer.footer-rule .footer-socials { opacity: 1; transform: none; }
 }
 
 /* ---------- Responsive (content grids) ---------- */
