@@ -152,7 +152,7 @@ h1, h2, h3 {
 .logo {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.4rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
