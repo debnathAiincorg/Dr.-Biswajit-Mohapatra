@@ -20,9 +20,9 @@
   });
 
   // Mark the current page's nav link, in both the inline nav and the mobile panel.
-  var currentFile = location.pathname.split('/').pop() || 'index.html';
+  var currentFile = location.pathname.split('/').pop() || 'about.html';
   document.querySelectorAll('.nav-links a, .mobile-panel a').forEach(function (link) {
-    var linkFile = link.getAttribute('href').split('#')[0] || 'index.html';
+    var linkFile = link.getAttribute('href').split('#')[0] || 'about.html';
     if (linkFile === currentFile) {
       link.setAttribute('aria-current', 'page');
     }
