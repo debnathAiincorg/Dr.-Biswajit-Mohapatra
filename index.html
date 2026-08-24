@@ -84,15 +84,34 @@
   .hero-full-content h1 {
     font-family: var(--font-sans);
     font-weight: 500;
+    font-size: clamp(2.4rem, 3.6vw + 1rem, 4rem);
+    letter-spacing: 0.01em;
     color: #fff;
     line-height: 1.05;
     margin-bottom: 1.4rem;
   }
   .hero-full-content h1 em { font-style: normal; color: var(--terracotta); }
-  .hero-full-content p.lede { color: rgba(255, 255, 255, 0.88); }
-  .hero-full-content .btn-outline { color: #fff; border-color: rgba(255, 255, 255, 0.6); }
-  .hero-full-content .btn-outline:hover, .hero-full-content .btn-outline:focus-visible {
-    background: #fff; color: var(--ink); border-color: #fff;
+  .hero-full-content p.lede {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 46ch;
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 2.1rem;
+  }
+  /* Both hero CTAs match the reference: identical cream/black style, not primary vs outline. */
+  .hero-full-content .btn {
+    background: #EEE4DD;
+    color: #000;
+    border: none;
+    border-radius: 0;
+    font-weight: 300;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    padding: 1.1rem 1.85rem;
+  }
+  .hero-full-content .btn:hover, .hero-full-content .btn:focus-visible {
+    background: #fff;
+    color: #000;
   }
 
   @media (max-width: 640px) {
@@ -145,18 +164,60 @@
     transform: translateY(-6px);
   }
 
-  /* White newsletter band, matching the reference site's "Indra's Latest"
-     section. Scoped to the homepage only — news.html/phd-opportunities.html
-     keep the --paper-dim panel background used sitewide. */
+  /* Newsletter/panel band recolored to match the reference's measured panel
+     background (#EEE4DD, its own Squarespace fallback color) instead of our
+     sitewide --paper-dim. Scoped to the homepage only — news.html/
+     phd-opportunities.html keep the shared panel styling. */
   .page-home #news {
-    background: #fff;
+    background: #EEE4DD;
+  }
+  .page-home #news .eyebrow {
+    color: #1a1a1a;
+  }
+  .page-home #news .btn-primary {
+    background: #000;
+    color: #EEE4DD;
+    border-color: #000;
+  }
+  .page-home #news .btn-primary:hover,
+  .page-home #news .btn-primary:focus-visible {
+    background: #1a1a1a;
+    border-color: #1a1a1a;
   }
 
-  /* White gallery band, matching the same white block style as #news
-     ("Lab Notes" / "Indra's Latest"). Scoped to the homepage only —
+  /* Gallery recolored to match the reference's photo grid: solid black
+     background with cream captions/heading. Scoped to the homepage only —
      gallery.html keeps the light --paper background used sitewide. */
   .page-home #gallery {
+    background: #000;
+    padding-top: 0;
+  }
+  /* "Indra's Latest" on the reference is its own full-bleed white band above
+     the black photo grid, not black-on-black. Break .content-head out of the
+     centered .container to span the full viewport width, restoring a white
+     background just for the heading, while the rest of the section (and the
+     grid inside it) stays black. Safe because body already has
+     overflow-x: hidden sitewide (styles.css). */
+  .page-home #gallery .content-head {
     background: #fff;
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0 calc(50% - 50vw) clamp(2rem, 4vw, 3rem);
+    padding: clamp(3rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem);
+  }
+  .page-home #gallery .photo-caption {
+    color: #EEE4DD;
+  }
+  .page-home #gallery .photo-figure {
+    background: #1a1a1a;
+  }
+
+  /* Footer recolored to the same cream tone as the News panel, per feedback.
+     The shared default footer styles (dark text/icons on a light background)
+     already work here unchanged, so only the background needs overriding. */
+  .page-home .site-footer {
+    background: #EEE4DD;
+    padding: 1.1rem 0;
   }
 </style>
 </head>
