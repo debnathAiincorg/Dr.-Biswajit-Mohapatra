@@ -89,7 +89,8 @@ adopted (see Fidelity Decisions below).
 ## Fidelity Decisions — where the reference conflicts with your standing requirements
 
 Your original brief (turn 1, approved in Stage 1) explicitly specified: sticky nav, serif
-headings (Playfair Display) + sans body (Inter), and a neutral **light** palette (white/cream
+headings (Playfair Display) + sans body (Inter) — this typeface requirement was later changed
+to all-sans, see the Typeface row below — and a neutral **light** palette (white/cream
 background, charcoal text, one accent color). The re-audit shows the reference site itself
 uses a non-sticky header, an all-sans typeface, and alternates dark-photo/light-band sections.
 Rather than silently picking one, here's the resolution:
@@ -98,7 +99,7 @@ Rather than silently picking one, here's the resolution:
 |---|---|---|---|
 | Header stickiness | `position: absolute`, scrolls away | "Sticky top nav" (explicit, turn 1) | **Keep sticky** — your explicit requirement wins, and with 14 nav destinations a persistent nav is a practical necessity, not just a style preference |
 | Palette / dark hero band | Alternating black/bright sections, white text on hero photo | "white/cream bg, charcoal text, one accent color" (explicit, turn 1) | **Keep the light palette** — your explicit requirement wins; we do not adopt the dark hero-overlay treatment |
-| Typeface | All-sans (`halyard-display`) | "Serif headings (Playfair Display), sans body (Inter)" (explicit, turn 1) | **Keep the serif/sans pairing** — your explicit requirement wins; we adopt the reference's *numeric ratios* (line-height ratios, letter-spacing scale) translated onto our fonts, not its actual typeface |
+| Typeface | All-sans (`halyard-display`) | "Serif headings (Playfair Display), sans body (Inter)" (explicit, turn 1) | **Kept the serif/sans pairing through v1–v2** — your explicit turn-1 requirement won over the reference's all-sans face, and we adopted its *numeric ratios* (line-height ratios, letter-spacing scale) onto Playfair + Inter rather than its actual typeface. **Superseded as of commit `a4cfabf`** (2026-08-24): the requirement changed to all-sans — Inter now renders both headings and body sitewide, weights 500/600 only, with no serif face loaded on any of the 14 pages |
 | Nav case | Normal case, weight 300, 16px, 0.8px tracking | Not specified by you | **Adopt the reference's approach** — switch our nav from uppercase/tracked to normal-case, lighter weight, closer to measured size, since you didn't specify otherwise and this is a real fidelity gap worth closing |
 | Gallery columns | 5 → 2 masonry, tight 13px gaps | "3 columns desktop, 1 column mobile" (explicit, turn 1; reconfirmed this round: "keep the grid layout") | **Keep 3/1 fixed grid** — your explicit requirement, twice-confirmed, wins over the reference's masonry column counts |
 | Container max-width | `1300px` | Previously `1220px` (our v1 choice, not user-specified) | **Adopt the reference's 1300px** — no standing user instruction to override |
@@ -179,8 +180,9 @@ as an actual homepage rather than a sitemap. Reasoning and exact copy in `SECTIO
 - Placeholder images from `https://placehold.co`, plus one real image (`image/1.png`) used as
   the About/hero portrait per your direct instruction — noted here since it's the one departure
   from "placeholder images only," made deliberately at your request, not by default.
-- Google Fonts: **Playfair Display** (serif, headings) + **Inter** (sans-serif, body/UI) —
-  unchanged, per your standing instruction (see Fidelity Decisions).
+- Google Fonts: **Inter** only, for both headings and body/UI, weights 500/600 — serif
+  Playfair Display dropped sitewide as of commit `a4cfabf`, which changed the standing turn-1
+  typeface requirement to all-sans (see Fidelity Decisions).
 - CSS custom properties for palette/type scale, tuned to the re-audit's measured ratios
   (line-height ~1.6 for body copy, ~0.97–1.05 for large headings, container max-width 1300px),
   now living in `styles.css`.

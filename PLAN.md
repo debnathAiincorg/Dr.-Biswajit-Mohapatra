@@ -133,9 +133,11 @@ pattern for a wayfinding menu. Instead:
 - Body/paragraph `line-height`: **1.6** (was 1.7; matches reference's measured 20.8px/33.28px
   ratio).
 - Large heading `line-height`: tightened toward **~1.05** for the hero H1 (reference measured
-  an even tighter 0.97, but that's on a sans-serif at 500 weight — Playfair Display needs a
+  an even tighter 0.97, but that's on a sans-serif at 500 weight — the heading face needs a
   little more room before descenders/ascenders start clipping, so 1.05 is the closest safe
-  value, not the literal reference number — noted as an approximation).
+  value, not the literal reference number — noted as an approximation). Headings render in
+  Inter sitewide as of commit `a4cfabf`, which retired the Playfair Display face this note
+  originally cited.
 - Button: `border-radius` reduced to **1px** (was 3px; reference is a hard 0px square, but a
   hairline radius keeps our buttons from looking visually harsh against rounded card corners
   elsewhere on the page — a deliberate near-match, not the literal value).
@@ -151,8 +153,9 @@ pattern for a wayfinding menu. Instead:
   uses a tight 13px gap — we don't go that tight since our cards are larger fixed-width grid
   cells, not masonry bricks, but move meaningfully closer).
 - Gallery caption: **not italic** (was italic in v1) — reference measured `font-style: normal`.
-  Switching to upright Playfair Display for captions, keeping the serif choice (per Fidelity
-  Decisions) but dropping the italic treatment to match what was actually measured.
+  Renders in upright Inter — the sitewide face as of commit `a4cfabf`, which replaced the
+  Playfair Display this note originally specified — with the italic treatment dropped to match
+  what was actually measured.
 - Social icon size: **28px** (was 32px; reference measured 21px — split the difference for
   touch-target comfort, noted as approximate).
 - Header: **stays sticky** (`position: sticky`, kept per Fidelity Decisions), gains its own
@@ -163,7 +166,9 @@ pattern for a wayfinding menu. Instead:
 
 1. **Document skeleton & design tokens** — update the existing `:root` custom properties per
    the table above (container width, line-heights, button radius/tracking, nav typography,
-   gallery gap, social icon size). Keep Playfair Display + Inter, keep the light palette.
+   gallery gap, social icon size). Keep Inter for both headings and body (serif Playfair
+   Display retired sitewide as of commit `a4cfabf` — see CLAUDE.md → Fidelity Decisions), keep
+   the light palette.
 
 2. **Nav bar (rework)**
    - Logo left (unchanged position).
@@ -248,12 +253,13 @@ pattern for a wayfinding menu. Instead:
 - [ ] Awards, Education, Experience, Publications, Alumni, Courses, Activities — list-row
       sections, fictional content per `SECTIONS.md`
 - [ ] Projects, Students — card-grid sections, fictional content per `SECTIONS.md`
-- [ ] Gallery — 3-col/1-col grid, 9 cards, upright serif caption + date (italic dropped per
-      re-audit finding)
+- [ ] Gallery — 3-col/1-col grid, 9 cards, upright caption + date (italic dropped per re-audit
+      finding; caption face was Playfair Display, now Inter sitewide as of commit `a4cfabf`)
 - [ ] Contact — dedicated section with placeholder email/address
 - [ ] Footer — unchanged (social icons, copyright, credit line)
-- [ ] Editorial, whitespace-heavy aesthetic; light palette retained; Playfair Display + Inter
-      retained (per Fidelity Decisions)
+- [ ] Editorial, whitespace-heavy aesthetic; light palette retained; Inter retained sitewide
+      for both headings and body (Playfair Display retired as of commit `a4cfabf` — per
+      Fidelity Decisions)
 - [ ] Container width, line-height ratios, button radius/tracking, gallery gap, nav typography
       updated per the re-audit's measured values (see tokens table above)
 - [ ] Fully responsive; hamburger below 1560px for nav, 768px/1024px retained for content grids
