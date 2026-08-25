@@ -104,7 +104,12 @@
 
     // Scroll reveal. Elements are visible in CSS until .js-reveal is set above;
     // from there the observer adds .is-visible as they enter the viewport.
-    var MAX_STAGGER_STEPS = 8;
+    // Capped lower than before (was 8) now that --reveal-stagger is 75ms: 8
+    // steps would put the last card in a batch 600ms behind the first, and with
+    // the longer --reveal-duration on top of that the tail of a big grid
+    // started to feel like waiting rather than cascading. 6 keeps the same
+    // effect with a tail that resolves promptly.
+    var MAX_STAGGER_STEPS = 6;
     var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var revealTargets = document.querySelectorAll('.card, .reveal');
     // The footer animates its drawn hairline and its own children from

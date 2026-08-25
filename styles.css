@@ -24,11 +24,18 @@ html, body {
   --radius: 1px;
   --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
   /* Entrances decelerate into place, so they use their own curve rather than
-     the symmetric --ease used for hover/state changes. */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --reveal-shift: 18px;
-  --reveal-duration: 0.55s;
-  --reveal-stagger: 55ms;
+     the symmetric --ease used for hover/state changes. Eased-out cubic rather
+     than the near-expo curve this used to carry: at the longer durations below,
+     an expo curve reads as a snap followed by a crawl, where cubic keeps a
+     single continuous glide the whole way in. */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  /* Entrance motion, tuned as one system so every page shares a cadence.
+     Slightly longer travel alongside the longer duration: the same distance
+     stretched over more time reads as hesitant, where a little more distance
+     keeps the movement deliberate. */
+  --reveal-shift: 22px;
+  --reveal-duration: 0.78s;
+  --reveal-stagger: 75ms;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -137,11 +144,11 @@ h1, h2, h3 {
   border: 1px solid var(--terracotta);
   cursor: pointer;
   transition:
-    background 0.25s var(--ease),
-    color 0.25s var(--ease),
-    border-color 0.25s var(--ease),
-    box-shadow 0.25s var(--ease),
-    transform 0.2s var(--ease);
+    background 0.32s var(--ease),
+    color 0.32s var(--ease),
+    border-color 0.32s var(--ease),
+    box-shadow 0.32s var(--ease),
+    transform 0.26s var(--ease);
 }
 /* Every button lifts the same way on every page, so the affordance reads
    identically sitewide rather than being re-specified per page. */
@@ -180,7 +187,7 @@ h1, h2, h3 {
   background: rgba(246, 240, 228, 0.92);
   backdrop-filter: blur(6px);
   border-bottom: 1px solid transparent;
-  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 .site-header.is-scrolled {
   border-bottom-color: var(--line);
@@ -194,7 +201,7 @@ h1, h2, h3 {
   gap: 0.5rem;
   max-width: none;
   margin: 0;
-  transition: padding 0.32s var(--ease);
+  transition: padding 0.42s var(--ease);
 }
 /* Scrolled state also tightens the bar vertically, so the header visibly
    settles into a compact strip rather than only gaining a hairline. Padding is
@@ -219,7 +226,7 @@ h1, h2, h3 {
   white-space: nowrap;
   flex-shrink: 0;
   margin-right: auto;
-  animation: nav-logo-in 0.5s var(--ease-out) backwards;
+  animation: nav-logo-in 0.7s var(--ease-out) backwards;
 }
 
 /* The narrow-screen font-size stepdown that used to live here is gone: it
@@ -245,11 +252,11 @@ h1, h2, h3 {
   border-radius: var(--radius);
   background-color: transparent;
   transition:
-    background-color 0.18s var(--ease),
-    color 0.18s var(--ease),
-    transform 0.18s var(--ease);
-  animation: nav-item-in 0.45s var(--ease-out) backwards;
-  animation-delay: calc(110ms + var(--nav-i, 0) * 30ms);
+    background-color 0.24s var(--ease),
+    color 0.24s var(--ease),
+    transform 0.24s var(--ease);
+  animation: nav-item-in 0.62s var(--ease-out) backwards;
+  animation-delay: calc(130ms + var(--nav-i, 0) * 42ms);
 }
 .nav-links a::after {
   content: "";
@@ -259,7 +266,7 @@ h1, h2, h3 {
   bottom: 0;
   height: 1px;
   background: var(--terracotta);
-  transition: left 0.28s var(--ease-out), right 0.28s var(--ease-out);
+  transition: left 0.36s var(--ease-out), right 0.36s var(--ease-out);
 }
 .nav-links a:hover,
 .nav-links a:focus-visible {
@@ -282,8 +289,8 @@ h1, h2, h3 {
   flex-shrink: 0;
 }
 .header-actions > * {
-  animation: nav-item-in 0.45s var(--ease-out) backwards;
-  animation-delay: calc(110ms + var(--nav-i, 0) * 30ms);
+  animation: nav-item-in 0.62s var(--ease-out) backwards;
+  animation-delay: calc(130ms + var(--nav-i, 0) * 42ms);
 }
 .header-actions > *:nth-child(1) { --nav-i: 14; }
 .header-actions > *:nth-child(2) { --nav-i: 15; }
@@ -297,7 +304,7 @@ h1, h2, h3 {
 .social-badge {
   display: inline-flex;
   align-items: center;
-  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+  transition: transform 0.32s var(--ease), opacity 0.32s var(--ease);
   flex-shrink: 0;
 }
 .social-badge img { height: 28px; width: auto; display: block; }
@@ -324,7 +331,7 @@ h1, h2, h3 {
   height: 1.5px;
   width: 22px;
   background: var(--ink);
-  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+  transition: transform 0.38s var(--ease), opacity 0.38s var(--ease);
 }
 .burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
 .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
@@ -341,11 +348,11 @@ h1, h2, h3 {
   overflow: hidden;
   visibility: hidden;
   transition:
-    max-height 0.42s var(--ease-out),
-    padding 0.42s var(--ease-out),
-    border-top-width 0.42s var(--ease-out),
-    opacity 0.22s var(--ease),
-    visibility 0s linear 0.42s;
+    max-height 0.52s var(--ease-out),
+    padding 0.52s var(--ease-out),
+    border-top-width 0.52s var(--ease-out),
+    opacity 0.28s var(--ease),
+    visibility 0s linear 0.52s;
 }
 .mobile-panel.is-open {
   padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem;
@@ -355,10 +362,10 @@ h1, h2, h3 {
   overflow-y: auto;
   visibility: visible;
   transition:
-    max-height 0.42s var(--ease-out),
-    padding 0.42s var(--ease-out),
-    border-top-width 0.42s var(--ease-out),
-    opacity 0.3s var(--ease),
+    max-height 0.52s var(--ease-out),
+    padding 0.52s var(--ease-out),
+    border-top-width 0.52s var(--ease-out),
+    opacity 0.38s var(--ease),
     visibility 0s;
 }
 /* Child combinator, not a descendant selector: these style the panel's nav
@@ -373,7 +380,7 @@ h1, h2, h3 {
   border-bottom: 1px solid var(--line);
   border-radius: var(--radius);
   background-color: transparent;
-  transition: background-color 0.18s var(--ease);
+  transition: background-color 0.24s var(--ease);
 }
 .mobile-panel > a:hover,
 .mobile-panel > a:focus-visible {
@@ -382,8 +389,8 @@ h1, h2, h3 {
 .mobile-panel > a[aria-current="page"] { color: var(--terracotta); }
 .mobile-panel.is-open > a,
 .mobile-panel.is-open .mobile-socials {
-  animation: nav-item-in 0.4s var(--ease-out) backwards;
-  animation-delay: calc(90ms + var(--nav-i, 0) * 26ms);
+  animation: nav-item-in 0.55s var(--ease-out) backwards;
+  animation-delay: calc(110ms + var(--nav-i, 0) * 36ms);
 }
 .mobile-panel .mobile-socials {
   display: flex;
@@ -440,7 +447,7 @@ h1, h2, h3 {
   .burger { display: flex; }
   .mobile-panel { display: flex; }
   /* The nav links this delay was meant to trail are hidden here. */
-  .header-actions > * { animation-delay: 140ms; }
+  .header-actions > * { animation-delay: 170ms; }
 }
 
 /* ---------- Section rhythm ---------- */
@@ -518,7 +525,7 @@ h1, h2, h3 {
   padding: 1.15rem 0.25rem;
 }
 .row-list a {
-  transition: color 0.25s var(--ease);
+  transition: color 0.32s var(--ease);
 }
 .row-list a:hover, .row-list a:focus-visible {
   color: var(--terracotta);
@@ -532,7 +539,7 @@ h1, h2, h3 {
    composited, where animating padding-left relayouts the row on every frame
    and drags the right-aligned meta text with it. */
 .row-list a .row-title {
-  transition: transform 0.25s var(--ease);
+  transition: transform 0.32s var(--ease);
 }
 .row-list a:hover .row-title,
 .row-list a:focus-visible .row-title {
@@ -631,7 +638,7 @@ h1, h2, h3 {
 }
 .photo-figure img {
   width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.6s var(--ease);
+  transition: transform 0.8s var(--ease);
 }
 .card:hover .photo-figure img { transform: scale(1.045); }
 .photo-caption {
@@ -643,7 +650,7 @@ h1, h2, h3 {
 }
 .card-rule {
   width: 0; height: 1px; background: var(--terracotta);
-  transition: width 0.35s var(--ease);
+  transition: width 0.45s var(--ease);
   margin-bottom: 0.5rem;
 }
 .card:hover .card-rule { width: 42px; }
@@ -748,7 +755,7 @@ h1, h2, h3 {
   background: var(--line);
   transform: scaleX(1);
   transform-origin: left center;
-  transition: transform 0.7s var(--ease-out);
+  transition: transform 0.95s var(--ease-out);
 }
 /* Undrawn start state, like .reveal above, hangs off .js-reveal -- so if
    script.js never runs the footer keeps its hairline instead of losing it. */
@@ -785,8 +792,8 @@ h1, h2, h3 {
   transform: translateY(var(--reveal-shift));
 }
 /* Line first, then the content settles beneath it. */
-.site-footer.footer-rule .footer-text { transition-delay: 0.12s; }
-.site-footer.footer-rule .footer-socials { transition-delay: calc(0.12s + var(--reveal-stagger)); }
+.site-footer.footer-rule .footer-text { transition-delay: 0.16s; }
+.site-footer.footer-rule .footer-socials { transition-delay: calc(0.16s + var(--reveal-stagger)); }
 .js-reveal .site-footer.footer-rule.is-visible .footer-text,
 .js-reveal .site-footer.footer-rule.is-visible .footer-socials {
   opacity: 1;
@@ -809,8 +816,8 @@ h1, h2, h3 {
   .footer-text { text-align: center; }
   /* column-reverse lifts the socials above the text, so the cascade swaps to
      keep running top-to-bottom rather than jumping back up the bar. */
-  .site-footer.footer-rule .footer-socials { transition-delay: 0.12s; }
-  .site-footer.footer-rule .footer-text { transition-delay: calc(0.12s + var(--reveal-stagger)); }
+  .site-footer.footer-rule .footer-socials { transition-delay: 0.16s; }
+  .site-footer.footer-rule .footer-text { transition-delay: calc(0.16s + var(--reveal-stagger)); }
 }
 
 /* Belt-and-braces for scripting genuinely disabled, matching the reveal block
