@@ -12,6 +12,27 @@
   // and the footer's text and hairline, invisible permanently.
   document.documentElement.classList.add('js-reveal');
 
+  // Measure the reserved scrollbar gutter and expose it as --scrollbar-w.
+  //
+  // about.html's full-bleed gallery band breaks out of .container using the
+  // standard `width: 100vw; margin: 0 calc(50% - 50vw)` trick. `100vw` is
+  // defined as the window's full width INCLUDING whatever gutter the browser
+  // reserves for a vertical scrollbar, whereas the .container it's escaping
+  // from is laid out against the narrower visible area (clientWidth). On any
+  // desktop browser that reserves scrollbar space, that mismatch left the
+  // band about 15px wider than the true viewport, split as ~7px overflow on
+  // each edge -- invisible today only because body already carries
+  // overflow-x: hidden as a separate safety net (styles.css), not because the
+  // band was actually sized correctly. --scrollbar-w lets that rule subtract
+  // the real gutter width from both its size and its centering math, so nothing
+  // needs to be clipped in the first place. try/catch because a layout
+  // measurement has nothing to do with the reveal system below, and must not
+  // be able to take it down.
+  try {
+    var scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--scrollbar-w', Math.max(0, scrollbarW) + 'px');
+  } catch (e) {}
+
   // Everything below runs inside a guard that DISARMS on failure. Arming above
   // is what makes a missing script.js fail visible; this is what makes a
   // *throwing* script.js fail visible too. Without it, any error between the

@@ -273,24 +273,23 @@ h1, h2, h3 {
 .header-actions > *:nth-child(1) { --nav-i: 14; }
 .header-actions > *:nth-child(2) { --nav-i: 15; }
 .header-actions > *:nth-child(3) { --nav-i: 16; }
-.social-icon {
-  width: 36px;
-  height: 36px;
+/* LinkedIn's official brand kit ships the "in" mark only as a complete
+   badge -- a filled rounded-square with its own background baked into the
+   PNG -- never as a plain single-color glyph the way the old inline SVG
+   was. There's nothing to recolor via CSS `fill` any more (it's a raster
+   image with the badge colors already fixed), so this is a standalone
+   mark with its own lift-on-hover, not a circle chip a glyph sits inside. */
+.social-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  transition: border-color 0.25s var(--ease), background 0.25s var(--ease), transform 0.25s var(--ease);
+  transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
   flex-shrink: 0;
 }
-.social-icon svg { width: 13px; height: 13px; fill: var(--ink); transition: fill 0.25s var(--ease); }
-.social-icon:hover, .social-icon:focus-visible {
-  background: var(--ink);
-  border-color: var(--ink);
+.social-badge img { height: 28px; width: auto; display: block; }
+.social-badge:hover, .social-badge:focus-visible {
   transform: translateY(-2px);
+  opacity: 0.82;
 }
-.social-icon:hover svg, .social-icon:focus-visible svg { fill: var(--paper); }
 
 .burger {
   display: none;
@@ -348,9 +347,9 @@ h1, h2, h3 {
     visibility 0s;
 }
 /* Child combinator, not a descendant selector: these style the panel's nav
-   rows, and .mobile-socials holds two <a class="social-icon"> further down the
-   panel. As a descendant selector this outranked .social-icon and squared off
-   the round icons (border-radius) and replaced their ink hover fill. */
+   rows, and .mobile-socials holds an <a class="social-badge"> further down
+   the panel. As a descendant selector this would apply the nav rows' own
+   padding and border-bottom to that link too. */
 .mobile-panel > a {
   padding: 0.85rem 0;
   font-size: 0.92rem;
@@ -422,7 +421,7 @@ h1, h2, h3 {
    would mean shrinking nav font below ~0.68rem or dropping/abbreviating nav
    labels, which starts trading off legibility rather than just spacing. */
 @media (max-width: 1249px) {
-  .nav-links, .header-actions .social-icon { display: none; }
+  .nav-links, .header-actions .social-badge { display: none; }
   .burger { display: flex; }
   .mobile-panel { display: flex; }
   /* The nav links this delay was meant to trail are hidden here. */

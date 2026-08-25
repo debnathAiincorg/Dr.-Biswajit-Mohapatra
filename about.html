@@ -52,10 +52,10 @@
   .page-home .nav-links a::after { background: #fff; }
   .page-home .nav-links a:hover, .page-home .nav-links a:focus-visible { background-color: rgba(255, 255, 255, 0.16); }
   .page-home .nav-links a[aria-current="page"] { color: var(--terracotta); }
-  .page-home .header-actions .social-icon { border-color: rgba(255, 255, 255, 0.5); }
-  .page-home .header-actions .social-icon svg { fill: #fff; }
-  .page-home .header-actions .social-icon:hover { background: #fff; border-color: #fff; }
-  .page-home .header-actions .social-icon:hover svg { fill: var(--ink); }
+  /* No .social-badge override needed here: the header uses
+     linkedin-badge-white.png directly (see the header markup below) instead
+     of a CSS-recolored icon, since the badge is a fixed-color raster image
+     now, not a single-color SVG glyph that could be flipped with `fill`. */
   .page-home .burger span { background: #fff; }
 
   /* Full-bleed hero */
@@ -190,13 +190,22 @@
      the black photo grid, not black-on-black. Break .content-head out of the
      centered .container to span the full viewport width, restoring a white
      background just for the heading, while the rest of the section (and the
-     grid inside it) stays black. Safe because body already has
-     overflow-x: hidden sitewide (styles.css). */
+     grid inside it) stays black.
+
+     100vw includes whatever gutter the browser reserves for a vertical
+     scrollbar; .container it's escaping does not, since it's laid out against
+     the true visible width. Unadjusted, that mismatch made this band ~15px
+     too wide, overflowing ~7px past each edge on desktop browsers that
+     reserve scrollbar space -- previously invisible only because body's own
+     overflow-x: hidden (styles.css) clipped it, not because it was sized
+     correctly. --scrollbar-w (measured in script.js) is subtracted from both
+     the width and the centering math below so the band is actually the right
+     size instead of relying on that clip. */
   .page-home #gallery .content-head {
     background: #fff;
-    max-width: 100vw;
-    width: 100vw;
-    margin: 0 calc(50% - 50vw) clamp(2rem, 4vw, 3rem);
+    max-width: calc(100vw - var(--scrollbar-w, 0px));
+    width: calc(100vw - var(--scrollbar-w, 0px));
+    margin: 0 calc(50% - 50vw + var(--scrollbar-w, 0px) / 2) clamp(2rem, 4vw, 3rem);
     padding: clamp(3rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem);
   }
   .page-home #gallery .photo-caption {
@@ -240,11 +249,8 @@
     </nav>
 
     <div class="header-actions">
-      <a class="social-icon" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.3-.02-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21H9z"/></svg>
-      </a>
-      <a class="social-icon" href="#" aria-label="Goodreads (placeholder link)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.2 15.1h-1.6l-.35-1.02h-2.5l-.34 1.02H8.8l2.5-6.9h1.4l2.5 6.9zm-2.35-2.3-.85-2.53-.85 2.53h1.7z"/></svg>
+      <a class="social-badge" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
+        <img src="image/linkedin-badge-white.png" width="30" height="28" alt="">
       </a>
       <button class="burger" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobilePanel">
         <span></span><span></span><span></span>
@@ -268,11 +274,8 @@
     <a href="activities.html">Activities</a>
     <a href="contact.html">Contact</a>
     <div class="mobile-socials">
-      <a class="social-icon" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.3-.02-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21H9z"/></svg>
-      </a>
-      <a class="social-icon" href="#" aria-label="Goodreads (placeholder link)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.2 15.1h-1.6l-.35-1.02h-2.5l-.34 1.02H8.8l2.5-6.9h1.4l2.5 6.9zm-2.35-2.3-.85-2.53-.85 2.53h1.7z"/></svg>
+      <a class="social-badge" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
+        <img src="image/linkedin-badge-black.png" width="30" height="28" alt="">
       </a>
     </div>
   </div>
@@ -414,11 +417,8 @@
       <p class="footer-credit">All photography is placeholder imagery via placehold.co, for layout demonstration only.</p>
     </div>
     <div class="footer-socials">
-      <a class="social-icon" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.3-.02-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21H9z"/></svg>
-      </a>
-      <a class="social-icon" href="#" aria-label="Goodreads (placeholder link)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.2 15.1h-1.6l-.35-1.02h-2.5l-.34 1.02H8.8l2.5-6.9h1.4l2.5 6.9zm-2.35-2.3-.85-2.53-.85 2.53h1.7z"/></svg>
+      <a class="social-badge" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
+        <img src="image/linkedin-badge-black.png" width="30" height="28" alt="">
       </a>
     </div>
   </div>
