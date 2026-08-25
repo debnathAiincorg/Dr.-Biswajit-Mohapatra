@@ -33,6 +33,40 @@
     document.documentElement.style.setProperty('--scrollbar-w', Math.max(0, scrollbarW) + 'px');
   } catch (e) {}
 
+  // Lenis smooth scrolling. Its <script> tag sits right before this one in
+  // every page's <head>/end-of-body, but that's a separate CDN request --
+  // if it 404s, is slow, or is blocked, `Lenis` simply never exists here.
+  // Guarded and entirely independent of the reveal system below: this is a
+  // scroll-feel concern, not a visibility one, so it has nothing to do with
+  // the arm/disarm contract above and must not be able to interfere with it
+  // either way.
+  //
+  // Skipped outright under prefers-reduced-motion rather than configured
+  // around it -- Lenis has no built-in reduced-motion awareness, and native
+  // scrolling is exactly the fallback this page already wants for every
+  // other animation when that's set (see the global rule in styles.css).
+  //
+  // No wrapper/content options passed: default (window-scroll) mode re-drives
+  // the page's own native scroll position via scrollTo() on each frame --
+  // confirmed by reading the library source, it does not wrap the page or
+  // apply transform to it, so it can't reintroduce the transform-triggered
+  // layout bug the footer fix above worked around. autoRaf: true lets Lenis
+  // run its own rAF loop rather than this file having to drive one.
+  //
+  // syncTouch is deliberately left at its default (false): that's what keeps
+  // touch scrolling native on mobile/tablet. Lenis only takes over wheel/
+  // trackpad input unless syncTouch is explicitly turned on, so nothing here
+  // needs to special-case touch devices -- the default already leaves them
+  // alone. The existing sticky-header scroll listener above reads
+  // window.scrollY either way, so it keeps working unmodified regardless of
+  // whether Lenis or the browser is the one driving that value.
+  try {
+    var reduceMotionForLenis = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (typeof Lenis !== 'undefined' && !reduceMotionForLenis) {
+      new Lenis({ autoRaf: true });
+    }
+  } catch (e) {}
+
   // Everything below runs inside a guard that DISARMS on failure. Arming above
   // is what makes a missing script.js fail visible; this is what makes a
   // *throwing* script.js fail visible too. Without it, any error between the
