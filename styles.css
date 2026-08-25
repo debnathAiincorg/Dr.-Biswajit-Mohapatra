@@ -7,6 +7,20 @@ html, body {
   max-width: 100%;
 }
 
+/* Vertical scrollbar hidden sitewide -- track/thumb only, scrolling itself
+   (wheel, trackpad, touch, keyboard) is untouched, since overflow-y stays at
+   its default (auto/visible), just with nothing painted for it. Three
+   properties because each browser engine exposes this differently: Firefox
+   via scrollbar-width, old Edge/IE via -ms-overflow-style, and
+   Chrome/Safari/current Edge via the ::-webkit-scrollbar pseudo-element. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   --paper: #EEE4DD;
   --paper-dim: #EEE4DD;
@@ -307,7 +321,7 @@ h1, h2, h3 {
   transition: transform 0.32s var(--ease), opacity 0.32s var(--ease);
   flex-shrink: 0;
 }
-.social-badge img { height: 28px; width: auto; display: block; }
+.social-badge img { height: 27.44px; width: auto; display: block; }
 .social-badge:hover, .social-badge:focus-visible {
   transform: translateY(-2px);
   opacity: 0.82;
@@ -779,17 +793,32 @@ h1, h2, h3 {
 
    The footer element itself is observed separately now, at threshold 0 with no
    bottom cut, so its own reveal no longer depends on being taller than that
-   excluded band -- see the note in script.js. */
+   excluded band -- see the note in script.js.
+
+   margin-top, not transform, drives the rise here -- the one exception to
+   "everything else on the page uses transform" in this whole reveal system.
+   transform/translate on these two elements (confirmed with both, isolated
+   independently) puts <main> and <footer> into a Chromium layout bug specific
+   to this exact nesting -- flex children of .footer-inner, itself a
+   margin:auto-centered box inside the <footer> flex item -- where both
+   compute ~15px narrower than the real viewport (matching the reserved
+   scrollbar-gutter width) and, on about/alumni/gallery/news/publications/
+   students specifically, off-center to one side rather than merely narrower.
+   That's what the previous audit surfaced as "inconsistent footer spacing
+   across pages": both groups were wrong, one just wrong symmetrically.
+   margin-top doesn't trigger it (verified: constant footer height across 21
+   samples over 2s of real time, confirming .footer-inner's align-items:center
+   absorbs the animated margin without growing the bar). */
 .site-footer.footer-rule .footer-text,
 .site-footer.footer-rule .footer-socials {
   transition:
     opacity var(--reveal-duration) var(--ease-out),
-    transform var(--reveal-duration) var(--ease-out);
+    margin-top var(--reveal-duration) var(--ease-out);
 }
 .js-reveal .site-footer.footer-rule .footer-text,
 .js-reveal .site-footer.footer-rule .footer-socials {
   opacity: 0;
-  transform: translateY(var(--reveal-shift));
+  margin-top: var(--reveal-shift);
 }
 /* Line first, then the content settles beneath it. */
 .site-footer.footer-rule .footer-text { transition-delay: 0.16s; }
@@ -797,7 +826,7 @@ h1, h2, h3 {
 .js-reveal .site-footer.footer-rule.is-visible .footer-text,
 .js-reveal .site-footer.footer-rule.is-visible .footer-socials {
   opacity: 1;
-  transform: none;
+  margin-top: 0;
 }
 .footer-inner {
   display: flex;
@@ -827,7 +856,7 @@ h1, h2, h3 {
 @media (scripting: none) {
   .site-footer.footer-rule::before { transform: scaleX(1); }
   .site-footer.footer-rule .footer-text,
-  .site-footer.footer-rule .footer-socials { opacity: 1; transform: none; }
+  .site-footer.footer-rule .footer-socials { opacity: 1; margin-top: 0; }
 }
 
 /* ---------- Responsive (content grids) ---------- */

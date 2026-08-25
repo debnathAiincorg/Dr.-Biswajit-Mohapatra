@@ -52,10 +52,10 @@
   .page-home .nav-links a::after { background: #fff; }
   .page-home .nav-links a:hover, .page-home .nav-links a:focus-visible { background-color: rgba(255, 255, 255, 0.16); }
   .page-home .nav-links a[aria-current="page"] { color: var(--terracotta); }
-  /* No .social-badge override needed here: the header uses
-     linkedin-badge-white.png directly (see the header markup below) instead
-     of a CSS-recolored icon, since the badge is a fixed-color raster image
-     now, not a single-color SVG glyph that could be flipped with `fill`. */
+  /* No .social-badge override needed here: LinkedIn's official blue badge
+     (image/linkedin-badge-blue.png) reads clearly on both this dark hero and
+     the light pages, so all 14 pages share the one file -- no separate
+     light/dark variant needed the way the earlier black/white pairing did. */
   .page-home .burger span { background: #fff; }
 
   /* Full-bleed hero */
@@ -253,7 +253,7 @@
 
     <div class="header-actions">
       <a class="social-badge" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
-        <img src="image/linkedin-badge-white.png" width="30" height="28" alt="">
+        <img src="image/linkedin-badge-blue.png" width="32" height="27" alt="">
       </a>
       <button class="burger" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobilePanel">
         <span></span><span></span><span></span>
@@ -278,7 +278,7 @@
     <a href="contact.html">Contact</a>
     <div class="mobile-socials">
       <a class="social-badge" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
-        <img src="image/linkedin-badge-black.png" width="30" height="28" alt="">
+        <img src="image/linkedin-badge-blue.png" width="32" height="27" alt="">
       </a>
     </div>
   </div>
@@ -421,7 +421,7 @@
     </div>
     <div class="footer-socials">
       <a class="social-badge" href="https://in.linkedin.com/in/biswajitmohapatra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)">
-        <img src="image/linkedin-badge-black.png" width="30" height="28" alt="">
+        <img src="image/linkedin-badge-blue.png" width="32" height="27" alt="">
       </a>
     </div>
   </div>
