@@ -1,3 +1,12 @@
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+* {
+  max-width: 100%;
+}
+
 :root {
   --paper: #EEE4DD;
   --paper-dim: #EEE4DD;
