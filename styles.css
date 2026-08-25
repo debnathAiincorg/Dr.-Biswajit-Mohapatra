@@ -309,22 +309,33 @@ h1, h2, h3 {
 .header-actions > *:nth-child(1) { --nav-i: 14; }
 .header-actions > *:nth-child(2) { --nav-i: 15; }
 .header-actions > *:nth-child(3) { --nav-i: 16; }
-/* LinkedIn's official brand kit ships the "in" mark only as a complete
-   badge -- a filled rounded-square with its own background baked into the
-   PNG -- never as a plain single-color glyph the way the old inline SVG
-   was. There's nothing to recolor via CSS `fill` any more (it's a raster
-   image with the badge colors already fixed), so this is a standalone
-   mark with its own lift-on-hover, not a circle chip a glyph sits inside. */
+/* Circular outer shape, required: LinkedIn's official brand kit only ships
+   the "in" mark as a filled rounded-SQUARE badge with the background baked
+   into the file, so getting a true circle without clipping the letterforms
+   means going back to an inline single-color SVG glyph sitting inside a
+   circle this site draws itself -- the same construction .burger and the
+   old .social-icon already used elsewhere. fill: currentColor (not a fixed
+   color) is what lets one shared SVG go dark-on-cream here and, via the
+   .page-home override below, light-on-photo on the homepage hero, with no
+   separate light/dark image files to keep in sync. */
 .social-badge {
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
-  transition: transform 0.32s var(--ease), opacity 0.32s var(--ease);
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+  transition: border-color 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease);
   flex-shrink: 0;
 }
-.social-badge img { height: 27.44px; width: auto; display: block; }
+.social-badge svg { width: 15px; height: 15px; fill: currentColor; display: block; }
 .social-badge:hover, .social-badge:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
   transform: translateY(-2px);
-  opacity: 0.82;
 }
 
 .burger {
