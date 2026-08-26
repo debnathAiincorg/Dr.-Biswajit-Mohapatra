@@ -1,0 +1,4 @@
+# Temporary: this site is not ready to be public and must not be indexed.
+# Applies to every crawler and every path.
+User-agent: *
+Disallow: /
