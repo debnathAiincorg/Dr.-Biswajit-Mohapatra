@@ -1,0 +1,8 @@
+# https://biswajitmohapatra.com/robots.txt
+User-agent: *
+Allow: /
+
+# Redirect stub. The canonical homepage is /
+Disallow: /about.html
+
+Sitemap: https://biswajitmohapatra.com/sitemap.xml

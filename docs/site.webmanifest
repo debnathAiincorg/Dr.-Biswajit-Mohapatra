@@ -1,0 +1,15 @@
+{
+  "name": "Dr. Biswajit Mohapatra — Speech Lab",
+  "short_name": "B. Mohapatra",
+  "description": "Professor and Director of the Speech Lab: research on spoken language, human–AI communication, teaching and doctoral supervision.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#EEE4DD",
+  "theme_color": "#B5502E",
+  "icons": [
+    { "src": "/image/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/image/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/image/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

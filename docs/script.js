@@ -109,24 +109,46 @@
       var burger = document.getElementById('burgerBtn');
       var panel = document.getElementById('mobilePanel');
       if (burger && panel) {
-        burger.addEventListener('click', function () {
-          var isOpen = panel.classList.toggle('is-open');
+        var setMenuState = function (isOpen) {
           burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          // aria-expanded alone reads as "collapsed/expanded" but leaves the
+          // label saying "Open navigation menu" while the menu is open.
+          burger.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+        };
+        burger.addEventListener('click', function () {
+          setMenuState(panel.classList.toggle('is-open'));
+        });
+        // Escape closes the panel and returns focus to the control that opened
+        // it -- expected of any disclosure that covers the page on mobile.
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+            panel.classList.remove('is-open');
+            setMenuState(false);
+            burger.focus();
+          }
         });
         panel.querySelectorAll('a').forEach(function (link) {
           link.addEventListener('click', function () {
             panel.classList.remove('is-open');
-            burger.setAttribute('aria-expanded', 'false');
+            setMenuState(false);
           });
         });
       }
 
-      // Mark the current page's nav link, in both the inline nav and the mobile panel.
-      var currentFile = location.pathname.split('/').pop() || 'about.html';
+      // Mark the current page's nav link, in both the inline nav and the mobile
+      // panel. The server-rendered markup already carries aria-current on the
+      // right link, so this is a correction pass, not the only source of truth:
+      // it keeps the highlight right when a page is reached by a path the build
+      // could not predict -- '/' and '/index.html' are the same page, and
+      // about.html redirects here. Stale marks are cleared first so exactly one
+      // link is ever current.
+      var currentFile = location.pathname.split('/').pop() || 'index.html';
+      if (currentFile === 'about.html') { currentFile = 'index.html'; }
       document.querySelectorAll('.nav-links a, .mobile-panel a').forEach(function (link) {
         var href = link.getAttribute('href');
         if (!href) return;
-        var linkFile = href.split('#')[0] || 'about.html';
+        var linkFile = href.split('#')[0] || 'index.html';
+        link.removeAttribute('aria-current');
         if (linkFile === currentFile) {
           link.setAttribute('aria-current', 'page');
         }

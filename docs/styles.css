@@ -29,6 +29,17 @@ html::-webkit-scrollbar {
   --line: #DBCFB4;
   --terracotta: #B5502E;
   --terracotta-deep: #8F3D22;
+  /* Accent used for TEXT on the light background. --terracotta itself measures
+     4.04:1 against --paper -- under the 4.5:1 WCAG AA floor for text below
+     18.66px, which is every accent-coloured string on the site (eyebrows, card
+     dates, tags, student roles, the current nav link). This shade is the same
+     hue, darkened until it clears the floor: 5.0:1 against --paper.
+     --terracotta is unchanged and still paints every fill, border and rule,
+     where the 3:1 non-text threshold already applied and already passed. */
+  --terracotta-text: #A04525;
+  /* Light counterpart, for accent text on the homepage's dark bands (hero,
+     black gallery). --terracotta manages only 4.14:1 on black; this is 8.2:1. */
+  --terracotta-light: #E9895F;
   --on-terracotta: #FAF4E8;
   --container: 1300px;
   /* --font-serif is gone: nothing renders in a serif any more, and the 13
@@ -129,14 +140,14 @@ ul { list-style: none; }
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
 }
 
 /* All-sans body typography, taken from about.html (the reference page), which
    already restates exactly these values in its own .page-home h1,h2,h3 block.
    Headings used to be Playfair 700 here while about.html rendered them as
    Inter 600, which was the whole of the heading mismatch between the two. */
-h1, h2, h3 {
+h1, h2, h3, h4 {
   font-family: var(--font-sans);
   font-weight: 600;
   line-height: 1.1;
@@ -285,7 +296,7 @@ h1, h2, h3 {
 .nav-links a:hover,
 .nav-links a:focus-visible {
   background-color: rgba(181, 80, 46, 0.12);
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   transform: translateY(-1px);
 }
 .nav-links a:hover::after,
@@ -294,7 +305,7 @@ h1, h2, h3 {
   left: 0;
   right: 0;
 }
-.nav-links a[aria-current="page"] { color: var(--terracotta); }
+.nav-links a[aria-current="page"] { color: var(--terracotta-text); }
 
 .header-actions {
   display: flex;
@@ -411,7 +422,7 @@ h1, h2, h3 {
 .mobile-panel > a:focus-visible {
   background-color: rgba(181, 80, 46, 0.1);
 }
-.mobile-panel > a[aria-current="page"] { color: var(--terracotta); }
+.mobile-panel > a[aria-current="page"] { color: var(--terracotta-text); }
 .mobile-panel.is-open > a,
 .mobile-panel.is-open .mobile-socials {
   animation: nav-item-in 0.55s var(--ease-out) backwards;
@@ -486,6 +497,7 @@ h1, h2, h3 {
   text-align: center;
 }
 .content-head .eyebrow { margin-bottom: 0.9rem; }
+.content-head h1,
 .content-head h2 { font-size: clamp(1.9rem, 2.4vw + 1rem, 2.6rem); }
 .content-head p { color: var(--ink-soft); margin-top: 0.9rem; }
 
@@ -515,6 +527,7 @@ h1, h2, h3 {
   justify-content: center;
 }
 .mark svg { width: 20px; height: 20px; fill: var(--terracotta); }
+.panel h1,
 .panel h2 { font-size: clamp(1.8rem, 2.4vw + 1rem, 2.5rem); margin-bottom: 0.75rem; }
 .panel > .panel-inner > p { color: var(--ink-soft); margin-bottom: 2rem; }
 
@@ -553,7 +566,7 @@ h1, h2, h3 {
   transition: color 0.32s var(--ease);
 }
 .row-list a:hover, .row-list a:focus-visible {
-  color: var(--terracotta);
+  color: var(--terracotta-text);
 }
 .row-title {
   font-family: var(--font-sans);
@@ -577,7 +590,7 @@ h1, h2, h3 {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   border: 1px solid var(--terracotta);
   border-radius: 20px;
   padding: 0.15rem 0.55rem;
@@ -661,6 +674,14 @@ h1, h2, h3 {
   margin-bottom: 1rem;
   background: var(--paper-dim);
 }
+/* Every photo is served as <picture><source webp><img jpeg></picture>, so the
+   wrapper has to carry the box the img used to fill; a bare <picture> is
+   inline and would collapse the 4/5 frame. */
+.photo-figure picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .photo-figure img {
   width: 100%; height: 100%; object-fit: cover;
   transition: transform 0.8s var(--ease);
@@ -683,7 +704,7 @@ h1, h2, h3 {
   font-size: 0.7rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
 }
 
 /* Project card (also used for homepage teasers) */
@@ -702,12 +723,13 @@ h1, h2, h3 {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   border: 1px solid var(--terracotta);
   border-radius: 20px;
   padding: 0.2rem 0.65rem;
   margin-bottom: 1rem;
 }
+.project-card h2,
 .project-card h3 { font-size: 1.2rem; margin-bottom: 0.6rem; }
 .project-card p { color: var(--ink-soft); font-size: 0.92rem; flex-grow: 1; }
 
@@ -721,16 +743,23 @@ h1, h2, h3 {
   border: 1px solid var(--line);
 }
 .student-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.student-card h2,
 .student-card h3 { font-size: 1.05rem; margin-bottom: 0.15rem; }
 .student-role {
   display: block;
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   margin-bottom: 0.5rem;
 }
 .student-card p { color: var(--ink-soft); font-size: 0.88rem; }
+
+/* Centred call-to-action closing a section (homepage gallery teaser, 404). */
+.section-cta {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  text-align: center;
+}
 
 /* ---------- Contact ---------- */
 .contact-inner {
@@ -738,6 +767,7 @@ h1, h2, h3 {
   margin: 0 auto;
   text-align: center;
 }
+.contact-inner h1 { font-size: clamp(1.9rem, 2.4vw + 1rem, 2.6rem); }
 .contact-inner p { color: var(--ink-soft); }
 /* contact.html only, so about.html has no counterpart to copy: it gets the
    same sans face as every other text element rather than being left as the one
@@ -881,3 +911,308 @@ h1, h2, h3 {
   .hero-ctas { flex-direction: column; align-items: stretch; }
   .hero-ctas .btn { text-align: center; }
 }
+
+
+/* ==========================================================================
+   Lenis smooth-scroll support styles
+
+   Inlined verbatim from lenis@1.3.26/dist/lenis.css (513 bytes) rather than
+   pulled from unpkg. It was a render-blocking <link> to a third-party CDN in
+   the <head> of all 14 pages: a request that had to resolve before first
+   paint, from a host outside our control, with no integrity hash. Half a
+   kilobyte is not worth a blocking cross-origin round trip, or the outage
+   risk. The library itself is now vendored at vendor/lenis.min.js.
+   ========================================================================== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+/* ==========================================================================
+   Homepage overrides (.page-home)
+
+   Moved here from the inline <style> block that used to sit in about.html.
+   That was ~200 lines embedded in the page: re-downloaded on every homepage
+   visit, and the one place design tokens could drift from the shared system.
+   Here it is cached with everything else and there is a single stylesheet to
+   be consistent with -- the same reasoning CLAUDE.md already records for
+   extracting styles.css in the first place.
+
+   Every rule below is scoped to .page-home, which only index.html carries,
+   so no other page is affected. The homepage deliberately differs from the
+   rest of the site: a full-bleed dark hero photo with a non-sticky overlay
+   header, against the light sticky system every other page uses.
+   ========================================================================== */
+
+.page-home .site-header {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+  .page-home .site-header.is-scrolled {
+    background: transparent;
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
+  .page-home .logo {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: #fff;
+  }
+  /* The home header is an absolute overlay that scrolls away with the hero,
+     so the shared condense-on-scroll would retitle a bar the reader is
+     already losing. Held at full height here. */
+  .page-home .site-header.is-scrolled .header-inner {
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
+  }
+  .page-home .nav-links a { color: #fff; }
+  .page-home .nav-links a::after { background: #fff; }
+  .page-home .nav-links a:hover, .page-home .nav-links a:focus-visible { background-color: rgba(255, 255, 255, 0.16); }
+  .page-home .nav-links a[aria-current="page"] { color: var(--terracotta-light); }
+  .page-home .header-actions .social-badge { border-color: rgba(255, 255, 255, 0.5); color: #fff; }
+  .page-home .header-actions .social-badge:hover { background: #fff; border-color: #fff; color: var(--ink); }
+  .page-home .burger span { background: #fff; }
+
+  /* Full-bleed hero */
+  .hero-full {
+    position: relative;
+    min-height: min(88vh, 860px);
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-full .hero-bg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 0;
+  }
+  /* object-position was `center`, which cropped the subject out of frame
+     entirely on narrow viewports. The source photo is 1673x793 with the
+     subject at ~76% across; at 390px wide, `cover` scales it to 1319px and
+     shows only the middle 390px -- x 464..854 -- while the subject sits at
+     x~1001. The hero rendered as an empty dark backdrop on every phone.
+     Anchoring to 76% keeps him at 76% of the container at every width. */
+  .hero-full .hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 76% center;
+  }
+  .hero-full .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(20, 14, 10, 0.82) 0%, rgba(20, 14, 10, 0.62) 40%, rgba(20, 14, 10, 0.3) 75%, rgba(20, 14, 10, 0.35) 100%);
+    z-index: 1;
+  }
+  .hero-full-inner { position: relative; z-index: 2; width: 100%; }
+  .hero-full-content {
+    max-width: 640px;
+    padding-top: clamp(6rem, 14vw, 9rem);
+    padding-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+  .hero-full-content .eyebrow { margin-bottom: 1.1rem; color: #fff; }
+  .hero-full-content h1 {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: clamp(2.4rem, 3.6vw + 1rem, 4rem);
+    letter-spacing: 0.01em;
+    color: #fff;
+    line-height: 1.05;
+    margin-bottom: 1.4rem;
+  }
+  .hero-full-content h1 em { font-style: normal; color: var(--terracotta); }
+  .hero-full-content p.lede {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 46ch;
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 2.1rem;
+  }
+  /* Hero CTAs restored to the site's own terracotta-primary / white-outline
+     pairing per feedback, instead of matching indranooyi.com's identical
+     cream buttons. .btn-primary uses the sitewide terracotta styling
+     unchanged; .btn-outline just needs white text/border to read on the
+     dark hero photo. */
+  .hero-full-content .btn-outline {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
+  }
+  .hero-full-content .btn-outline:hover, .hero-full-content .btn-outline:focus-visible {
+    background: #fff;
+    color: var(--ink);
+    border-color: #fff;
+  }
+
+  @media (max-width: 640px) {
+    .hero-full { min-height: 74vh; }
+    .hero-full-content { padding-top: clamp(5.5rem, 24vw, 7.5rem); }
+    /* On a 390px hero the copy spans nearly the full width, so it now sits
+       directly over the subject rather than over empty backdrop -- a side
+       effect of anchoring object-position so he is in frame at all on phones.
+       The desktop scrim is too light for that (0.3 alpha where the headline
+       falls). Deepened here only; desktop keeps its original gradient, where
+       the copy still sits on open background to the left of the subject. */
+    .hero-full .hero-scrim {
+      background: linear-gradient(to top,
+        rgba(20, 14, 10, 0.92) 0%,
+        rgba(20, 14, 10, 0.8) 45%,
+        rgba(20, 14, 10, 0.66) 80%,
+        rgba(20, 14, 10, 0.62) 100%);
+    }
+  }
+
+  /* All-sans typography sitewide on this page, matching the reference */
+  .page-home h1, .page-home h2, .page-home h3 { font-family: var(--font-sans); font-weight: 600; }
+  .page-home .photo-caption, .page-home .row-title { font-family: var(--font-sans); font-style: normal; }
+
+  /* ---------- Homepage animations ---------- */
+
+  /* Hero load-in: staggered fade + slight rise for each hero element, plus a
+     slow one-time settle on the background photo. Pure CSS, runs once on
+     page load. The global prefers-reduced-motion rule in styles.css already
+     forces all animation/transition durations to ~0 sitewide, so under
+     reduced motion this still completes (content isn't stuck invisible) —
+     it just does so instantly instead of animating. */
+  .hero-full-content > * {
+    opacity: 0;
+    animation: heroFadeUp 1s var(--ease-out) forwards;
+  }
+  /* Hero cascade widened alongside the sitewide slowdown so each line still
+     lands distinctly rather than overlapping into one blur at the longer
+     duration. Same four-step order and effect as before. */
+  .hero-full-content .eyebrow { animation-delay: 0.14s; }
+  .hero-full-content h1 { animation-delay: 0.28s; }
+  .hero-full-content p.lede { animation-delay: 0.44s; }
+  .hero-full-content .hero-ctas { animation-delay: 0.6s; }
+  @keyframes heroFadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-full .hero-bg {
+    animation: heroImgSettle 1.9s ease-out forwards;
+  }
+  @keyframes heroImgSettle {
+    from { transform: scale(1.06); }
+    to { transform: scale(1); }
+  }
+
+  /* Newsletter/panel band recolored to match the reference's measured panel
+     background (#EEE4DD, its own Squarespace fallback color) instead of our
+     sitewide --paper-dim. Scoped to the homepage only — news.html/
+     phd-opportunities.html keep the shared panel styling. */
+  .page-home #news {
+    background: #EEE4DD;
+  }
+  .page-home #news .eyebrow {
+    color: #1a1a1a;
+  }
+  .page-home #news .btn-primary {
+    background: #000;
+    color: #EEE4DD;
+    border-color: #000;
+  }
+  .page-home #news .btn-primary:hover,
+  .page-home #news .btn-primary:focus-visible {
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+  }
+
+  /* Gallery recolored to match the reference's photo grid: solid black
+     background with cream captions/heading. Scoped to the homepage only —
+     gallery.html keeps the light --paper background used sitewide. */
+  .page-home #gallery {
+    background: #000;
+    padding-top: 0;
+  }
+  /* "Indra's Latest" on the reference is its own full-bleed white band above
+     the black photo grid, not black-on-black. Break .content-head out of the
+     centered .container to span the full viewport width, restoring a white
+     background just for the heading, while the rest of the section (and the
+     grid inside it) stays black.
+
+     100vw includes whatever gutter the browser reserves for a vertical
+     scrollbar; .container it's escaping does not, since it's laid out against
+     the true visible width. Unadjusted, that mismatch made this band ~15px
+     too wide, overflowing ~7px past each edge on desktop browsers that
+     reserve scrollbar space -- previously invisible only because body's own
+     overflow-x: hidden (styles.css) clipped it, not because it was sized
+     correctly. --scrollbar-w (measured in script.js) is subtracted from both
+     the width and the centering math below so the band is actually the right
+     size instead of relying on that clip. */
+  .page-home #gallery .content-head {
+    background: #fff;
+    max-width: calc(100vw - var(--scrollbar-w, 0px));
+    width: calc(100vw - var(--scrollbar-w, 0px));
+    margin: 0 calc(50% - 50vw + var(--scrollbar-w, 0px) / 2) clamp(2rem, 4vw, 3rem);
+    padding: clamp(3rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem);
+  }
+  .page-home #gallery .photo-caption {
+    color: #EEE4DD;
+  }
+  /* The photo grid sits on black, so accent text there inverts: --terracotta-text
+     is tuned for the cream background and manages only 3.0:1 on black.
+     Scoped to .card-date deliberately -- this section's .eyebrow lives in
+     .content-head, which breaks out as a full-bleed WHITE band, where the light
+     tint would be 2.56:1. That one keeps the standard dark accent. */
+  .page-home #gallery .card-date {
+    color: var(--terracotta-light);
+  }
+  .page-home #gallery .photo-figure {
+    background: #1a1a1a;
+  }
+  /* The gallery band is solid black, so the section's closing CTA cannot use
+     the sitewide .btn-outline (ink text on a cream border) -- measured 1.06:1
+     against this background, i.e. invisible. Same inversion the hero already
+     applies for the same reason. */
+  .page-home #gallery .btn-outline {
+    color: #EEE4DD;
+    border-color: rgba(238, 228, 221, 0.55);
+  }
+  .page-home #gallery .btn-outline:hover,
+  .page-home #gallery .btn-outline:focus-visible {
+    background: #EEE4DD;
+    border-color: #EEE4DD;
+    color: var(--ink);
+  }
+  .page-home #gallery .section-cta {
+    padding-bottom: clamp(1rem, 2vw, 2rem);
+  }
+
+  /* Footer recolored to the same cream tone as the News panel, per feedback.
+     The shared default footer styles (dark text/icons on a light background)
+     already work here unchanged, so only the background needs overriding. */
+  .page-home .site-footer {
+    background: #EEE4DD;
+    padding: 1.1rem 0;
+  }

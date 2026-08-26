@@ -206,3 +206,89 @@ as an actual homepage rather than a sitemap. Reasoning and exact copy in `SECTIO
 - Multi-page deliverable: `index.html` + 13 page files + `styles.css` + `script.js` (see
   Multi-Page Architecture above) — supersedes the earlier "single file" constraint, which was
   scoped to the one-page version of this project.
+
+## Production Readiness Pass (v4)
+
+This revision did not change the design system, the persona, or the section
+content plan — v2's Fidelity Decisions and v3's multi-page architecture all
+carry forward. It closed the gap between "a good-looking prototype" and
+"something you can actually publish."
+
+**No framework.** React/Next was considered and rejected: 14 static pages with
+no state, no data fetching, no interactivity beyond a menu toggle and a scroll
+observer. A framework would add a build step, a toolchain to maintain, and a
+JS bundle to download, in exchange for nothing this site needs. Plain
+HTML/CSS/JS remains correct, and the whole site now loads in ~290KB.
+
+**Repository layout.** The published site lives in `docs/`; everything outside
+it is never deployed. GitHub Pages is configured as *main branch, `/docs`
+folder*, which is the only subdirectory a branch-based Pages deploy supports.
+
+```
+CLAUDE.md, PLAN.md, SECTIONS.md, CHECKLIST.md   project notes, never served
+image-src/     source PNG masters (5.4MB), never served
+docs/          <- the entire published site
+  index.html + 15 more pages, styles.css, script.js
+  robots.txt, sitemap.xml, site.webmanifest, CNAME
+  favicon.ico, icon.svg, apple-touch-icon.png
+  image/       served images only (opt/ WebP+JPEG, og-cover, icons)
+  vendor/      lenis.min.js
+```
+
+This replaced a `robots.txt` `Disallow:` for the notes, which only asks
+crawlers not to index — the files were still fetchable by URL. Keeping them
+outside `docs/` makes them unreachable rather than merely unlisted, and does so
+on any host, not just GitHub. `CLAUDE.md` staying at the repo root is also what
+keeps it loading as project instructions.
+
+The source PNGs moved to `image-src/` for the same reason: nothing references
+them (every page uses `docs/image/opt/`), and serving 5.4MB of masters that no
+page requests is pure deployed weight. Regenerate the optimised set from them
+whenever a photo changes.
+
+**Homepage filename.** `index.html` is now the real homepage — previously the
+site had no `index.html` at all, so the root URL 404'd. `about.html` is kept as
+a `noindex` redirect stub pointing at `index.html`, so any existing inbound
+link still resolves.
+
+**CSS/JS architecture — one change, one reason.** The ~200-line `.page-home`
+`<style>` block that lived inline in `about.html` moved into `styles.css`. It
+was the one place the design system could drift from the shared stylesheet,
+and being inline it re-downloaded on every homepage visit instead of being
+cached. Everything else stays as v3 left it: one `styles.css`, one
+`script.js`, no further splitting — with 14 pages this size, more files would
+mean more requests and no clearer ownership. Lenis is now vendored at
+`vendor/lenis.min.js` and its 513-byte stylesheet is inlined into
+`styles.css`, removing a render-blocking third-party CDN request from the
+`<head>` of every page.
+
+**Images.** All photographs are served as WebP with JPEG fallback via
+`<picture>`, generated into `docs/image/opt/`. The masters live in `image-src/`
+outside the published tree. This took the site from 5.9MB of images to ~320KB.
+
+`Photo 7.png` was deleted: it was byte-identical to `Photo 6.png` (verified by
+md5), so the homepage gallery had been rendering the same photograph twice
+under two different captions. The gallery is 8 unique photographs; restoring a
+full 3x3 grid needs a genuinely new ninth image.
+
+**SEO.** Per-page canonical, Open Graph and Twitter tags; JSON-LD `@graph`
+(WebSite + Person + per-page WebPage/CollectionPage/ProfilePage/ContactPage +
+BreadcrumbList); `robots.txt`; `sitemap.xml` with image entries; a three-file
+favicon set plus `site.webmanifest`; one `<h1>` per page with no skipped
+heading levels; and real meta descriptions replacing the old
+"Demo content only" placeholders.
+
+**Base URL.** `https://biswajitmohapatra.com` is baked into every canonical
+tag, Open Graph URL, and sitemap entry, and into `docs/CNAME`. If the domain
+changes, it is a find-and-replace across `docs/*.html`, `docs/sitemap.xml`,
+`docs/robots.txt` and `docs/CNAME`.
+
+**Still placeholder — read before publishing.** The written content (Speech
+Lab, Ashfield University, the publication and course lists, student and alumni
+names, the `speechlab@example.edu` address) is still invented, while the
+photographs and the LinkedIn link belong to a real person whose actual
+background is in DevOps and Agile delivery leadership, not speech science.
+Gallery captions and alt text were corrected to describe what the photographs
+actually show; the surrounding academic framing was not, because inventing a
+real person's biography is not something to do silently. That content has to
+be replaced before this site goes live.
