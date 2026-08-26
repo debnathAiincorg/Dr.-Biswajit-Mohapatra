@@ -1,0 +1,27 @@
+/*
+  Shared stylesheet, loaded by every page.
+
+  Split into partials by concern and concatenated at build time by esbuild,
+  which inlines every @import into one file -- so this is an authoring
+  convenience, not extra HTTP requests. Import order is the original cascade
+  order and must not be reordered: several later rules deliberately override
+  earlier ones (the nav collapse breakpoint, the responsive grid overrides).
+
+  Page-specific styles live in ./pages/ and are loaded only by the pages that
+  need them; see the `pageCss` front-matter key.
+*/
+@import "./base/reset.css";
+@import "./base/tokens.css";
+@import "./base/layout.css";
+@import "./base/typography.css";
+@import "./components/buttons.css";
+@import "./components/header.css";
+@import "./layout/sections.css";
+@import "./components/panel.css";
+@import "./components/row-list.css";
+@import "./components/card-grid.css";
+@import "./utils/reveal.css";
+@import "./components/contact.css";
+@import "./components/footer.css";
+@import "./layout/responsive.css";
+@import "./vendor-lenis.css";

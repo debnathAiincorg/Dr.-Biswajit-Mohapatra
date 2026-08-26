@@ -1,0 +1,119 @@
+/* Footer and footer reveal */
+/* ---------- Footer ---------- */
+.site-footer {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line);
+}
+
+/* Footer reveal. All 14 pages carry .footer-rule, about.html included.
+
+   The hairline draws itself left to right as the footer arrives: the gesture
+   .card-rule already uses on card hover, scaled up to the seam that closes the
+   page, so this is the existing motion vocabulary rather than a new one. The
+   border is held at 1px transparent instead of being removed and the drawn
+   line is a pseudo-element sitting exactly where the border was, so the
+   footer's box height does not change by a pixel. scaleX rather than
+   .card-rule's width, so a full-width line animates on the compositor. */
+.site-footer.footer-rule {
+  position: relative;
+  border-top-color: transparent;
+}
+.site-footer.footer-rule::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+  transform: scaleX(1);
+  transform-origin: left center;
+  transition: transform 0.95s var(--ease-out);
+}
+/* Undrawn start state, like .reveal above, hangs off .js-reveal -- so if
+   script.js never runs the footer keeps its hairline instead of losing it. */
+.js-reveal .site-footer.footer-rule::before {
+  transform: scaleX(0);
+}
+.js-reveal .site-footer.footer-rule.is-visible::before {
+  transform: scaleX(1);
+}
+
+/* The footer's content is driven from the footer's own .is-visible class
+   instead of carrying .reveal, and that is a correctness requirement rather
+   than a preference: the shared observer in script.js uses rootMargin
+   '0px 0px -60px 0px', and the footer's inner content sits entirely inside
+   that excluded band at the document bottom -- measured intersection ratio
+   0.000 against a 0.12 threshold, at every scroll position, because the footer
+   is the last thing on the page. Marked .reveal it would never fire and the
+   footer text would simply stay invisible. Driving the children from the
+   parent also makes their order deterministic, rather than depending on how
+   the observer happens to sort two elements that share a top edge.
+
+   The footer element itself is observed separately now, at threshold 0 with no
+   bottom cut, so its own reveal no longer depends on being taller than that
+   excluded band -- see the note in script.js.
+
+   margin-top, not transform, drives the rise here -- the one exception to
+   "everything else on the page uses transform" in this whole reveal system.
+   transform/translate on these two elements (confirmed with both, isolated
+   independently) puts <main> and <footer> into a Chromium layout bug specific
+   to this exact nesting -- flex children of .footer-inner, itself a
+   margin:auto-centered box inside the <footer> flex item -- where both
+   compute ~15px narrower than the real viewport (matching the reserved
+   scrollbar-gutter width) and, on about/alumni/gallery/news/publications/
+   students specifically, off-center to one side rather than merely narrower.
+   That's what the previous audit surfaced as "inconsistent footer spacing
+   across pages": both groups were wrong, one just wrong symmetrically.
+   margin-top doesn't trigger it (verified: constant footer height across 21
+   samples over 2s of real time, confirming .footer-inner's align-items:center
+   absorbs the animated margin without growing the bar). */
+.site-footer.footer-rule .footer-text,
+.site-footer.footer-rule .footer-socials {
+  transition:
+    opacity var(--reveal-duration) var(--ease-out),
+    margin-top var(--reveal-duration) var(--ease-out);
+}
+.js-reveal .site-footer.footer-rule .footer-text,
+.js-reveal .site-footer.footer-rule .footer-socials {
+  opacity: 0;
+  margin-top: var(--reveal-shift);
+}
+/* Line first, then the content settles beneath it. */
+.site-footer.footer-rule .footer-text { transition-delay: 0.16s; }
+.site-footer.footer-rule .footer-socials { transition-delay: calc(0.16s + var(--reveal-stagger)); }
+.js-reveal .site-footer.footer-rule.is-visible .footer-text,
+.js-reveal .site-footer.footer-rule.is-visible .footer-socials {
+  opacity: 1;
+  margin-top: 0;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.footer-text { text-align: left; }
+.footer-socials { display: flex; gap: 1rem; flex-shrink: 0; }
+.footer-copy { font-size: 0.85rem; color: var(--ink); margin-bottom: 0.4rem; }
+.footer-credit { font-size: 0.75rem; color: var(--ink-soft); }
+
+@media (max-width: 640px) {
+  .footer-inner { flex-direction: column-reverse; text-align: center; }
+  .footer-text { text-align: center; }
+  /* column-reverse lifts the socials above the text, so the cascade swaps to
+     keep running top-to-bottom rather than jumping back up the bar. */
+  .site-footer.footer-rule .footer-socials { transition-delay: 0.16s; }
+  .site-footer.footer-rule .footer-text { transition-delay: calc(0.16s + var(--reveal-stagger)); }
+}
+
+/* Belt-and-braces for scripting genuinely disabled, matching the reveal block
+   above. The hidden start states now live behind .js-reveal, which cannot be
+   set without a script engine, so these are redundant -- kept because they
+   cost nothing and state the intent where it applies. */
+@media (scripting: none) {
+  .site-footer.footer-rule::before { transform: scaleX(1); }
+  .site-footer.footer-rule .footer-text,
+  .site-footer.footer-rule .footer-socials { opacity: 1; margin-top: 0; }
+}

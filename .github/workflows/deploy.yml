@@ -1,0 +1,62 @@
+# Builds the Eleventy site and publishes dist/ to GitHub Pages.
+#
+# Set repo Settings -> Pages -> Source to "GitHub Actions" (not "Deploy from a
+# branch"). Nothing is committed to a branch; the built artifact is uploaded
+# directly, so dist/ stays gitignored.
+#
+# The site is host-agnostic: SITE_URL and PATH_PREFIX below are the only
+# GitHub-specific values, and both are inputs rather than hardcoded in source.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        env:
+          # Project page => served from /<repo>/. For a user page or a custom
+          # domain, set SITE_URL to the origin and drop PATH_PREFIX.
+          SITE_URL: https://${{ github.repository_owner }}.github.io
+          PATH_PREFIX: /${{ github.event.repository.name }}/
+          # Indexing stays off until the real biography replaces the
+          # placeholder content. Set to 'true' to open the site to crawlers.
+          ALLOW_INDEXING: 'false'
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

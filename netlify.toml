@@ -1,0 +1,9 @@
+# Netlify: no base path needed, the site is served from the domain root.
+# Set SITE_URL in the Netlify UI to your production origin, and ALLOW_INDEXING
+# to "true" once the real content is in place.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"

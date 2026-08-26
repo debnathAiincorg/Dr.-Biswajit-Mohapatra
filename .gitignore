@@ -9,3 +9,8 @@ desktop.ini
 
 # Local export/scratch artifacts, if any get created again
 *.zip
+
+# Build output and dependencies
+dist/
+node_modules/
+.eleventy-cache/

@@ -1,0 +1,65 @@
+/* Reusable row list */
+/* ---------- Reusable row-list (News, Awards, Education, Experience, Publications, Alumni, Courses, Activities) ---------- */
+.row-list {
+  text-align: left;
+  border-top: 1px solid var(--line);
+}
+.row-list.with-cta { margin-bottom: 2.25rem; }
+.row-list li { border-bottom: 1px solid var(--line); }
+.row-list a, .row-list .row-static {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  padding: 1.15rem 0.25rem;
+}
+.row-list a {
+  transition: color 0.32s var(--ease);
+}
+.row-list a:hover, .row-list a:focus-visible {
+  color: var(--terracotta-text);
+}
+.row-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+/* The title slides rather than the row padding growing: transform is
+   composited, where animating padding-left relayouts the row on every frame
+   and drags the right-aligned meta text with it. */
+.row-list a .row-title {
+  transition: transform 0.32s var(--ease);
+}
+.row-list a:hover .row-title,
+.row-list a:focus-visible .row-title {
+  transform: translateX(6px);
+}
+.row-title .row-tag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--terracotta-text);
+  border: 1px solid var(--terracotta);
+  border-radius: 20px;
+  padding: 0.15rem 0.55rem;
+  margin-left: 0.6rem;
+  vertical-align: middle;
+}
+.row-meta {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.row-sub {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 0.2rem;
+}

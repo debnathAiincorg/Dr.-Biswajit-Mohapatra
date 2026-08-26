@@ -1,0 +1,32 @@
+/* Container and skip link */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.75rem 1.25rem;
+  z-index: 1000;
+  font-size: 0.875rem;
+}
+/* Pre-existing bug, unrelated to the overflow-x fix in 1791620: focus used to
+   land at top: 1rem, which sits inside the header bar and overlaps the logo
+   (measured header height is 72px desktop / 80.2px at 390px width -- 1rem/16px
+   was always going to collide with it). 5.5rem/88px clears the taller of the
+   two with margin, so the focused skip-link now appears as its own banner
+   below the header instead of on top of the wordmark. */
+.skip-link:focus {
+  left: 1rem;
+  top: 5.5rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 3px;
+}

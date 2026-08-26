@@ -1,0 +1,7 @@
+/* Card grid */
+/* ---------- Card grid (Projects, Students, Gallery, homepage teasers) ---------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.25rem, 2.2vw, 1.75rem);
+}

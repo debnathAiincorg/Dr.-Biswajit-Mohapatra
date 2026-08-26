@@ -1,0 +1,23 @@
+/* Section rhythm and hero CTAs */
+/* ---------- Section rhythm ---------- */
+.content-section {
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
+  border-top: 1px solid var(--line);
+}
+.content-head {
+  max-width: 640px;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+  text-align: center;
+}
+.content-head .eyebrow { margin-bottom: 0.9rem; }
+.content-head h1,
+.content-head h2 { font-size: clamp(1.9rem, 2.4vw + 1rem, 2.6rem); }
+.content-head p { color: var(--ink-soft); margin-top: 0.9rem; }
+
+/* ---------- Hero CTAs (about.html) ---------- */
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.4rem;
+}

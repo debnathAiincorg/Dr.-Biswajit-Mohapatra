@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang }}">
+<head>
+{% include "partials/head.njk" %}
+</head>
+<body{% if bodyClass %} class="{{ bodyClass }}"{% endif %}>
+{% include "partials/header.njk" %}
+
+<main id="main">
+{{ content | safe }}
+</main>
+
+{% include "partials/footer.njk" %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* Eyebrow and heading faces */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--terracotta-text);
+}
+
+/* All-sans body typography, taken from about.html (the reference page), which
+   already restates exactly these values in its own .page-home h1,h2,h3 block.
+   Headings used to be Playfair 700 here while about.html rendered them as
+   Inter 600, which was the whole of the heading mismatch between the two. */
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+}

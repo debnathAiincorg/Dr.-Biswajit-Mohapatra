@@ -1,0 +1,65 @@
+/* Overflow guards and scrollbar handling */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+* {
+  max-width: 100%;
+}
+
+/* Vertical scrollbar hidden sitewide -- track/thumb only, scrolling itself
+   (wheel, trackpad, touch, keyboard) is untouched, since overflow-y stays at
+   its default (auto/visible), just with nothing painted for it. Three
+   properties because each browser engine exposes this differently: Firefox
+   via scrollbar-width, old Edge/IE via -ms-overflow-style, and
+   Chrome/Safari/current Edge via the ::-webkit-scrollbar pseudo-element. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --paper: #EEE4DD;
+  --paper-dim: #EEE4DD;
+  --ink: #2B2622;
+  --ink-soft: #6B6259;
+  --line: #DBCFB4;
+  --terracotta: #B5502E;
+  --terracotta-deep: #8F3D22;
+  /* Accent used for TEXT on the light background. --terracotta itself measures
+     4.04:1 against --paper -- under the 4.5:1 WCAG AA floor for text below
+     18.66px, which is every accent-coloured string on the site (eyebrows, card
+     dates, tags, student roles, the current nav link). This shade is the same
+     hue, darkened until it clears the floor: 5.0:1 against --paper.
+     --terracotta is unchanged and still paints every fill, border and rule,
+     where the 3:1 non-text threshold already applied and already passed. */
+  --terracotta-text: #A04525;
+  /* Light counterpart, for accent text on the homepage's dark bands (hero,
+     black gallery). --terracotta manages only 4.14:1 on black; this is 8.2:1. */
+  --terracotta-light: #E9895F;
+  --on-terracotta: #FAF4E8;
+  --container: 1300px;
+  /* --font-serif is gone: nothing renders in a serif any more, and the 13
+     pages that used to load Playfair Display no longer request it. Leaving the
+     token behind would hand anyone who used it a silent Georgia fallback. */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  --radius: 1px;
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  /* Entrances decelerate into place, so they use their own curve rather than
+     the symmetric --ease used for hover/state changes. Eased-out cubic rather
+     than the near-expo curve this used to carry: at the longer durations below,
+     an expo curve reads as a snap followed by a crawl, where cubic keeps a
+     single continuous glide the whole way in. */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  /* Entrance motion, tuned as one system so every page shares a cadence.
+     Slightly longer travel alongside the longer duration: the same distance
+     stretched over more time reads as hesitant, where a little more distance
+     keeps the movement deliberate. */
+  --reveal-shift: 22px;
+  --reveal-duration: 0.78s;
+  --reveal-stagger: 75ms;
+}

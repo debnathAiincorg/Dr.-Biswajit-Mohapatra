@@ -1,0 +1,22 @@
+{
+  "name": "biswajit-mohapatra-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal academic site for Dr. Biswajit Mohapatra — static site built with Eleventy.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "eleventy --serve --quiet",
+    "build": "cross-env NODE_ENV=production eleventy",
+    "clean": "node -e \"import('node:fs').then(fs=>fs.rmSync('dist',{recursive:true,force:true}))\"",
+    "serve:dist": "node scripts/serve-dist.js"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.24.0",
+    "html-minifier-terser": "^7.2.0"
+  }
+}
