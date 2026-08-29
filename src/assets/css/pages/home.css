@@ -46,6 +46,12 @@
   .page-home .nav-links a::after { background: #fff; }
   .page-home .nav-links a:hover, .page-home .nav-links a:focus-visible { background-color: rgba(255, 255, 255, 0.16); }
   .page-home .nav-links a[aria-current="page"] { color: var(--terracotta-light); }
+  /* The overlay header sits on the hero photograph, so the wordmark hover and
+     anything else resolving --hover-accent needs the light terracotta -- the
+     default shade is tuned for cream and measures far too dark on the photo. */
+  .page-home .site-header {
+    --hover-accent: var(--terracotta-light);
+  }
   .page-home .header-actions .social-badge { border-color: rgba(255, 255, 255, 0.5); color: #fff; }
   .page-home .header-actions .social-badge:hover { background: #fff; border-color: #fff; color: var(--ink); }
   .page-home .burger span { background: #fff; }
@@ -89,7 +95,12 @@
     padding-bottom: clamp(2.5rem, 6vw, 5rem);
   }
   .hero-full-content .eyebrow { margin-bottom: 1.1rem; color: #fff; }
+  /* The only page heading whose text is left-aligned rather than centred.
+     Scaling it about the block's centre would walk its left edge outwards as
+     it grew; anchoring the origin to that edge keeps the first character
+     still, which is what a centre origin achieves everywhere else. */
   .hero-full-content h1 {
+    transform-origin: left center;
     font-family: var(--font-sans);
     font-weight: 500;
     font-size: clamp(2.4rem, 3.6vw + 1rem, 4rem);
@@ -111,6 +122,12 @@
      cream buttons. .btn-primary uses the sitewide terracotta styling
      unchanged; .btn-outline just needs white text/border to read on the
      dark hero photo. */
+  /* Same re-pointing for the hero copy: a text link in the lede resolves its
+     accent and its resting hairline against the photograph, not against cream. */
+  .hero-full-content {
+    --hover-accent: var(--terracotta-light);
+    --hover-rule: rgba(255, 255, 255, 0.45);
+  }
   .hero-full-content .btn-outline {
     color: #fff;
     border-color: rgba(255, 255, 255, 0.7);
@@ -190,10 +207,18 @@
     color: #EEE4DD;
     border-color: #000;
   }
+  /* The hover was #000 -> #1a1a1a: a 45-unit step in RGB, which is a change
+     the code makes and the eye does not see. The resting black stays -- it is
+     the deliberate match to the reference panel above -- but the hover now
+     lands on the same --terracotta-deep every other .btn-primary resolves to,
+     so this button behaves like the rest of the site instead of looking inert.
+     Cream text on that shade measures 5.87:1, clearing AA; plain --terracotta
+     would have been more vivid but only reaches 4.04:1, under the floor for
+     text this size. */
   .page-home #news .btn-primary:hover,
   .page-home #news .btn-primary:focus-visible {
-    background: #1a1a1a;
-    border-color: #1a1a1a;
+    background: var(--terracotta-deep);
+    border-color: var(--terracotta-deep);
   }
 
   /* Gallery recolored to match the reference's photo grid: solid black
@@ -235,6 +260,11 @@
      tint would be 2.56:1. That one keeps the standard dark accent. */
   .page-home #gallery .card-date {
     color: var(--terracotta-light);
+  }
+  /* The gallery band is solid black; same treatment as the hero. */
+  .page-home #gallery {
+    --hover-accent: var(--terracotta-light);
+    --hover-rule: rgba(238, 228, 221, 0.4);
   }
   .page-home #gallery .photo-figure {
     background: #1a1a1a;

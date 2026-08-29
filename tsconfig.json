@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    /* Node runs these files through tsx, which strips types rather than
+       compiling them. Nothing is emitted; tsc is used purely to check. */
+    "noEmit": true,
+
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Relative imports name the real .ts files rather than the .js NodeNext
+       would normally expect. That is deliberate: Eleventy's watch-mode ESM
+       cache-busting (src/Util/EsmResolver.js) matches an import specifier's
+       literal path against the list of changed files, so a './x.js' specifier
+       pointing at x.ts is never invalidated and edits to shared components go
+       unnoticed until the dev server restarts. Naming the .ts file makes those
+       edits hot-reload. Nothing is emitted, so no rewriting is needed -- and
+       Node's own type stripping requires .ts specifiers too. */
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
+}

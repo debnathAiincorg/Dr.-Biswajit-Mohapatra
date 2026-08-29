@@ -19,3 +19,38 @@ h1, h2, h3, h4 {
   line-height: 1.1;
   color: var(--ink);
 }
+
+/* Page and section headings ease forward under the cursor.
+
+   `main h1` reaches every page title: the layout puts page content inside
+   <main> and each page carries exactly one h1, so all fifteen are covered
+   without a shared class or a per-page rule.
+
+   The two h2 selectors add the homepage's section titles, "Lab Notes" and
+   "Around the Lab", by the block they sit in rather than by id. Scoping to
+   .content-head and .panel-inner is precisely what keeps card titles out:
+   the seven other h2s on the site are project and student card headings, and
+   their .card-grid is a *sibling* of .content-head rather than a descendant.
+   A bare `main h2` would have swept all seven in.
+
+   Decorative only. No cursor change and no underline: these are not links and
+   nothing here should suggest they lead anywhere.
+
+   Centre origin throughout -- .content-head and .panel-inner both centre their
+   text, so the type grows about its own middle and holds position. The hero h1
+   is the one exception and re-points its origin in pages/home.css.
+
+   Headings carrying .reveal take their scale transition from the reveal
+   contract in utils/reveal.css; the one declared here covers the hero heading,
+   which reveals by keyframes instead and is not in that rule. */
+main h1,
+main .content-head h2,
+main .panel-inner h2 {
+  transform-origin: center;
+  transition: scale var(--hover-duration) var(--ease);
+}
+main h1:hover,
+main .content-head h2:hover,
+main .panel-inner h2:hover {
+  scale: var(--hover-zoom);
+}

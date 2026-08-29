@@ -121,6 +121,12 @@ chosen and justified in `PLAN.md`).
 
 ## Multi-Page Architecture (v3)
 
+> **Partly superseded.** The decision to have 14 separate pages sharing one
+> stylesheet still stands and is why the site is shaped the way it is. The
+> *mechanics* described below — hand-written `.html` files, a `styles.css` /
+> `script.js` pair, a Node script that regenerates duplicated header/footer
+> markup — were all replaced in v5. See **Tech Approach** for what is true now.
+
 **This revision converts the project from a single scrolling page into a real multi-page
 site.** The 14 nav destinations were originally in-page anchor sections stacked on one
 `index.html`; they are now 14 separate HTML files (`index.html` for About/home, 13 more for
@@ -170,28 +176,224 @@ navigation, so a longer teaser list on the homepage would just duplicate it; thr
 into the site's most likely first stops (what's new, how to apply, what it looks like) reads
 as an actual homepage rather than a sitemap. Reasoning and exact copy in `SECTIONS.md`.
 
-## Tech Approach
+## Tech Approach — Eleventy + TypeScript templates (v5, current)
 
-- Plain **HTML5 + CSS3 + vanilla JS**, no frameworks, no build step.
-- **Multi-page**: `index.html` + 13 standalone pages, sharing `styles.css` and `script.js` (see
-  Multi-Page Architecture above for the sharing decision and reasoning).
-- Semantic HTML5 landmarks on every page: `<header>`, `<nav>`, `<main>`, one or more
-  `<section>`s, `<footer>`.
-- Placeholder images from `https://placehold.co`, plus one real image (`image/1.png`) used as
-  the About/hero portrait per your direct instruction — noted here since it's the one departure
-  from "placeholder images only," made deliberately at your request, not by default.
-- Google Fonts: **Inter** only, for both headings and body/UI, weights 500/600 — serif
-  Playfair Display dropped sitewide as of commit `a4cfabf`, which changed the standing turn-1
-  typeface requirement to all-sans (see Fidelity Decisions).
-- CSS custom properties for palette/type scale, tuned to the re-audit's measured ratios
-  (line-height ~1.6 for body copy, ~0.97–1.05 for large headings, container max-width 1300px),
-  now living in `styles.css`.
-- Sticky header (kept, per Fidelity Decisions), with its own raised breakpoint for the 14-item
-  nav — same 1560px threshold, now shared identically across all 14 pages via `styles.css`.
-- Vanilla JS in `script.js`: mobile/overflow menu toggle, sticky-header shadow-on-scroll,
-  scroll-reveal for card grids, plus a new small addition — marking the current page's nav link
-  with `aria-current="page"` (detected from `location.pathname`) so each page's nav shows where
-  you are, a natural expectation once there are real separate pages to be "on."
+**This section replaces the "plain HTML5 + CSS3 + vanilla JS, no build step"
+description that stood through v1–v4.** The site is built by Eleventy from
+TypeScript templates. v2's Fidelity Decisions, the v2 measured audit and the
+per-page content plan in `SECTIONS.md` all still hold — v5 changed *how the HTML
+is produced*, not what it looks like. The conversion was verified by diffing the
+build against the pre-conversion Nunjucks output: every page came out
+byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
+`ALLOW_INDEXING`), and the only deliberate departures are listed under
+*Reconciled inconsistencies* below.
+
+### Stack
+
+- **Eleventy 3.1.x**, ESM (`"type": "module"`), input `src/`, output `dist/`.
+  `dist/` is gitignored — CI builds and publishes it, nothing is committed built.
+- **No client framework.** Output is plain HTML, one CSS bundle, one JS bundle.
+- **TypeScript templates** (`src/*.ts`); no template language. Nunjucks is gone.
+  `templateFormats` is `['ts']` and `markdownTemplateEngine` /
+  `htmlTemplateEngine` are both `false`, so nothing can silently fall back to
+  another engine. The extension is aliased onto Eleventy's built-in JavaScript
+  engine with `addExtension(['ts'], { key: '11ty.js' })`, so a plain `.ts`
+  module exporting `data` and `render` is treated as a `.11ty.js` template.
+  Because `ts` is *also* registered as a data extension, the config calls
+  `setDataFileSuffixes(['.11tydata'])` — see *Three things that will bite you*.
+- **tsx** strips types at import time via `NODE_OPTIONS=--import=tsx` in the npm
+  scripts. Nothing is compiled to disk. `npm run typecheck` runs `tsc --noEmit`
+  under `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
+- **esbuild** bundles `src/assets/css/main.css` (collapsing its `@import` graph)
+  and `src/assets/js/main.js` (ES modules into one IIFE), minified in production.
+- **Google Fonts: Inter only**, weights 400/500/600, headings and body — the
+  serif was dropped in `a4cfabf` (see Fidelity Decisions).
+- Design tokens and the type scale live in `src/assets/css/base/tokens.css` and
+  the files `main.css` imports. **The nav collapse breakpoint is
+  `@media (max-width: 1249px)`, and it lives in
+  `src/assets/css/components/header.css`, not in `tokens.css`.** Below that
+  width the 14-item inline nav is hidden and the burger and mobile panel take
+  over; at 1250px and above the full row shows. Measured crossover: burger at
+  1024px, full nav at 1280px.
+
+  > Earlier revisions of this file said 1560px. That number is stale — it came
+  > from the v3 nav strategy in `PLAN.md`, before two tightening passes on nav
+  > font-size, gaps and logo sizing brought the true minimum down to ~1209px
+  > (see the comment above the media query in `header.css`). `PLAN.md` and
+  > `CHECKLIST.md` have been corrected to match; where they still name 1560px it
+  > is explicitly marked as the superseded original. `header.css` is the
+  > authority.
+
+### Layout
+
+```
+src/
+  _data/           site.ts, nav.ts, buildDate.ts, eleventyComputed.ts
+  _includes/
+    lib/           html.ts (escaping), url.ts, types.ts, page.ts (definePage)
+    layouts/       base.ts — the document shell
+    partials/      head.ts, header.ts, footer.ts, linkedin-badge.ts
+    components/    row-list.ts, list-page.ts, card-grid.ts, panel.ts
+    content/       photos.ts, lab-notes.ts — content used by more than one page
+  assets/          css/, js/ (both bundled by esbuild), images/, icons/, vendor/
+  *.ts             one file per page
+scripts/           dev tooling, never shipped
+image-src/         photo masters, never served
+dist/              build output (gitignored)
+```
+
+### How a page is written
+
+A template exports `data` (its front matter) and `render`. Both come from
+`definePage`, which applies the base layout, so a page cannot forget it:
+
+```ts
+export const { data, render } = definePage({
+  data: { title: '…', description: '…', permalink: '/contact/' },
+  render: (data, { url }) => html`  <section>…</section>
+`,
+});
+```
+
+`title`, `description` and `permalink` are required by the `PageMeta` type — a
+page missing one no longer builds. Under Nunjucks a missing `description`
+silently produced an empty `<meta name="description">`.
+
+`defineStandalone` is the same thing without the layout, used for `/about.html`
+(the redirect stub), `robots.txt` and `sitemap.xml`.
+
+Nunjucks filters became ordinary functions: `url` is `lib/url.ts`; `safe` and
+autoescaping are the `html` tag in `lib/html.ts`; `replace`, `join`, `default`
+and `dump` are plain expressions at the point of use. The custom `absolute` and
+`jsonld` filters the old config registered were used by no template and depended
+on Nunjucks' `this.ctx`, so they were deleted rather than ported.
+
+Repeated markup lives in `components/`; content that two pages share lives in
+`content/`. Seven pages (Education, Experience, Awards, Publications, Courses,
+Activities, Alumni) are the same `row-list` shape, and are now a heading plus an
+array of rows each.
+
+### Five things that will bite you
+
+1. **Interpolated values are HTML-escaped; literal template text is not.** The
+   `html` tag in `lib/html.ts` reproduces Nunjucks' escape map character for
+   character — ampersand, double quote, single quote, less-than, greater-than
+   and backslash. To emit markup or an entity reference such as `&mdash;` *from
+   a value*, wrap it in `raw()`. Getting this wrong is silent: you get
+   `&amp;mdash;` in the page rather than a dash.
+
+2. **Relative imports must name the `.ts` file, not `.js`.** Eleventy's
+   watch-mode cache busting (`src/Util/EsmResolver.js`) matches an import
+   specifier's literal path against the list of changed files, so a `./x.js`
+   specifier pointing at `x.ts` is never invalidated and edits to shared modules
+   are served stale until the dev server restarts. `allowImportingTsExtensions`
+   is enabled in `tsconfig.json` for this reason. Node's own type stripping
+   requires `.ts` specifiers too, so this is also the more portable choice.
+
+3. **`scripts/watch-fresh-includes.mjs` exists because of a deeper version of
+   the same problem.** Even with correct specifiers, Eleventy only busts the
+   files it saw change — editing `partials/footer.ts` leaves `lib/page.ts` and
+   `layouts/base.ts` cached, and those still hold the old footer, so the page
+   rebuilds looking unchanged. The hook versions every module under
+   `src/_includes` by the newest mtime in that tree, so one change refreshes the
+   whole shared graph. It is registered only for `--serve` / `--watch`; a
+   one-shot build starts with an empty module cache and does not need it.
+
+4. **`setDataFileSuffixes(['.11tydata'])` is load-bearing, and looks like it
+   isn't.** `ts` is registered as both a template format and a data extension.
+   Eleventy finds a template's local data file by joining the template basename
+   with each data-file suffix and each data extension, and that suffix list
+   defaults to `['.11tydata', '']`. The empty entry makes `src/index.ts` its
+   own data file: every page imports itself a second time just for its `data`
+   export. Dropping the empty suffix leaves only `<name>.11tydata.ts`, which is
+   what a local data file was always meant to be called. Nothing in `src/`
+   relies on the empty-suffix lookup — there are no `<name>.json` local data
+   files — but deleting this line as dead config would quietly reintroduce the
+   double import.
+
+5. **`PATH_PREFIX=/repo/` is mangled by Git Bash before Node ever starts. This
+   is shell behaviour, not a bug in `url.ts` — do not "fix" it in code.**
+   MSYS2 path conversion, which Git Bash on Windows applies to any argument or
+   environment value that looks like a Unix absolute path, rewrites a leading
+   `/repo/` into a Windows path against the Git installation root. Reproduced:
+
+   ```bash
+   $ PATH_PREFIX=/repo/ node -e "console.log(process.env.PATH_PREFIX)"
+   C:/Program Files/Git/repo/          # not /repo/
+   ```
+
+   Every internal link, canonical, sitemap entry and JSON-LD URL then comes out
+   with `C:/Program Files/Git/...` embedded in it. The value is already
+   corrupted in `process.env` by the time any project code runs, so no amount
+   of normalising inside `url.ts` can recover the intended prefix — and adding
+   path-normalisation there would be dead code that obscures the real cause.
+   **This has already been misdiagnosed as a `url.ts` bug once. It is not.**
+
+   CI is unaffected: `.github/workflows/deploy.yml` runs on `ubuntu-latest`,
+   which has no MSYS layer, so project-page builds deploy correctly. It only
+   bites local Windows testing in Git Bash. Two ways round it:
+
+   ```bash
+   MSYS_NO_PATHCONV=1 PATH_PREFIX=/repo/ npm run build   # passes /repo/ through exactly
+   PATH_PREFIX=//repo/ npm run build                     # leading // suppresses conversion
+   ```
+
+   `MSYS_NO_PATHCONV=1` is the cleaner of the two — it yields exactly `/repo/`,
+   whereas the `//repo/` form reaches Node with its doubled slash intact and
+   relies on that being harmless downstream. PowerShell and `cmd.exe` do not
+   apply this conversion at all, so the plain form works there.
+
+### Config notes
+
+- **`eleventy.config.js` stays JavaScript on purpose.** Eleventy only
+  auto-discovers `.eleventy.js` and `eleventy.config.{js,mjs,cjs}`; an
+  `eleventy.config.ts` would need `--config=` on every invocation, and a bare
+  `npx eleventy` would silently build with default settings instead. It would
+  also gain nothing — Eleventy ships no type definitions, so `eleventyConfig` is
+  untyped either way.
+- **`_data/*.ts` needs `addDataExtension('ts', …)`.** Eleventy resolves
+  `.js`/`.cjs`/`.mjs` data files itself but treats anything else as
+  user-registered — and, unlike the built-in path, it does *not* invoke a
+  function export, so the loader in the config calls it (`buildDate.ts` returns
+  a function). That loader also appends an mtime query to bust the ESM cache on
+  watch rebuilds.
+- **The client JS bundle passes `tsconfigRaw: {}` to esbuild.** Without it,
+  esbuild picks up the project `tsconfig.json` and applies its `strict` (hence
+  `alwaysStrict`) setting to the browser bundle, prepending a strict-mode
+  directive and changing shipped output. The client assets are plain JS and are
+  not part of the template type-check.
+
+### Node version
+
+`engines` is `>=20.6`, because `NODE_OPTIONS=--import` — how tsx is loaded — was
+added in Node 20.6.
+
+> **Node 20 reached end-of-life in April 2026.** CI
+> (`.github/workflows/deploy.yml`) and Netlify (`netlify.toml`) are still pinned
+> to Node 20, which resolves to 20.19.x and works today. **Bump both, plus
+> `engines` in `package.json`, to Node 22 LTS.** This was deliberately left out
+> of the v5 conversion to keep a templating change from touching deployment, so
+> it is easy to forget — it is the one outstanding maintenance item in the build.
+
+### Reconciled inconsistencies
+
+The conversion preserved the old output byte for byte, including two markup
+inconsistencies it had inherited. Both were then fixed deliberately:
+
+- Lab news dates now use `<time datetime="2026-06">` on **both** the homepage
+  teaser and `/news/`. Previously only the homepage did; `/news/` used a plain
+  `<span>`. `content/lab-notes.ts` is the single source for those four items.
+- The news panel icon carries `focusable="false"` on both pages; previously only
+  the homepage's did.
+- `Children's Acquisition…` in `publications.ts` renders as `&#39;` like
+  every other apostrophe in a data value, rather than being special-cased with
+  `raw()` to reproduce the old literal character. Identical rendering, one less
+  exception to explain.
+
+Two cosmetic quirks were left alone: `404.ts`'s body sits at zero
+indentation while every other page starts at two spaces, and Gallery and the
+homepage put a blank line before their `card-grid` where Projects and Students
+do not. Both are noted in the source.
 
 ## Constraints
 
@@ -203,11 +405,18 @@ as an actual homepage rather than a sitemap. Reasoning and exact copy in `SECTIO
   image explicitly requested for the About/hero portrait.
 - Structural/layout and numeric-spacing similarity is the goal; visual asset and color-theme
   similarity is not (see Fidelity Decisions).
-- Multi-page deliverable: `index.html` + 13 page files + `styles.css` + `script.js` (see
-  Multi-Page Architecture above) — supersedes the earlier "single file" constraint, which was
-  scoped to the one-page version of this project.
+- Multi-page deliverable: the 14 nav destinations plus `/404.html`, an `/about.html` redirect
+  stub, `robots.txt` and `sitemap.xml` — built from `src/*.ts` into `dist/` (see Tech
+  Approach). Supersedes both the original "single file" constraint and v3's hand-written
+  `styles.css` / `script.js` pair.
 
 ## Production Readiness Pass (v4)
+
+> **Partly superseded.** The SEO, image-optimisation and indexing-gate work
+> below is all still live, but it now happens in the Eleventy build rather than
+> in checked-in files: there is no `docs/` directory, no `styles.css` /
+> `script.js`, and the published output is `dist/`, built by CI and gitignored.
+> See **Tech Approach** for the current layout.
 
 This revision did not change the design system, the persona, or the section
 content plan — v2's Fidelity Decisions and v3's multi-page architecture all
@@ -220,29 +429,20 @@ observer. A framework would add a build step, a toolchain to maintain, and a
 JS bundle to download, in exchange for nothing this site needs. Plain
 HTML/CSS/JS remains correct, and the whole site now loads in ~290KB.
 
-**Repository layout.** The published site lives in `docs/`; everything outside
-it is never deployed. GitHub Pages is configured as *main branch, `/docs`
-folder*, which is the only subdirectory a branch-based Pages deploy supports.
-
-```
-CLAUDE.md, PLAN.md, SECTIONS.md, CHECKLIST.md   project notes, never served
-image-src/     source PNG masters (5.4MB), never served
-docs/          <- the entire published site
-  index.html + 15 more pages, styles.css, script.js
-  robots.txt, sitemap.xml, site.webmanifest, CNAME
-  favicon.ico, icon.svg, apple-touch-icon.png
-  image/       served images only (opt/ WebP+JPEG, og-cover, icons)
-  vendor/      lenis.min.js
-```
+**Repository layout.** *(Superseded — the published tree is now `dist/`, built
+by Eleventy and gitignored, and GitHub Pages deploys the build artifact rather
+than a committed folder. See Tech Approach for the current layout. The principle
+below is unchanged and still why things sit where they do.)* The published site
+was a single directory; everything outside it is never deployed.
 
 This replaced a `robots.txt` `Disallow:` for the notes, which only asks
 crawlers not to index — the files were still fetchable by URL. Keeping them
-outside `docs/` makes them unreachable rather than merely unlisted, and does so
-on any host, not just GitHub. `CLAUDE.md` staying at the repo root is also what
-keeps it loading as project instructions.
+outside the published tree makes them unreachable rather than merely unlisted,
+and does so on any host, not just GitHub. `CLAUDE.md` staying at the repo root
+is also what keeps it loading as project instructions.
 
 The source PNGs moved to `image-src/` for the same reason: nothing references
-them (every page uses `docs/image/opt/`), and serving 5.4MB of masters that no
+them (every page uses the optimised set), and serving 5.4MB of masters that no
 page requests is pure deployed weight. Regenerate the optimised set from them
 whenever a photo changes.
 
@@ -255,16 +455,22 @@ link still resolves.
 `<style>` block that lived inline in `about.html` moved into `styles.css`. It
 was the one place the design system could drift from the shared stylesheet,
 and being inline it re-downloaded on every homepage visit instead of being
-cached. Everything else stays as v3 left it: one `styles.css`, one
-`script.js`, no further splitting — with 14 pages this size, more files would
-mean more requests and no clearer ownership. Lenis is now vendored at
-`vendor/lenis.min.js` and its 513-byte stylesheet is inlined into
-`styles.css`, removing a render-blocking third-party CDN request from the
-`<head>` of every page.
+cached. Lenis is vendored rather than loaded from a CDN, removing a
+render-blocking third-party request from the `<head>` of every page.
+
+*(Superseded in detail.)* CSS and JS are now authored as many small files under
+`src/assets/` and bundled by esbuild into one of each — the "one request"
+outcome this section wanted, without the single-file authoring constraint. The
+homepage's page-specific CSS is `src/assets/css/pages/home.css`, loaded only
+where `pageCss` is set in a page's front matter.
 
 **Images.** All photographs are served as WebP with JPEG fallback via
-`<picture>`, generated into `docs/image/opt/`. The masters live in `image-src/`
-outside the published tree. This took the site from 5.9MB of images to ~320KB.
+`<picture>`. The optimised pairs live in `src/assets/images/photos/` and are
+passthrough-copied to `dist/assets/images/photos/`; the masters stay in
+`image-src/`, outside the build entirely. This took the site from 5.9MB of
+images to ~320KB. The set is defined once in `src/_includes/content/photos.ts`
+— captions, alt text and dimensions — and both the Gallery page and the
+homepage teaser render from it, so a corrected caption is a one-line edit.
 
 `Photo 7.png` was deleted: it was byte-identical to `Photo 6.png` (verified by
 md5), so the homepage gallery had been rendering the same photograph twice
@@ -278,10 +484,18 @@ favicon set plus `site.webmanifest`; one `<h1>` per page with no skipped
 heading levels; and real meta descriptions replacing the old
 "Demo content only" placeholders.
 
-**Base URL.** `https://biswajitmohapatra.com` is baked into every canonical
-tag, Open Graph URL, and sitemap entry, and into `docs/CNAME`. If the domain
-changes, it is a find-and-replace across `docs/*.html`, `docs/sitemap.xml`,
-`docs/robots.txt` and `docs/CNAME`.
+**Base URL.** *(Superseded — do not hand-edit built files.)* The origin is no
+longer baked into the source. `src/_data/site.ts` reads `SITE_URL` (default
+`https://biswajitmohapatra.com`) and `PATH_PREFIX`, and every internal link goes
+through the `url` filter, so the same tree deploys to any host:
+
+```bash
+SITE_URL=https://example.com npm run build                        # custom domain
+SITE_URL=https://user.github.io PATH_PREFIX=/repo/ npm run build  # project page
+```
+
+`CNAME` is opt-in and never written by default: set `CNAME_DOMAIN` at cutover.
+`ALLOW_INDEXING=true` opens `robots.txt` and swaps every page to `index, follow`.
 
 **Still placeholder — read before publishing.** The written content (Speech
 Lab, Ashfield University, the publication and course lists, student and alumni

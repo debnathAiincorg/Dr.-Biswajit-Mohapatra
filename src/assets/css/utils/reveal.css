@@ -17,12 +17,31 @@
    Reduced motion is covered by the global rule at the top of this file
    (durations collapse to ~0, so content appears instantly rather than being
    stuck hidden), and script.js also marks every target visible up front. */
+/* `scale` is listed alongside opacity and transform because hover zoom uses the
+   individual `scale` property rather than `transform: scale()`.
+
+   That is forced, not stylistic. This rule owns the `transform` channel for
+   every revealed element, and `.is-visible` below resolves it to `none` at a
+   specificity of three classes -- so a hover rule writing `transform` would
+   either lose outright or have to out-specify the reveal system and then
+   restate its entrance. `scale` is a separate property that composes with
+   `transform` instead of replacing it: the entrance still translates, the
+   hover still scales, and neither has to know about the other. It is the same
+   GPU-composited transform either way.
+
+   The delay is a three-value list so the stagger keeps applying to the
+   entrance while the hover zoom starts immediately -- inheriting a 450ms
+   stagger would make a hover feel broken. */
 .reveal,
 .card {
   transition:
     opacity var(--reveal-duration) var(--ease-out),
-    transform var(--reveal-duration) var(--ease-out);
-  transition-delay: calc(var(--reveal-i, 0) * var(--reveal-stagger));
+    transform var(--reveal-duration) var(--ease-out),
+    scale var(--hover-duration) var(--ease);
+  transition-delay:
+    calc(var(--reveal-i, 0) * var(--reveal-stagger)),
+    calc(var(--reveal-i, 0) * var(--reveal-stagger)),
+    0s;
 }
 .js-reveal .reveal,
 .js-reveal .card {

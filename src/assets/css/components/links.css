@@ -1,0 +1,56 @@
+/* Text links */
+/* ---------- In-copy text links ----------
+
+   The site already had a hover vocabulary before this file existed, and it is
+   built around one gesture: a hairline that draws itself. The nav underline
+   expands from the centre of a link, .card-rule grows on card hover, and the
+   footer seam sweeps left to right as the page closes. What was missing was
+   the same gesture at text scale -- an anchor sitting in a paragraph had no
+   styling at all, because the global reset sets `a { color: inherit;
+   text-decoration: none; }`, so it rendered as plain body copy.
+
+   So this is that same hairline, at the size of a word: a link rests on a
+   1px --hover-rule line and, on hover, a terracotta line draws across it from
+   left to right. Left origin rather than the nav's centre origin, because a
+   line under running text should follow the direction the text is read; the
+   nav's links are centred pills where a centre origin is the honest one.
+
+   Drawn with two background layers rather than a positioned pseudo-element:
+   an absolutely-positioned ::after only underlines the first line box, so a
+   link that wraps mid-sentence would lose its underline on every line after
+   the first. Backgrounds wrap correctly. */
+
+.text-link,
+.content-head p a:not(.btn),
+.panel-inner p a:not(.btn),
+.contact-inner a:not(.btn) {
+  color: var(--hover-accent);
+  padding-bottom: 2px;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(var(--hover-rule), var(--hover-rule));
+  background-repeat: no-repeat;
+  background-position: 0 100%, 0 100%;
+  /* Layer one is the drawn line and starts at zero width; layer two is the
+     resting hairline, so the link is identifiable as a link before anyone
+     hovers it -- colour alone is not enough to mark a link in body copy. */
+  background-size: 0% 1px, 100% 1px;
+  transition:
+    background-size var(--hover-draw) var(--ease-out),
+    color var(--hover-duration) var(--ease);
+}
+
+.text-link:hover,
+.text-link:focus-visible,
+.content-head p a:not(.btn):hover,
+.content-head p a:not(.btn):focus-visible,
+.panel-inner p a:not(.btn):hover,
+.panel-inner p a:not(.btn):focus-visible,
+.contact-inner a:not(.btn):hover,
+.contact-inner a:not(.btn):focus-visible {
+  color: var(--terracotta-deep);
+  background-size: 100% 1px, 100% 1px;
+}
+
+/* The homepage's dark bands re-point --hover-accent and --hover-rule; those
+   overrides live in pages/home.css with the rest of the .page-home scope. */

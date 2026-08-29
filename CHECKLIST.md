@@ -24,7 +24,7 @@ before building starts.
 - [ ] Gallery grid gap compared against reference's measured 13px (ours is intentionally wider
       per the fixed-grid decision — check it's a deliberate, not accidental, difference).
 - [ ] Button padding compared against reference's measured `17.6px 29.4px`.
-- [ ] Nav item gap compared against the 1560px-breakpoint token (~0.85rem).
+- [ ] Nav item gap compared against the 1250px-breakpoint value (~0.5rem, after two tightening passes).
 
 ## Pass 3 — Typography
 - [ ] Nav link font-size/weight/case compared against reference's measured 16px/300/normal-case
@@ -38,8 +38,9 @@ before building starts.
 - [ ] Button letter-spacing/case compared against reference's measured 0.285px/uppercase.
 
 ## Pass 4 — Responsive behavior (390px mobile, 768px tablet)
-- [ ] Nav collapse behavior at 1560px checked directly (not just at 390/768) — confirm hamburger
-      shows below 1560px, full row shows above it, no wrap/clip at the threshold.
+- [ ] Nav collapse behavior at the 1249/1250px threshold checked directly (not just at 390/768) —
+      confirm hamburger shows at 1249px and below, full row shows at 1250px and above, no
+      wrap/clip at the threshold. (Measured crossover: burger at 1024px, full nav at 1280px.)
 - [ ] Mobile nav panel scroll behavior checked with all 14 items open on a 390×844 viewport.
 - [ ] Gallery/card grids collapse 3→2→1 at the existing 1024px/768px breakpoints, compared
       against reference's own measured masonry column collapse (5→2, different mechanism, per

@@ -14,16 +14,22 @@
   border: 1px solid var(--terracotta);
   cursor: pointer;
   transition:
-    background 0.32s var(--ease),
-    color 0.32s var(--ease),
-    border-color 0.32s var(--ease),
-    box-shadow 0.32s var(--ease),
-    transform 0.26s var(--ease);
+    background var(--hover-duration) var(--ease),
+    color var(--hover-duration) var(--ease),
+    border-color var(--hover-duration) var(--ease),
+    box-shadow var(--hover-duration) var(--ease),
+    transform var(--hover-duration) var(--ease);
 }
 /* Every button lifts the same way on every page, so the affordance reads
-   identically sitewide rather than being re-specified per page. */
+   identically sitewide rather than being re-specified per page.
+
+   The lift is kept as the button gesture rather than being swapped for the
+   links' drawn hairline: a button is already a filled shape, and drawing a
+   line under one would read as decoration rather than as the affordance. What
+   the two share is timing and easing -- both now run on --hover-duration and
+   the same curve, which is what makes them feel like one system. */
 .btn:hover, .btn:focus-visible {
-  transform: translateY(-2px);
+  transform: translateY(var(--hover-lift));
   box-shadow: 0 6px 16px rgba(20, 14, 10, 0.16);
 }
 .btn:active {

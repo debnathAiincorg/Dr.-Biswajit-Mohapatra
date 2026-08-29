@@ -6,17 +6,10 @@
   margin: 0 auto;
   text-align: center;
 }
-.mark {
-  width: 46px;
-  height: 46px;
-  margin: 0 auto 1.5rem;
-  border: 1px solid var(--terracotta);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.mark svg { width: 20px; height: 20px; fill: var(--terracotta); }
+/* The decorative circular `.mark` icon that opened each panel was removed
+   sitewide. Its 46px box and 1.5rem bottom margin went with it, so the panel
+   now begins at its eyebrow with only the section's own top padding above --
+   matching every `.content-head` section. Nothing else needed adjusting. */
 .panel h1,
 .panel h2 { font-size: clamp(1.8rem, 2.4vw + 1rem, 2.5rem); margin-bottom: 0.75rem; }
 .panel > .panel-inner > p { color: var(--ink-soft); margin-bottom: 2rem; }
@@ -35,4 +28,25 @@
   width: 10px;
   height: 1px;
   background: var(--terracotta);
+}
+/* Hover, matching the .row-list treatment on every other list page.
+
+   The text needs its own element to carry this. The li holds the row's
+   border-bottom and its ::before dash, so transforming the li would drag the
+   separator and the marker along with the text and leave a notch at the left
+   of every rule. Wrapping the text mirrors what .row-title already does
+   inside a row: the text moves, the furniture around it stays put.
+
+   inline-block because a transform does not apply to a non-replaced inline
+   element. The box still shrink-to-fits and wraps its text normally, so
+   nothing changes on a narrow screen. */
+.bullet-list .bullet-text {
+  display: inline-block;
+  transition:
+    color var(--hover-duration) var(--ease),
+    transform var(--hover-duration) var(--ease);
+}
+.bullet-list li:hover .bullet-text {
+  color: var(--hover-accent);
+  transform: translateX(var(--hover-slide));
 }

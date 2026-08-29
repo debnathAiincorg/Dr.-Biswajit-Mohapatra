@@ -62,4 +62,29 @@ html::-webkit-scrollbar {
   --reveal-shift: 22px;
   --reveal-duration: 0.78s;
   --reveal-stagger: 75ms;
+
+  /* Hover micro-interactions, as one system.
+
+     Two durations, not one: --hover-duration covers state changes that happen
+     in place (colour, background, the 2px lift), while --hover-draw covers the
+     hairline that travels the width of a link. A line crossing real distance
+     needs marginally longer to read as *drawn* rather than snapped, and both
+     still sit in the band where a hover feels responsive rather than laggy.
+
+     --hover-accent is the colour a hovered link resolves to and --hover-rule
+     the hairline it rests on. Both are custom properties precisely so the dark
+     bands can re-point them once, on the section, instead of every rule inside
+     it restating a colour -- see pages/home.css. */
+  --hover-duration: 0.2s;
+  --hover-draw: 0.28s;
+  --hover-lift: -2px;
+  /* Travel for a hovered row title. 6px is under the row's 16px column gap, so
+     a slid title cannot collide with the date sitting to its right. */
+  --hover-slide: 6px;
+  /* Hover zoom for the wordmark and page headings. 3% reads as the type
+     settling forward rather than as a pop -- at the 4rem hero heading that is
+     roughly a pixel and a half of growth. */
+  --hover-zoom: 1.03;
+  --hover-accent: var(--terracotta-text);
+  --hover-rule: var(--line);
 }

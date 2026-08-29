@@ -14,3 +14,6 @@ desktop.ini
 dist/
 node_modules/
 .eleventy-cache/
+
+# Build-comparison snapshot, produced locally to diff against a fresh build
+_baseline/

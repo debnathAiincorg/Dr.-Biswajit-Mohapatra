@@ -3,20 +3,25 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Personal academic site for Dr. Biswajit Mohapatra — static site built with Eleventy.",
+  "description": "Personal academic site for Dr. Biswajit Mohapatra \u2014 static site built with Eleventy.",
   "engines": {
-    "node": ">=18"
+    "node": ">=20.6"
   },
+  "//engines": "Floor is 20.6 because the TypeScript templates load via NODE_OPTIONS=--import, added in Node 20.6. TODO: Node 20 reached end-of-life in April 2026 -- bump this, .github/workflows/deploy.yml and netlify.toml to Node 22 LTS. Node 20 still resolves to 20.19.x and builds fine today, so this is maintenance, not breakage.",
   "scripts": {
-    "dev": "eleventy --serve --quiet",
-    "build": "cross-env NODE_ENV=production eleventy",
+    "dev": "cross-env NODE_OPTIONS=--import=tsx eleventy --serve --quiet",
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--import=tsx eleventy",
+    "typecheck": "tsc --noEmit",
     "clean": "node -e \"import('node:fs').then(fs=>fs.rmSync('dist',{recursive:true,force:true}))\"",
     "serve:dist": "node scripts/serve-dist.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
+    "@types/node": "^26.4.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.24.0",
-    "html-minifier-terser": "^7.2.0"
+    "html-minifier-terser": "^7.2.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
   }
 }

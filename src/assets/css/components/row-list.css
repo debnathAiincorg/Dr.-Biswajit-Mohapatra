@@ -15,25 +15,51 @@
   padding: 1.15rem 0.25rem;
 }
 .row-list a {
-  transition: color 0.32s var(--ease);
+  transition: color var(--hover-duration) var(--ease);
 }
 .row-list a:hover, .row-list a:focus-visible {
-  color: var(--terracotta-text);
+  color: var(--hover-accent);
 }
 .row-title {
   font-family: var(--font-sans);
   font-weight: 600;
   font-size: 1.05rem;
 }
-/* The title slides rather than the row padding growing: transform is
-   composited, where animating padding-left relayouts the row on every frame
-   and drags the right-aligned meta text with it. */
-.row-list a .row-title {
-  transition: transform 0.32s var(--ease);
+/* Hover: the row title warms to the accent.
+
+   Driven from `li:hover` rather than from the row's inner element, so the
+   whole row is the target rather than just the run of text, and so it behaves
+   identically whether a row is a static span -- which all 39 of them are
+   today -- or becomes a link later.
+
+   No pointer cursor and no underline, deliberately. These rows are not
+   clickable, so either would promise a destination that does not exist. A
+   title that warms and eases a few pixels to the right under the cursor reads
+   as what it actually is: a reading aid marking which row you are on in a
+   dense list.
+
+   .row-sub and .row-tag sit inside .row-title but declare their own colours,
+   so the institution line and the pill keep those while the title itself
+   changes; both travel with it, since they are nested inside it.
+
+   The title moves by transform rather than by growing the row's padding:
+   transform is composited, where animating padding-left relayouts the row on
+   every frame and drags the right-aligned meta text along with it. The date
+   stays anchored, which is the whole point of the gesture.
+
+   Both the colour and the slide hang off `li:hover`, so they fire on static
+   and link rows alike -- an anchor sits inside the li, so hovering it hovers
+   the row too. `a:focus-visible` is listed alongside because focus lands on
+   the anchor, not the row, and a keyboard user should see the same thing. */
+.row-list .row-title {
+  transition:
+    color var(--hover-duration) var(--ease),
+    transform var(--hover-duration) var(--ease);
 }
-.row-list a:hover .row-title,
+.row-list li:hover .row-title,
 .row-list a:focus-visible .row-title {
-  transform: translateX(6px);
+  color: var(--hover-accent);
+  transform: translateX(var(--hover-slide));
 }
 .row-title .row-tag {
   display: inline-block;

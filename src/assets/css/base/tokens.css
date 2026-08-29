@@ -12,6 +12,41 @@ html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* Zeroing the duration above makes motion instant, not absent: a lift or a
+     slide still jumps to its hovered position, which is the jolt this setting
+     exists to prevent. These hovers drop the movement entirely and keep the
+     colour, background and hairline changes, which are what actually
+     communicate the state -- so nothing is lost but the travel.
+
+     !important, and stated here rather than beside each component, so that one
+     block governs reduced motion for the whole site regardless of where the
+     rule it overrides sits in the cascade. */
+  .btn:hover, .btn:focus-visible {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .social-badge:hover, .social-badge:focus-visible,
+  .nav-links a:hover, .nav-links a:focus-visible {
+    transform: none !important;
+  }
+  .row-list li:hover .row-title,
+  .row-list a:focus-visible .row-title,
+  .bullet-list li:hover .bullet-text {
+    transform: none !important;
+  }
+  /* `scale` is its own property, so `transform: none` above does not reach the
+     hover zoom -- it has to be suppressed by name. The wordmark still shifts
+     colour and the headings simply hold still. */
+  .logo:hover, .logo:focus-visible,
+  main h1:hover,
+  main .content-head h2:hover,
+  main .panel-inner h2:hover {
+    scale: none !important;
+  }
+  .card:hover .photo-figure img {
+    transform: none !important;
+  }
 }
 
 body {

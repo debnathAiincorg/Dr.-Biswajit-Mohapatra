@@ -65,7 +65,7 @@ persistent instead of hover-only.
 ## Responsive Web Design Audit Plan
 
 Breakpoints to verify, per your spec: mobile (~375–430px), tablet (~768–1024px), laptop
-(~1280–1440px), large desktop (~1600px+), plus the nav's own 1560px crossover specifically.
+(~1280–1440px), large desktop (~1600px+), plus the nav's own 1250px crossover specifically.
 
 **Pages to test** (not just `index.html`): `index.html` (hero + new teaser grid),
 `publications.html` (list-row only, tests a list-row page with nothing else around it),
@@ -75,7 +75,7 @@ content), `gallery.html` (card-grid at full 9-card count, the heaviest single pa
 like something's missing).
 
 **What to check per page/breakpoint:**
-- Nav: hamburger vs. inline row crossover exactly at 1560px, on at least two different pages
+- Nav: hamburger vs. inline row crossover exactly at the 1249/1250px threshold, on at least two different pages
   (not just index), to confirm the shared stylesheet behaves identically everywhere.
 - Grids (`card-grid` on Projects/Students/Gallery/index-teasers): 3→2→1 column collapse at
   1024px/768px, checked on the pages that actually use it standalone, not only embedded in a
@@ -114,17 +114,24 @@ pattern for a wayfinding menu. Instead:
   measured its natural (non-wrapping) width in a real browser: **logo 153px + gap 16px + nav
   1112px + gap 16px + actions 67px + container padding ~96px (at ≥1200px viewport, our
   `clamp(1.25rem,4vw,3rem)` side padding maxes at 48px/side) ≈ 1460px minimum.**
-- **Hamburger breakpoint set to 1560px** (~100px safety margin above the measured 1460px
-  minimum, to avoid a knife-edge fit and leave room for real-font rendering variance).
-- Below 1560px (this now covers what used to be "desktop" in v1 — 1024–1559px — plus tablet
+- **Hamburger breakpoint originally set to 1560px** (~100px safety margin above the measured
+  1460px minimum, to avoid a knife-edge fit and leave room for real-font rendering variance).
+
+  > **Superseded — the shipped breakpoint is `@media (max-width: 1249px)`.** Two later
+  > tightening passes reduced nav font-size (0.72rem→0.68rem), nav/header gaps
+  > (0.7rem→0.5rem), header padding, and both logo variants' font-size and letter-spacing,
+  > bringing the true non-wrapping minimum down from 1460px to ~1209px, and the breakpoint
+  > moved to 1250px to match. `src/assets/css/components/header.css` is the authority; the
+  > numbers below are updated to agree with it.
+- Below 1250px (this now covers what used to be "desktop" in v1 — 1024–1249px — plus tablet
   and mobile), the nav collapses into the existing hamburger + slide-down panel pattern from
-  v1. Above 1560px, all 14 items show in one non-wrapping row.
-- This means most real-world desktop windows (a maximized 1440px or 1366px laptop screen) will
-  see the hamburger menu, not the inline nav — an accepted tradeoff of fitting 14 items
-  without wrapping/scrolling. Flagging this explicitly since it's a real behavior change from
-  v1, where the inline nav was visible on any standard desktop width.
-- On the ≥1560px inline nav, spacing is tightened vs. what 6 items could afford: nav gap
-  ~0.85rem (was ~2rem), font-size ~0.72rem, letter-spacing ~0.05em.
+  v1. At 1250px and above, all 14 items show in one non-wrapping row.
+- Because the breakpoint came down to 1250px, a maximized 1280px or 1440px laptop screen now
+  sees the full inline nav; only windows narrower than 1250px — 1024px tablet landscape
+  included — get the hamburger. This supersedes the tradeoff flagged against the original
+  1560px figure, which put most real desktop windows on the hamburger.
+- On the ≥1250px inline nav, spacing is tightened vs. what 6 items could afford: nav gap
+  ~0.5rem (was ~2rem), font-size ~0.68rem, letter-spacing ~0.05em.
 
 ## Design Tokens — updated from re-audit (see CLAUDE.md → Fidelity Decisions)
 
@@ -159,7 +166,7 @@ pattern for a wayfinding menu. Instead:
 - Social icon size: **28px** (was 32px; reference measured 21px — split the difference for
   touch-target comfort, noted as approximate).
 - Header: **stays sticky** (`position: sticky`, kept per Fidelity Decisions), gains its own
-  1560px breakpoint for the nav specifically (separate from the 768px hamburger-panel content
+  1250px breakpoint for the nav specifically (separate from the 768px hamburger-panel content
   breakpoint used everywhere else on the page, e.g. gallery/card grids).
 
 ## Build Steps
@@ -175,7 +182,7 @@ pattern for a wayfinding menu. Instead:
    - `<nav>` with all **14** links in nav order (see `SECTIONS.md` for the full anchor list),
      normal-case typography per the tokens above.
    - 2 social icons far right (unchanged).
-   - Sticky header (unchanged mechanic), but hamburger breakpoint moves from 768px → **1560px**
+   - Sticky header (unchanged mechanic), but hamburger breakpoint moves from 768px → **1250px**
      for the nav row specifically.
    - Mobile/collapsed panel now lists all 14 links — likely needs to scroll internally on short
      viewports (panel `max-height` + `overflow-y: auto`), since 14 full-width rows may exceed
@@ -228,7 +235,7 @@ pattern for a wayfinding menu. Instead:
 17. **Footer** — unchanged from v1 (centered social icons, copyright, image-credit line).
 
 18. **Responsive behavior**
-    - Nav: hamburger below **1560px** (new — see Nav Strategy above), mobile panel scrollable.
+    - Nav: hamburger below **1250px** (new — see Nav Strategy above), mobile panel scrollable.
     - All other breakpoints (gallery/card grids, hero stacking) stay at the v1 values (1024px,
       768px) — those weren't in conflict with anything the re-audit found, and 768px matches
       the reference's own measured crossover for its (smaller) nav, which is a reasonable
@@ -244,7 +251,7 @@ pattern for a wayfinding menu. Instead:
 ## Requirements Checklist
 
 - [ ] Sticky nav, logo left, **14-item** nav (exact labels/anchors from your message, in
-      order), 2 social icons far right, hamburger below 1560px (raised from 768px, justified
+      order), 2 social icons far right, hamburger below 1250px (raised from 768px, justified
       above), scrollable mobile panel
 - [ ] About (hero) — photo placeholder, headline + description, two CTAs, secondary link row
 - [ ] PhD Opportunities — callout panel, blurb, research-area list, CTA to Contact
@@ -262,15 +269,18 @@ pattern for a wayfinding menu. Instead:
       Fidelity Decisions)
 - [ ] Container width, line-height ratios, button radius/tracking, gallery gap, nav typography
       updated per the re-audit's measured values (see tokens table above)
-- [ ] Fully responsive; hamburger below 1560px for nav, 768px/1024px retained for content grids
+- [ ] Fully responsive; hamburger below 1250px for nav, 768px/1024px retained for content grids
 - [ ] Semantic HTML5, single file, no frameworks
 - [ ] No real content/images from indranooyi.com anywhere, including the new academic sections
 
 ## Open Items / Assumptions Carried Into Build
 
-- 1560px nav breakpoint is derived from a measured test render of the real 14 labels in our
+- ~~1560px nav breakpoint is derived from a measured test render of the real 14 labels in our
   actual typography — if real-browser kerning differs slightly, I'll re-check during the
-  verification passes and adjust if the nav is still tight/loose at that threshold.
+  verification passes and adjust if the nav is still tight/loose at that threshold.~~
+  **Resolved.** It was re-checked, and the nav was tightened twice rather than left at the
+  original threshold: the shipped breakpoint is `@media (max-width: 1249px)`, against a
+  measured non-wrapping minimum of ~1209px.
 - Persona pivot (memoir author → professor/lab director, book kept as a minor thread) is a
   judgment call made to reconcile the new nav taxonomy with a coherent single person — flagged
   in `CLAUDE.md`, open to a different framing if you'd rather.

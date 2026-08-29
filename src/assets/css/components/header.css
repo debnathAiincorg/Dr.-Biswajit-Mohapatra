@@ -48,6 +48,31 @@
   margin-right: auto;
   animation: nav-logo-in 0.7s var(--ease-out) backwards;
 }
+/* The wordmark was the one link on every page with no hover state at all.
+   It gets a colour shift on the surname rather than the links' drawn hairline:
+   the header already carries fourteen underlining nav links, and a fifteenth
+   line directly above them would be noise. Shifting only the second word keeps
+   the wordmark stable while still confirming the whole thing is clickable. */
+/* The zoom sits on the whole wordmark and the colour shift stays on the
+   surname, so the two read as one gesture: the name eases forward and its
+   second word warms. `scale` rather than `transform: scale()` because
+   nav-logo-in animates `transform` on this same element -- see the note in
+   utils/reveal.css for the full reasoning; the two properties compose. */
+.logo {
+  transform-origin: center;
+  transition: scale var(--hover-duration) var(--ease);
+}
+.logo:hover,
+.logo:focus-visible {
+  scale: var(--hover-zoom);
+}
+.logo span {
+  transition: color var(--hover-duration) var(--ease);
+}
+.logo:hover span,
+.logo:focus-visible span {
+  color: var(--hover-accent);
+}
 
 /* The narrow-screen font-size stepdown that used to live here is gone: it
    existed because the uppercase serif wordmark ran the burger button off the
@@ -72,9 +97,9 @@
   border-radius: var(--radius);
   background-color: transparent;
   transition:
-    background-color 0.24s var(--ease),
-    color 0.24s var(--ease),
-    transform 0.24s var(--ease);
+    background-color var(--hover-duration) var(--ease),
+    color var(--hover-duration) var(--ease),
+    transform var(--hover-duration) var(--ease);
   animation: nav-item-in 0.62s var(--ease-out) backwards;
   animation-delay: calc(130ms + var(--nav-i, 0) * 42ms);
 }
@@ -86,7 +111,7 @@
   bottom: 0;
   height: 1px;
   background: var(--terracotta);
-  transition: left 0.36s var(--ease-out), right 0.36s var(--ease-out);
+  transition: left var(--hover-draw) var(--ease-out), right var(--hover-draw) var(--ease-out);
 }
 .nav-links a:hover,
 .nav-links a:focus-visible {
@@ -133,7 +158,7 @@
   border: 1px solid var(--line);
   border-radius: 50%;
   color: var(--ink);
-  transition: border-color 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease);
+  transition: border-color var(--hover-duration) var(--ease), background var(--hover-duration) var(--ease), color var(--hover-duration) var(--ease), transform var(--hover-duration) var(--ease);
   flex-shrink: 0;
 }
 .social-badge svg { width: 15px; height: 15px; fill: currentColor; display: block; }
@@ -141,7 +166,7 @@
   background: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
-  transform: translateY(-2px);
+  transform: translateY(var(--hover-lift));
 }
 
 .burger {
@@ -211,7 +236,7 @@
   border-bottom: 1px solid var(--line);
   border-radius: var(--radius);
   background-color: transparent;
-  transition: background-color 0.24s var(--ease);
+  transition: background-color var(--hover-duration) var(--ease);
 }
 .mobile-panel > a:hover,
 .mobile-panel > a:focus-visible {
