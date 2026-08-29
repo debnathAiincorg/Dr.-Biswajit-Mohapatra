@@ -97,13 +97,61 @@ Rather than silently picking one, here's the resolution:
 
 | Conflict | Reference does | Your standing spec says | Decision |
 |---|---|---|---|
-| Header stickiness | `position: absolute`, scrolls away | "Sticky top nav" (explicit, turn 1) | **Keep sticky** — your explicit requirement wins, and with 14 nav destinations a persistent nav is a practical necessity, not just a style preference |
+| Header stickiness | `position: absolute`, scrolls away | "Sticky top nav" (explicit, turn 1) | **Keep sticky** — your explicit requirement wins, and with 14 nav destinations a persistent nav is a practical necessity, not just a style preference. **This was inert until 2026-08-29 — see the note directly below.** |
 | Palette / dark hero band | Alternating black/bright sections, white text on hero photo | "white/cream bg, charcoal text, one accent color" (explicit, turn 1) | **Keep the light palette** — your explicit requirement wins; we do not adopt the dark hero-overlay treatment |
 | Typeface | All-sans (`halyard-display`) | "Serif headings (Playfair Display), sans body (Inter)" (explicit, turn 1) | **Kept the serif/sans pairing through v1–v2** — your explicit turn-1 requirement won over the reference's all-sans face, and we adopted its *numeric ratios* (line-height ratios, letter-spacing scale) onto Playfair + Inter rather than its actual typeface. **Superseded as of commit `a4cfabf`** (2026-08-24): the requirement changed to all-sans — Inter now renders both headings and body sitewide, weights 500/600 only, with no serif face loaded on any of the 14 pages |
 | Nav case | Normal case, weight 300, 16px, 0.8px tracking | Not specified by you | **Adopt the reference's approach** — switch our nav from uppercase/tracked to normal-case, lighter weight, closer to measured size, since you didn't specify otherwise and this is a real fidelity gap worth closing |
 | Gallery columns | 5 → 2 masonry, tight 13px gaps | "3 columns desktop, 1 column mobile" (explicit, turn 1; reconfirmed this round: "keep the grid layout") | **Keep 3/1 fixed grid** — your explicit requirement, twice-confirmed, wins over the reference's masonry column counts |
 | Container max-width | `1300px` | Previously `1220px` (our v1 choice, not user-specified) | **Adopt the reference's 1300px** — no standing user instruction to override |
 | Button radius | `0px` square | Previously `3px` (our v1 choice) | **Move closer to reference: ~1–2px**, not user-specified, small enough to keep our buttons from looking harsh |
+
+### The sticky header was inert on every page until the overflow guard changed (2026-08-29)
+
+`.site-header` has declared `position: sticky` since v3, and `getComputedStyle`
+confirmed `sticky` the whole time — but the header still scrolled away on all 14
+non-homepage pages. The cause was the sitewide overflow guard:
+
+```css
+html, body { overflow-x: hidden; }   /* the guard, added in 1791620 */
+```
+
+`overflow-x: hidden` clips **and** makes the element a scroll container. A
+sticky element resolves against its nearest scrolling ancestor, so the header
+was sticking to *body's* scrollport while the document actually scrolled on
+`html`. It stuck perfectly — to a box that never moved relative to it.
+
+**The fix is `overflow-x: clip`, not removing the guard.** `clip` clips
+identically but does *not* create a scroll container, so the guard's protection
+is kept and sticky resolves against the viewport. Removing the guard instead
+would have traded a real regression risk for the fix; `clip` costs nothing.
+
+Measured before and after, same build, 16 pages × 14 widths (320→1920) × 2
+viewport heights, restricted to the 212 page/width combinations where the page
+is genuinely scrollable (`maxScroll >= 120px`):
+
+| | header pinned after scrolling | header top |
+|---|---|---|
+| `overflow-x: hidden` (before) | **0 / 212** | `-scrollY` exactly — scrolled away 1:1 with the page |
+| `overflow-x: clip` (after) | **212 / 212** | `0` |
+
+On `/gallery/`, which scrolls 1279–5082px, the header sat at `-1188` before and
+`0` after, at the same ~1188px scroll offset.
+
+**Do not revert this to `hidden`.** Both declarations — `base/reset.css` and
+`base/tokens.css` — carry a comment saying so. Verified that `clip` introduces
+no overflow `hidden` did not: across 240 records covering the two cases the
+guard's own commits name — the 1423px window width from `1791620` at 100/125/150%
+display scaling, and the homepage's `width: 100vw` full-bleed band from `73b8394`
+with the site's JS blocked so `--scrollbar-w` keeps its `0px` fallback —
+**zero records could scroll sideways in either variant**, and layout geometry was
+identical (all height deltas ≤1px, sub-pixel rounding). The known browser cost is
+that `overflow: clip` needs **Safari 16+** (Sept 2022); older Safari ignores the
+declaration and loses the guard, which permits sideways scroll but breaks nothing.
+
+The homepage is deliberately exempt and stays that way: `.page-home .site-header`
+is `position: absolute` (`pages/home.css`), an overlay on the dark hero photo that
+scrolls away by design. Confirmed unchanged — 56/56 combinations still compute
+`absolute` and still scroll away, identical to before the fix.
 
 The pattern: **numeric/structural fidelity (spacing, ratios, breakpoints, proportions,
 component mechanics) is adopted from the re-audit wherever you hadn't already specified

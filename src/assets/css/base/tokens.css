@@ -56,7 +56,9 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* `clip` not `hidden` -- see the note in base/reset.css; `hidden` here
+     makes body a scroll container and defeats the sticky header. */
+  overflow-x: clip;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

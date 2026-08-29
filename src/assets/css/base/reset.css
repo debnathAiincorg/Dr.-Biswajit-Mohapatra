@@ -1,6 +1,17 @@
 /* Overflow guards and scrollbar handling */
+
+/* `clip`, not `hidden`, and this matters.
+   Both clip the same way, but `hidden` also makes the element a scroll
+   container -- and `position: sticky` resolves against its nearest scrolling
+   ancestor, so `hidden` here silently made the sticky site header stick to
+   body's scrollport while the document scrolled on html. The header scrolled
+   away on every page (measured before/after on the same build: with `hidden`,
+   0 of the 212 genuinely scrollable page/width combinations pinned, header top
+   === -scrollY exactly; with `clip`, 212 of 212 pin). `clip` keeps the guard
+   and lets sticky work.
+   Do not change this back to `hidden`. See CLAUDE.md, Fidelity Decisions. */
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
 }
 
