@@ -15,3 +15,7 @@ dist/
 node_modules/
 .eleventy-cache/
 
+# Raw source material (personal certificates, LinkedIn exports, old-site docs) --
+# already extracted into the site content; not meant to be committed or published.
+dr/
+
