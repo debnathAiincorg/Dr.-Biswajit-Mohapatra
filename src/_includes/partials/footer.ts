@@ -1,6 +1,6 @@
 import { html, type Html } from '../lib/html.ts';
 import type { Site } from '../lib/types.ts';
-import { linkedInBadge } from './linkedin-badge.ts';
+import { linkedInBadge } from './social-badges.ts';
 
 /*
  * `{{ site.jobTitle | replace("Professor & Director, ", "") }}` reduced the

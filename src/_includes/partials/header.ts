@@ -1,6 +1,6 @@
 import { html, join, type Html } from '../lib/html.ts';
 import type { NavItem, PartialContext } from '../lib/types.ts';
-import { linkedInBadge } from './linkedin-badge.ts';
+import { linkedInBadge } from './social-badges.ts';
 
 /**
  * One nav entry. `aria-current` marks the page you are on, which is what the
