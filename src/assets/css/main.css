@@ -21,6 +21,7 @@
 @import "./components/panel.css";
 @import "./components/row-list.css";
 @import "./components/card-grid.css";
+@import "./components/lightbox.css";
 @import "./utils/reveal.css";
 @import "./components/contact.css";
 @import "./components/footer.css";

@@ -12,6 +12,7 @@ import { initSmoothScroll } from './modules/smooth-scroll.js';
 import { initHeader } from './modules/header.js';
 import { initMobileMenu, markCurrentNavLink } from './modules/nav.js';
 import { initReveal } from './modules/reveal.js';
+import { initLightbox } from './modules/lightbox.js';
 
 /* First statement in the bundle: see reveal-arm.js for why this ordering is
    load-bearing rather than incidental. */
@@ -37,4 +38,12 @@ try {
   /* Reveal setup failed: fall back to plain, fully visible content rather
      than leaving the page blank. */
   disarmReveal();
+}
+
+try {
+  /* A proof image's <a> already points straight at the full-size JPEG, so a
+     broken lightbox costs nothing beyond the enhancement it was adding. */
+  initLightbox();
+} catch {
+  /* Non-fatal: the anchors still open the image directly. */
 }
