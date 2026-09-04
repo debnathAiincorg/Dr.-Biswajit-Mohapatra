@@ -1,5 +1,4 @@
 import { cardGrid, photoCard } from './_includes/components/card-grid.ts';
-import { panel } from './_includes/components/panel.ts';
 import { rowList } from './_includes/components/row-list.ts';
 import { asRows } from './_includes/content/lab-notes.ts';
 import { homepagePhotoSlugs, photosBySlug } from './_includes/content/photos.ts';
@@ -25,18 +24,6 @@ export const { data, render } = definePage({
        same records the gallery renders, not a second copy of the captions. */
     const teaserCards = photosBySlug(homepagePhotoSlugs).map((photo) => photoCard(photo, url));
 
-    const newsPanel = panel({
-      id: 'news',
-      ariaLabelledby: 'news-title',
-      children: html`        <span class="eyebrow reveal">Latest</span>
-        <h2 class="reveal" id="news-title">News</h2>
-        <p class="reveal">Recent updates on roles, publications, awards, and speaking engagements.</p>
-
-        ${rowList(asRows(), '        ', 'row-list with-cta')}
-
-        <a class="btn btn-primary reveal" href="${url('/news/')}">All news</a>`,
-    });
-
     return html`  <!-- Hero: full-bleed photo with overlaid nav and copy -->
   <section class="hero-full" id="about" aria-labelledby="hero-title">
     <picture class="hero-bg"><source type="image/webp" srcset="${url('/assets/images/photos/profile-photo.webp')}"><img src="${url('/assets/images/photos/profile-photo.jpg')}" alt="Dr. Biswajit Mohapatra speaking on stage at a conference, gesturing with both hands against a dark blue backdrop." width="1673" height="793" fetchpriority="high" decoding="async"></picture>
@@ -54,8 +41,22 @@ export const { data, render } = definePage({
     </div>
   </section>
 
-  <!-- Lab news teaser -->
-${newsPanel}
+  <!-- News teaser: same structure as /news/ so the two read as one design.
+       The tinted band comes from the .page-home #news rule in pages/home.css,
+       which is scoped by id rather than to .panel, so the homepage keeps its
+       cream band without the panel wrapper's 640px column. -->
+  <section class="content-section" id="news" aria-labelledby="news-title">
+    <div class="container">
+      <div class="content-head">
+        <span class="eyebrow reveal">Latest</span>
+        <h2 class="reveal" id="news-title">News</h2>
+        <p class="reveal">Recent updates on roles, publications, awards, and speaking engagements.</p>
+      </div>
+      ${rowList(asRows(), '      ', 'row-list with-cta')}
+      <a class="btn btn-primary reveal" href="${url('/news/')}">All news</a>
+    </div>
+  </section>
+
   <!-- Gallery teaser: three photographs, full set on gallery.html -->
   <section class="content-section" id="gallery" aria-labelledby="gallery-title">
     <div class="container">
