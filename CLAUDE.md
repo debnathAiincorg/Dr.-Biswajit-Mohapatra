@@ -545,12 +545,64 @@ SITE_URL=https://user.github.io PATH_PREFIX=/repo/ npm run build  # project page
 `CNAME` is opt-in and never written by default: set `CNAME_DOMAIN` at cutover.
 `ALLOW_INDEXING=true` opens `robots.txt` and swaps every page to `index, follow`.
 
-**Still placeholder — read before publishing.** The written content (Speech
-Lab, Ashfield University, the publication and course lists, student and alumni
-names, the `speechlab@example.edu` address) is still invented, while the
-photographs and the LinkedIn link belong to a real person whose actual
-background is in DevOps and Agile delivery leadership, not speech science.
-Gallery captions and alt text were corrected to describe what the photographs
-actually show; the surrounding academic framing was not, because inventing a
-real person's biography is not something to do silently. That content has to
-be replaced before this site goes live.
+**Deploy pipeline ownership — unresolved, do not assume.** The repo carries
+two independent deploy configs that currently point at different places, and
+nothing in the repo says which one is actually production:
+
+- **`.github/workflows/deploy.yml`** (GitHub Actions → GitHub Pages) is
+  hardwired to a *project-page* build: `SITE_URL: https://<owner>.github.io`,
+  `PATH_PREFIX: /<repo>/`, `ALLOW_INDEXING: 'false'`. It never sets
+  `CNAME_DOMAIN`, so it never writes a `CNAME` file — this pipeline is
+  structurally incapable of serving `biswajitmohapatra.com` as committed.
+- **`netlify.toml`** sets no `SITE_URL`/`ALLOW_INDEXING` at all; its own
+  header comment defers both to the Netlify UI. With nothing set, a Netlify
+  build silently falls back to `site.ts`'s default
+  (`https://biswajitmohapatra.com`) — which happens to be the intended
+  production domain, but that's a coincidence of the fallback value, not
+  evidence Netlify is actually the live host. Whether Netlify's dashboard has
+  `biswajitmohapatra.com` attached, and whether its DNS actually points there,
+  are dashboard/DNS facts this repo cannot answer.
+
+**Do not wire `CNAME_DOMAIN: biswajitmohapatra.com` into the GitHub Actions
+workflow without first confirming Netlify does not also claim that domain** —
+two hosts both configured for the same custom domain is a DNS collision, and
+the loser silently stops serving traffic with nothing in either config
+revealing why.
+
+This needs the site owner to state, once, which pipeline is authoritative for
+`biswajitmohapatra.com` today (or confirm neither is live yet) — until then,
+treat both as non-production and this paragraph as the standing warning.
+
+**No longer placeholder — real content pass (this revision).** The fictional
+"Speech Lab / Ashfield University" academic persona described earlier in this
+file has been replaced sitewide with Dr. Mohapatra's real background, sourced
+from his LinkedIn export and prior website copy (kept outside the published
+tree, under `dr/`). His actual career is corporate technology leadership —
+VP & Head of Product and Solutions Engineering at Intuitive.ai, previously
+AWS (Head of Customer Solutions & CIO Advisory, India/South Asia), 15 years
+at IBM, and earlier roles at Kanbay, Zensar and TCS — not speech science or
+university teaching.
+
+Because four of the 14 nav destinations (PhD Opportunities, Students, Alumni,
+Courses) had no real equivalent in that career, they were repurposed rather
+than left fictional or deleted — same nav slots, retargeted content, new
+labels and URLs:
+
+| Old (fictional) | New | Real content |
+|---|---|---|
+| PhD Opportunities (`/phd-opportunities/`) | Patents (`/patents/`) | IBM patent portfolio |
+| Students (`/students/`) | Academic Engagement (`/academic-engagement/`) | Guest lectures, convocation appearances, Board of Studies |
+| Alumni (`/alumni/`) | Board & Advisory (`/board-roles/`) | Ambassadorships, board seats, policy contributions |
+| Courses (`/courses/`) | Certifications (`/certifications/`) | AWS/Azure/GCP/IBM/Gremlin certifications |
+
+Contact (`/contact/`) no longer shows an email or office address — no public
+professional email exists in the source material, so it points to LinkedIn
+only. Gallery grew from 8 to 38 photographs (added award/certificate images
+alongside the original event photos). Every other page (About, News, Awards,
+Education, Experience, Publications, Projects, Activities) was rewritten in
+place with real, dated, sourced content — nothing in `dr/` was fabricated or
+guessed; gaps in the source material were left out rather than invented.
+
+`allowIndexing` (see above) is still environment-controlled and still
+defaults to `false` — populating real content did not flip it. That remains a
+separate, explicit publishing decision for the site owner.
