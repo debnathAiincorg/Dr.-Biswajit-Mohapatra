@@ -13,6 +13,7 @@ import { initHeader } from './modules/header.js';
 import { initMobileMenu, markCurrentNavLink } from './modules/nav.js';
 import { initReveal } from './modules/reveal.js';
 import { initLightbox } from './modules/lightbox.js';
+import { initFooterShuffle } from './modules/footer-shuffle.js';
 
 /* First statement in the bundle: see reveal-arm.js for why this ordering is
    load-bearing rather than incidental. */
@@ -46,4 +47,12 @@ try {
   initLightbox();
 } catch {
   /* Non-fatal: the anchors still open the image directly. */
+}
+
+try {
+  /* Purely decorative, and guarded on its own so a failure here cannot take
+     the lightbox down with it. The badges are fully usable without it. */
+  initFooterShuffle();
+} catch {
+  /* Non-fatal: the footer badges simply hold still. */
 }
