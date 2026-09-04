@@ -21,7 +21,7 @@ const nav: readonly NavItem[] = [
   { url: '/gallery/',              label: 'Gallery' },
   { url: '/certifications/',       label: 'Certifications' },
   { url: '/activities/',           label: 'Activities' },
-  { url: '/contact/',              label: 'Contact' },
+  { url: '/contact/',              label: 'Social' },
 ];
 
 export default nav;

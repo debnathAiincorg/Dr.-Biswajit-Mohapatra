@@ -58,7 +58,7 @@ function badgeFor(site: Site, platform: Platform): Html {
  * Rendered on every page: header (desktop + mobile panel) and footer.
  * `exclude` drops a platform from one of those three spots without
  * affecting the others -- e.g. the header omits YouTube while the footer
- * and Contact page still show all four.
+ * and Social page still show all four.
  */
 export function socialBadges(site: Site, options?: { readonly exclude?: readonly Platform[] }): Html {
   const exclude = options?.exclude ?? [];

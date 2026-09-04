@@ -4,10 +4,10 @@ import { socialBadges } from './_includes/partials/social-badges.ts';
 
 export const { data, render } = definePage({
   data: {
-    title: 'Contact — Dr. Biswajit Mohapatra',
+    title: 'Social — Dr. Biswajit Mohapatra',
     description:
       'Get in touch with Dr. Biswajit Mohapatra on LinkedIn, YouTube, X and Facebook — for speaking engagements, advisory conversations and media enquiries.',
-    navLabel: 'Contact',
+    navLabel: 'Social',
     schemaType: 'ContactPage',
     permalink: '/contact/',
   },
@@ -16,7 +16,7 @@ export const { data, render } = definePage({
     <div class="container">
       <div class="contact-inner">
         <span class="eyebrow reveal">Get in Touch</span>
-        <h1 class="reveal">Contact</h1>
+        <h1 class="reveal">Social</h1>
         <p class="reveal">For speaking engagements, advisory conversations, or media enquiries &mdash; reach Dr. Mohapatra on LinkedIn.</p>
         <a class="btn btn-primary reveal" href="${site.linkedin}" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
         <div class="contact-socials reveal">
