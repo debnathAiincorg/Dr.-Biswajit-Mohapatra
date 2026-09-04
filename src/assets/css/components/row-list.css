@@ -5,7 +5,11 @@
   border-top: 1px solid var(--line);
 }
 .row-list.with-cta { margin-bottom: 2.25rem; }
-.row-list li { border-bottom: 1px solid var(--line); }
+/* Direct child only: a descendant selector here would also draw this divider
+   under every <li> inside an expanded row's own bullet list (row-detail-body
+   ul), which is a separate, nested list with no business inheriting the
+   top-level row separator. */
+.row-list > li { border-bottom: 1px solid var(--line); }
 .row-list a, .row-list .row-static {
   display: flex;
   justify-content: space-between;
@@ -88,4 +92,251 @@
   font-size: 0.85rem;
   color: var(--ink-soft);
   margin-top: 0.2rem;
+}
+
+/* ---------- Organisation logos ----------
+
+   Grouped with .row-title rather than added as a third flex child of
+   .row-static/a: that element is `justify-content: space-between` between
+   exactly two children (title-side, meta-side), and a bare third child would
+   float to the middle instead of sitting against the title. */
+.row-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.org-logo {
+  flex: none;
+  height: 20px;
+  width: auto;
+  max-width: 84px;
+  object-fit: contain;
+  opacity: 0.78;
+  transition: opacity var(--hover-duration) var(--ease);
+}
+.row-list li:hover .org-logo,
+.row-list a:focus-visible .org-logo {
+  opacity: 1;
+}
+
+/* ---------- Sourced rows ----------
+
+   A row that carries a public record becomes an anchor. The rest stay static
+   spans, and that contrast is the point: a visitor can see at a glance which
+   claims on the page are backed by something they can click through and check.
+
+   This is what the "no pointer cursor, no underline" note above was reserving
+   judgement on. Its reasoning -- that a cursor or an underline would "promise
+   a destination that does not exist" -- inverts once a destination exists, so
+   a sourced row gets the pointer and an explicit outbound glyph, while an
+   unsourced row is left exactly as it was.
+
+   No underline even so: the row already warms and slides on hover from the
+   shared .row-title rule, and the glyph carries the outbound meaning. An
+   underline across a full-width flex row would read as a rule, not a link. */
+.row-list a.row-sourced { cursor: pointer; }
+
+.row-proof-glyph {
+  display: inline-block;
+  /* Nudged off the baseline so the 12px box optically centres against the
+     1.05rem title rather than hanging below it. */
+  vertical-align: -0.05em;
+  margin-left: 0.4rem;
+  color: var(--terracotta-text);
+  opacity: 0.75;
+  transition: opacity var(--hover-duration) var(--ease);
+}
+.row-list li:hover .row-proof-glyph,
+.row-list a:focus-visible .row-proof-glyph {
+  opacity: 1;
+}
+
+/* ---------- Expandable rows (Publications) ----------
+
+   A row backed by substantive supporting material -- an excerpt, an
+   interview quote -- opens in place rather than linking away, since the
+   reader is already on the one page built to hold it.
+
+   <details>/<summary> rather than a JS-driven accordion: the disclosure
+   itself, its keyboard handling and its open/closed accessible state are the
+   browser's job. It works identically with JavaScript blocked, which a click
+   handler toggling a class could not promise.
+
+   The native marker (a browser-drawn triangle) is removed in favour of the
+   drawn chevron below, so an expandable row reads as one system with the
+   proof glyph on sourced rows rather than two different affordance styles. */
+.row-details summary.row-static {
+  cursor: pointer;
+  list-style: none;
+}
+.row-details summary.row-static::-webkit-details-marker {
+  display: none;
+}
+
+/* Keeps the row's existing two-column layout (title left, meta right) intact
+   -- the chevron nests inside the right-hand cluster alongside the date
+   rather than becoming a third flex child, which would pull the date away
+   from the row's trailing edge. */
+.row-meta-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.row-expand-glyph {
+  flex: none;
+  color: var(--ink-soft);
+  transition: transform var(--hover-duration) var(--ease);
+}
+.row-details[open] > summary .row-expand-glyph {
+  transform: rotate(180deg);
+}
+
+/* Focus lands on <summary> itself, not a nested <a>, so the keyboard
+   equivalent of the anchor's :focus-visible rule is stated here rather than
+   inherited from it. */
+.row-details summary:focus-visible .row-title {
+  color: var(--hover-accent);
+  transform: translateX(var(--hover-slide));
+}
+
+.row-detail-body {
+  padding: 0 0.25rem 1.15rem;
+  max-width: 68ch;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+.row-detail-body p + p {
+  margin-top: 0.75rem;
+}
+.row-detail-source {
+  margin-top: 0.9rem;
+}
+
+/* ---------- Rich content inside an expanded row ----------
+
+   Publications rows can carry more than prose: the Legacy Application
+   Modernization post included a comparison table, and two entries have a
+   supporting image (a diagram, a book cover, a magazine tearsheet) alongside
+   their text. Both extend row-detail-body rather than introducing a second
+   content system. */
+.row-detail-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.9rem 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.row-detail-body figure {
+  margin: 0.9rem 0;
+}
+.row-detail-body figcaption {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.row-detail-body a.row-detail-image-link {
+  display: block;
+}
+
+/* html, body carry `overflow-x: clip` sitewide (see base/reset.css) so the
+   sticky header has a non-scrolling ancestor to resolve against. `clip`
+   silently truncates anything that overflows it rather than letting the
+   page scroll -- fine for the page itself, wrong for a 4-column comparison
+   table, which is wider than a narrow viewport can show at a legible font
+   size. Giving the table its own scroll container keeps the page-level
+   guard intact (nothing here reintroduces `overflow-x: hidden` on html or
+   body) while letting this one wide element scroll on its own axis. */
+.row-detail-table-wrap {
+  overflow-x: auto;
+  margin: 0.9rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+.row-detail-body table {
+  width: 100%;
+  min-width: 32rem;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.row-detail-body th,
+.row-detail-body td {
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+.row-detail-body th {
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper-dim);
+}
+
+/* A question inside a transcribed Q&A carries the same weight as the row's
+   own title, so it reads as structure rather than as another sentence in the
+   paragraph flow above it. */
+.row-detail-body p.row-detail-q {
+  margin-top: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.row-detail-body p.row-detail-q:first-child {
+  margin-top: 0;
+}
+
+/* Experience rows carry their source's own bullet list of achievements
+   (each one led "•" in the LinkedIn export) rather than flattened prose --
+   the source is already itemised, and re-punctuating it into sentences would
+   be rewriting, not reformatting. ul is reset to no bullets sitewide
+   (base/tokens.css), so the marker is restored here, scoped to this one
+   context rather than globally. */
+.row-detail-body ul {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+}
+.row-detail-body li {
+  list-style: disc;
+  margin-top: 0.4rem;
+}
+.row-detail-body li:first-child {
+  margin-top: 0;
+}
+
+/* The employment-type / duration / location / team-size line LinkedIn prints
+   above each role's own text -- smaller and quieter than the achievement
+   prose, matching .row-meta's register rather than competing with it. */
+.row-detail-body p.row-detail-meta {
+  margin-bottom: 0.9rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
+
+/* ---------- Multi-image press coverage (News) ----------
+
+   The Intuitive.ai appointment drew six near-identical congratulations
+   graphics from six different outlets -- genuine, distinct, sourced items,
+   but stacking six full-width images in sequence would make the row far
+   longer than the six graphics are individually worth reading. A compact
+   grid keeps all six present and each one still opens full-size in the
+   lightbox; only the row's one substantively different image (his LinkedIn
+   profile banner) gets shown at full width, above the grid. */
+.row-detail-body .proof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 0.9rem 0;
+}
+.row-detail-body .proof-grid figure {
+  margin: 0;
+}
+.row-detail-body .proof-grid img {
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+.row-detail-body .proof-grid figcaption {
+  font-size: 0.72rem;
 }

@@ -8,20 +8,20 @@
 import type { NavItem } from '../_includes/lib/types.ts';
 
 const nav: readonly NavItem[] = [
-  { url: '/',                    label: 'About' },
-  { url: '/phd-opportunities/',  label: 'PhD Opportunities' },
-  { url: '/news/',               label: 'News' },
-  { url: '/awards/',             label: 'Awards' },
-  { url: '/education/',          label: 'Education' },
-  { url: '/experience/',         label: 'Experience' },
-  { url: '/publications/',       label: 'Publications' },
-  { url: '/projects/',           label: 'Projects' },
-  { url: '/students/',           label: 'Students' },
-  { url: '/alumni/',             label: 'Alumni' },
-  { url: '/gallery/',            label: 'Gallery' },
-  { url: '/courses/',            label: 'Courses' },
-  { url: '/activities/',         label: 'Activities' },
-  { url: '/contact/',            label: 'Contact' },
+  { url: '/',                      label: 'About' },
+  { url: '/patents/',              label: 'Patents' },
+  { url: '/news/',                 label: 'News' },
+  { url: '/awards/',               label: 'Awards' },
+  { url: '/education/',            label: 'Education' },
+  { url: '/experience/',           label: 'Experience' },
+  { url: '/publications/',         label: 'Publications' },
+  { url: '/projects/',             label: 'Projects' },
+  { url: '/academic-engagement/',  label: 'Academic Engagement' },
+  { url: '/board-roles/',          label: 'Board & Advisory' },
+  { url: '/gallery/',              label: 'Gallery' },
+  { url: '/certifications/',       label: 'Certifications' },
+  { url: '/activities/',           label: 'Activities' },
+  { url: '/contact/',              label: 'Contact' },
 ];
 
 export default nav;

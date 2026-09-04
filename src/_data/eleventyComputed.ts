@@ -7,6 +7,7 @@
  * matter; everything else is derived.
  */
 
+import { createUrlFilter } from '../_includes/lib/url.ts';
 import type { EleventyPage, Site } from '../_includes/lib/types.ts';
 
 /** The slice of the cascade this computation reads. */
@@ -18,16 +19,18 @@ interface ComputedInput {
   readonly navLabel?: string;
   readonly schemaType?: string;
   readonly breadcrumb?: false;
-  /** Never set by any page; kept so the WebSite description falls back as before. */
-  readonly siteDescription?: string;
 }
 
 /** Loose node shape -- schema.org graphs are not worth modelling exactly. */
 type SchemaNode = Record<string, unknown>;
 
+/* Delegates prefix-joining to the same `url()` used for canonicals/OG tags,
+   rather than re-deriving it -- `url()` normalises to exactly one leading and
+   one trailing slash, so a misconfigured PATH_PREFIX (e.g. missing its
+   leading slash) self-heals here exactly as it does everywhere else, instead
+   of producing a JSON-LD URL with no separator between host and path. */
 function abs(site: Site, urlPath: string): string {
-  const prefix = site.pathPrefix === '/' ? '' : site.pathPrefix.replace(/\/+$/, '');
-  return `${site.url}${prefix}${urlPath}`;
+  return `${site.url}${createUrlFilter(site.pathPrefix)(urlPath)}`;
 }
 
 export default {
@@ -48,15 +51,15 @@ export default {
       url: home,
       image: abs(site, site.ogImage),
       jobTitle: site.jobTitle,
-      worksFor: { '@type': 'CollegeOrUniversity', name: site.organization },
+      worksFor: { '@type': 'Organization', name: site.organization },
       knowsAbout: [
-        'Spoken language processing',
-        'Speech perception',
-        'Human–AI communication',
-        'Psycholinguistics',
-        'Conversational turn-taking',
+        'Cloud transformation',
+        'Artificial intelligence',
+        'DevOps',
+        'CIO advisory',
+        'Digital modernization',
       ],
-      sameAs: [site.linkedin],
+      sameAs: [site.linkedin, site.youtube, site.x, site.facebook],
     };
 
     const website: SchemaNode = {
@@ -64,7 +67,7 @@ export default {
       '@id': `${home}#website`,
       url: home,
       name: site.name,
-      description: data.siteDescription || description,
+      description: site.description,
       publisher: { '@id': `${home}#person` },
       inLanguage: site.lang,
     };
@@ -97,6 +100,18 @@ export default {
       });
     }
 
-    return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+    /* This is embedded via raw() into a <script type="application/ld+json">
+       element -- correctly, since HTML-escaping JSON would corrupt it (e.g.
+       '"' becoming '&quot;' breaks JSON.parse). But the browser's HTML
+       tokenizer looks for "</script" independent of JSON quoting: a title or
+       description that ever contained that substring would prematurely close
+       the script element and spill the remainder of the JSON as raw markup.
+       "<" has no meaning in JSON, so replacing it with its Unicode escape
+       neutralises "</script", "<!--" and any other tag-like substring without
+       touching the JSON's validity or its parsed values. */
+    return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(
+      /</g,
+      '\\u003c',
+    );
   },
 };

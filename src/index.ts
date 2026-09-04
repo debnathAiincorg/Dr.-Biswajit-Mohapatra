@@ -8,9 +8,9 @@ import { definePage } from './_includes/lib/page.ts';
 
 export const { data, render } = definePage({
   data: {
-    title: 'Dr. Biswajit Mohapatra — Professor & Director, Speech Lab',
+    title: 'Dr. Biswajit Mohapatra — VP & Head of Product and Solutions Engineering',
     description:
-      'Dr. Biswajit Mohapatra is a professor of cognitive and communication sciences and Director of the Speech Lab at Ashfield University, researching spoken language.',
+      'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist who previously led CIO advisory and cloud transformation at AWS and IBM.',
     navLabel: 'About',
     schemaType: 'ProfilePage',
     permalink: '/index.html',
@@ -28,13 +28,13 @@ export const { data, render } = definePage({
     const newsPanel = panel({
       id: 'news',
       ariaLabelledby: 'news-title',
-      children: html`        <span class="eyebrow reveal">Lab News</span>
-        <h2 class="reveal" id="news-title">Lab Notes</h2>
-        <p class="reveal">Occasional updates on publications, talks, and lab milestones.</p>
+      children: html`        <span class="eyebrow reveal">Latest</span>
+        <h2 class="reveal" id="news-title">News</h2>
+        <p class="reveal">Recent updates on roles, publications, awards, and speaking engagements.</p>
 
         ${rowList(asRows(), '        ', 'row-list with-cta')}
 
-        <a class="btn btn-primary reveal" href="${url('/news/')}">All lab notes</a>`,
+        <a class="btn btn-primary reveal" href="${url('/news/')}">All news</a>`,
     });
 
     return html`  <!-- Hero: full-bleed photo with overlaid nav and copy -->
@@ -43,12 +43,12 @@ export const { data, render } = definePage({
     <div class="hero-scrim" aria-hidden="true"></div>
     <div class="container hero-full-inner">
       <div class="hero-full-content">
-        <span class="eyebrow">Professor &middot; Director, Speech Lab</span>
-        <h1 id="hero-title">The science behind <em>how we speak</em>.</h1>
-        <p class="lede">Dr. Biswajit Mohapatra is a professor of cognitive and communication sciences at Ashfield University, where he directs the Speech Lab. His research explores how people produce and understand spoken language, and how that understanding might shape more natural human&ndash;AI communication. He is also the author of a memoir, <em>The Long Table</em>.</p>
+        <span class="eyebrow">VP &amp; Head of Product and Solutions Engineering &middot; Intuitive.ai</span>
+        <h1 id="hero-title">Where <em>cloud, data and AI</em> meet business outcomes.</h1>
+        <p class="lede">Dr. Biswajit Mohapatra leads Intuitive.ai&rsquo;s cloud, data, AI and security practice. An alumnus of IIT Bombay with more than three decades in enterprise technology, he previously led CIO advisory and cloud transformation for AWS across India and South Asia, and spent 15 years at IBM as Executive Director of its Hybrid Cloud Transformation practice. He holds patents in cloud automation and is the author of <em>The DevOps Odyssey</em>.</p>
         <div class="hero-ctas">
-          <a class="btn btn-primary" href="${url('/experience/')}">Academic CV</a>
-          <a class="btn btn-outline" href="${url('/phd-opportunities/')}">Prospective PhD Students</a>
+          <a class="btn btn-primary" href="${url('/experience/')}">View Experience</a>
+          <a class="btn btn-outline" href="${url('/contact/')}">Get in Touch</a>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@ ${newsPanel}
     <div class="container">
       <div class="content-head">
         <span class="eyebrow reveal">Moments</span>
-        <h2 class="reveal" id="gallery-title">Around the Lab</h2>
+        <h2 class="reveal" id="gallery-title">Highlights</h2>
       </div>
 
       ${cardGrid(teaserCards, '      ')}

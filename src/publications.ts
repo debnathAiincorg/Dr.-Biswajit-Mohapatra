@@ -1,66 +1,155 @@
 import { listPage } from './_includes/components/list-page.ts';
-import { raw } from './_includes/lib/html.ts';
+import { html, raw, type Html } from './_includes/lib/html.ts';
 import { definePage } from './_includes/lib/page.ts';
+import type { UrlFilter } from './_includes/lib/types.ts';
+
+/*
+ * Each row's `detail` is the complete piece, not a summary written from
+ * scratch: the full text of both older blog posts, the book's own launch-post
+ * description, and a full transcript of the OSFY interview -- every Q&A pair
+ * across all three of its pages, transcribed from the tearsheet at 3x crop
+ * resolution to keep the transcription accurate. Two posts carry a supporting
+ * image lifted from the same source: the data-warehouse post's own diagram
+ * (dr/old website.docx, embedded GIF) and the book's cover (dr/linkdin3.docx,
+ * embedded JPEG). The interview's original tearsheet is included in full so
+ * the typeset article itself, not just the transcript, is one click away.
+ *
+ * The interview tearsheet is one physical magazine page shared with an
+ * unrelated "IITB: The flag bearer" sidebar, written by a different author
+ * about a different subject (Prof. S. Sadagopan's IIT Bombay talk). Only the
+ * portion that is actually Dr. Mohapatra's interview is transcribed here;
+ * the sidebar is excluded, and the tearsheet image itself shows the boundary.
+ */
+
+function detailImage(
+  url: UrlFilter,
+  slug: string,
+  alt: string,
+  width: number,
+  height: number,
+  caption: Html,
+): Html {
+  return html`<figure><a class="row-detail-image-link" href="${url(`/assets/images/photos/${slug}.jpg`)}" target="_blank" rel="noopener noreferrer"><picture><source type="image/webp" srcset="${url(`/assets/images/photos/${slug}.webp`)}"><img src="${url(`/assets/images/photos/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></picture></a><figcaption>${caption}</figcaption></figure>`;
+}
+
+/** One Q&A pair from the interview transcript. */
+function qa(question: Html, answer: Html): Html {
+  return html`<p class="row-detail-q">Q. ${question}</p><p>A. ${answer}</p>`;
+}
 
 export const { data, render } = definePage({
   data: {
     title: 'Publications — Dr. Biswajit Mohapatra',
     description:
-      'Peer-reviewed papers, conference contributions and books by Dr. Biswajit Mohapatra on speech, prosody, turn-taking and human–AI conversation.',
+      "Books, media features and technical writing by Dr. Biswajit Mohapatra, including his book ‘The DevOps Odyssey’.",
     navLabel: 'Publications',
     schemaType: 'CollectionPage',
     permalink: '/publications/',
   },
 
-  render: () =>
+  render: (_data, { url }) =>
     listPage({
       id: 'publications',
-      eyebrow: 'Research',
+      eyebrow: 'Writing',
       heading: 'Publications',
       rows: [
         {
-          title: 'Prosody and Prediction in Spoken Dialogue',
-          sub: 'Journal of Fictional Linguistics',
+          title: raw('&ldquo;The DevOps Odyssey&rdquo;'),
+          tag: 'Book',
+          sub: 'Notion Press',
           meta: '2026',
           datetime: '2026',
+          detail: html`${detailImage(
+            url,
+            'pub-devops-odyssey-cover',
+            'Cover of The DevOps Odyssey by Dr. Biswajit Mohapatra',
+            160,
+            185,
+            html`Cover image, from the book&rsquo;s LinkedIn launch post. This is the only resolution available in the source material.`,
+          )}<p>&ldquo;I am also the author of &lsquo;The DevOps Odyssey&rsquo;, where I share practical insights on scaling DevOps and building high-performance engineering cultures.&rdquo;</p><p>&ldquo;It&rsquo;s a reflection of real-world experiences, leadership lessons and practical insights from the evolving world of DevOps, SRE, Observability and Chaos Engineering &mdash; built for practitioners, CXOs and builders who are shaping modern, scalable and resilient technology ecosystems.&rdquo;</p><p>From the launch post: &ldquo;Grateful for the incredible response so far. Your feedback, conversations and encouragement have been the real fuel behind this journey.&rdquo;</p><p>Available via Amazon, Flipkart and Notion Press.</p>`,
         },
         {
-          title: raw('Modeling Turn-Taking in Human&ndash;AI Conversation'),
-          sub: 'Fictional Conference on Spoken Language',
-          meta: '2025',
-          datetime: '2025',
+          title: 'Interview: Open Source Allows Us to Lower Costs, Accelerate Delivery, and Customise Solutions',
+          tag: 'Interview',
+          sub: 'Open Source For You magazine',
+          meta: 'Apr 2024',
+          datetime: '2024-04',
+          detail: html`${detailImage(
+            url,
+            'pub-osfy-interview-tearsheet',
+            'Scanned pages of the Open Source For You interview with Dr. Biswajit Mohapatra, April 2024',
+            1364,
+            1929,
+            html`The original tearsheet, pages 18&ndash;21 of Open Source For You, April 2024. This page is shared with an unrelated article; only the interview at right (page 18) and both full pages 20&ndash;21 are Dr. Mohapatra&rsquo;s. Click to view full size.`,
+          )}<p>&ldquo;Open source allows us to lower costs, accelerate delivery, and customise solutions to meet the market&rsquo;s fast-paced demands.&rdquo;</p><p>Open source is crucial for cost reduction and accelerated delivery of tailored solutions to meet market demands. At OSI 2023, OSFY&rsquo;s Yashasvini Razdan got a chance to speak to Dr Biswajit Mohapatra, Head, Customer Solutions at Amazon Web Services, who spoke about how open source empowered businesses with flexibility, experimentation, and agile methodologies for genuine customer satisfaction.</p>${qa(
+            html`What AI/ML opportunity do you see in India?`,
+            html`According to India&rsquo;s NASSCOM report, the country&rsquo;s GDP is predicted to be US&#36; 5 trillion by 2025. The GDP from AI and data will be around US&#36; 500 billion, which means that almost 10% of this entire US&#36; 5 trillion GDP will come from AI and data. Around 45% of this 500 billion will be used by India&rsquo;s finance, retail and agriculture industries. AI/ML is pervasive across every nook and cranny of India, from large banks and insurance companies to remote rural places. So that&rsquo;s the opportunity that India is offering.`,
+          )}${qa(
+            html`How has the adoption of open source technology grown across different industry sectors in India?`,
+            html`India is the fastest growing country in the world in terms of open source adoption. There is increased adoption of open source use cases across the fintech, insurance, healthcare, retail and agriculture industries. I would have expected the banking and telecom domains to have greater leverage of open source, but that&rsquo;s probably a little slower. However, other industries like media and entertainment have really picked up open source adoption.`,
+          )}${qa(
+            html`As a community leader, how do you encourage developers to adopt open source across businesses?`,
+            html`In today&rsquo;s business landscape, every customer demands accelerated delivery at a reduced cost, making it a critical aspect of our engagements. Failing to meet these expectations means someone else will step in. Open source allows us to lower costs, accelerate delivery, and tailor solutions to fit specific use cases to meet the fast-paced demands of the market. It also provides the flexibility for the community and users to experiment, iterate faster, and embrace agile methodologies. The third advantage stems from the democratisation of technology. In the current landscape, every company is essentially a tech company &mdash; even entities like banks today are tech companies with a banking licence. Open source becomes integral in this scenario, enabling companies to stay technologically competitive.`,
+          )}${qa(
+            html`How can the balance between data security and open source be maintained?`,
+            html`Attacks are happening faster than one can respond. How we put in the right mechanism to make open source software resilient plays a significant role in eliminating vulnerabilities before attackers can exploit them. We must have proper guardrails to manage data in transit, data in use, and data at rest. Open source never compromises on data privacy. So many techniques, cryptography, etc, can be brought into focus through open source. For instance, in the context of cloud and open source, cryptography is employed, but the efficacy of cryptographic algorithms is not foolproof. Consider a scenario where an individual begins selling personal information online. Without proper guardrails, someone observing this activity could extract and potentially misuse that information. Collaborative efforts within the industry and the open source community, or even at an individual level, are needed to establish effective guardrails that prevent unauthorised extraction of personal information. It&rsquo;s important to harden your security posture, manage risk and compliance, and automate governance processes to ensure open source data security.`,
+          )}${qa(
+            html`But with the influx of information, isn&rsquo;t it easy to break through these guardrails?`,
+            html`Indeed, obtaining information on virtually anything has become quite effortless today. This is where responsible AI plays a crucial role &ndash; in implementing the proper guidance and mechanisms to maintain a balance. Another consideration is the ability to redact information and ensure that I have all the information while creating a bubble around it so that it is not easily accessible to any unauthorised or malicious entity. For instance, one might have various contact numbers and other details available, but it&rsquo;s vital to establish guidelines to prevent the disclosure of all information. The information can still be accessible, but it remains within a defined bubble, ensuring that the linkage between different pieces of information is restricted and not readily available to external entities.`,
+          )}${qa(
+            html`With the increasing reliance of Indian startups on open source systems and the community&rsquo;s growth, who holds the responsibility for putting up these guardrails?`,
+            html`The community is growing, and adoption is a good sign. But at the same time, it&rsquo;s a shared responsibility that extends beyond mere coding, especially when placing data in the cloud or utilising open source. Simply assuming the cloud provider&rsquo;s systems will handle everything is not accurate. Being an equal stakeholder in managing and monitoring is very important. Sometimes, clients believe that once data is on the cloud, the cloud provider secures everything, but so many things go on within the application. Neglecting these areas compromises actual security. This is not exclusive to open source; it involves culture and mindset. Everyone, whether an individual or a company, needs to adopt the same responsibility model. We have been on a 100-year journey in open source and yet we are still at the tip of the iceberg. It will only grow; there is no finish line for open source, whether physical or technological.`,
+          )}${qa(
+            html`How does a company harness the power of open source to generate revenue?`,
+            html`Anyone can use open source technology. Take, for instance, ad-tech which is utilised to attract users. That, in itself, will generate revenue. Selection of the right open source solutions, focus on compatibility and integration, implementation of right security measures, and robust update processes need to be ingrained into business to leverage the power of open source and generate revenue. Today I can provide a differentiated value proposition to business through open source software integration.`,
+          )}${qa(
+            html`What should businesses engaging with open source prioritise &ndash; profitability or open innovation?`,
+            html`The primary focus should always be customer satisfaction, which inherently leads to financial success, regardless of the technology used. For finding the right player, open innovation opportunities are a must. Customers often appear content but are inherently dissatisfied and crave for more value. It is of paramount importance to leverage open innovation opportunities to provide richer customer experiences.`,
+          )}${qa(
+            html`How can a company effectively manage innovation, brand positioning, market presence, and technology stack within their overall workflow and architecture?`,
+            html`Today, to make businesses successful and drive differentiated value propositions, experimentation is critical. Open source technology plays an important role in providing opportunities for experimentation, democratising the process, and making it more iterative and pervasive. The rapid evolution of technology, especially in the cloud and open source domain, has accelerated experimentation.</p><p>Architectures are designed with cost optimisation in mind, reflecting customers&rsquo; changing priorities. The contemporary customer introduces four dimensions of cost in the context of providing cost optimisation services. The first dimension revolves around measurement, billing, and accounting. The second focuses on sales and exploring avenues for cost optimisation. The third dimension is centred on planning, involving forecasting and future-oriented design. Creating a culture and framework for cost-optimised operating models constitutes the fourth dimension. All these things are feasible and more streamlined due to the widespread adoption of open source technologies, which seamlessly connect with industry trends.`,
+          )}${qa(
+            html`How do companies gauge what open source libraries to utilise?`,
+            html`This is a critical question, and as mentioned earlier, certain aspects need attention quicker than specific products. Regarding credibility and usage, consider a scenario where I employ a pre-existing model from a third-party foundation as part of my services. If that model doesn&rsquo;t align with my compliance requirements, it must be customised to meet those specific business needs. While open source technology is valuable, it&rsquo;s essential to recognise that it may not always perfectly fit my compliance and customer service requirements. Therefore, a nuanced approach is necessary to address the dynamic aspects that come to life in this context.`,
+          )}${qa(
+            html`Who assumes responsibility for maintaining the updates from the third-party open source library, software use, and regular updates?`,
+            html`Navigating through the organisational vision due to the internal management of open source libraries demands establishing appropriate policies and procedures. As you rightly pointed out, determining who manages the updates is the challenge. We must implement an education mechanism and specific policies to ensure that the tools used align seamlessly with the organisation&rsquo;s project goals. Without the right guidance, policies, and procedures, there&rsquo;s potential for trouble. Drawing the line in this context is crucial, and this is where partnerships play a pivotal role. Open source service providers, like the community village, offer valuable assistance, aiding organisations in carefully delivering and integrating updates. While this might be somewhat complex, the best defence today lies in having well-defined policies and procedures within the organisation and forming a structured process.`,
+          )}${qa(
+            html`What strategies can be employed to select licences for open source systems while preventing misuse or exploitation?`,
+            html`There are a lot of rules around licensing technology. There is no one-size-fits-all licensing strategy in the open source world. There are two main types of open source licences &ndash; permissive and copyleft. The latter specifies how the open source software can be used, modified and distributed. I&rsquo;ve also seen open source code generation tools using line-of-code-based licensing models. Yet, challenges arise when code analysis breaks down or when making the tools available to users on their platform of choice. There are also flexible licensing models where options like user-level or usage-based pricing strategy are followed catering to users&rsquo; varying needs, whether they&rsquo;re part of a large enterprise or individuals working from a local coffee shop. There&rsquo;s no universal answer for licensing, but there is a definite need to formulate strategies that can be standardised across the community.`,
+          )}${qa(
+            html`How does AWS leverage open source AI/ML solutions?`,
+            html`AWS is a proven leader in AI/ML solutions and can help solve real world business problems in any industry. Organisations can innovate with confidence by building on 20+ years of experience at Amazon. AWS AI/ML solutions increase productivity of data scientists multi-fold, who can now focus their efforts on improving customer experiences, optimising business processes and accelerating innovation. In short, it helps them create impactful solutions faster. You can use ready-made, purpose-built AI services, or your own models with AWS ML services. This can be used to create more intelligent contact centres, detect fraud and personalise user experiences, and much more. We unlock the potential of GenAI by offering the most performant infrastructure for it with the flexibility to build your own foundation models, and by making GenAI powered applications available on AWS cloud.`,
+          )}`,
         },
         {
-          title: 'Cross-Linguistic Perception of Speech Rhythm',
-          sub: 'Fictional Journal of Cognitive Science',
-          meta: '2024',
-          datetime: '2024',
+          title: raw('&ldquo;Node.js &mdash; A Fad or Next Big Thing?&rdquo;'),
+          tag: 'Blog',
+          sub: 'LinkedIn',
+          meta: 'Jan 2020',
+          datetime: '2020-01',
+          detail: html`<p>When I stepped into my programming career in early 1990s, I found a language called HTML to build webpages. As time advanced, this funny little thing called JavaScript appeared in the horizon to make my webpages more interactive. JavaScript soon become the choice for building applications in the browser. However, I always felt a need for having the JavaScript on server which could make me more a JavaScript Developer than a JavaScript User. This is exactly what today&rsquo;s Node.js is all about &ndash; A cross platform run time environment that extends JavaScript to the server side. Node.js is used for developing applications that provides ability to run JavaScript both on the client as well as server side and therefore benefit from the re-usability of code and the lack of context switching.</p><p>Node.js is an open source server side platform built on Chrome&rsquo;s JavaScript Engine. Node.js uses an event driven lightweight model suitable for data-intensive real-time applications. Node.js applications are typically written in JavaScript and can run within Node.js runtime on Windows, Linux and OS X. Node.js is in a position to simplify development of web applications leveraging rich library of JavaScript modules. Asynchronous, Event driven nature of Node.js coupled with faster performance, higher scalability makes it the first choice for Developer community today. Node.js process model scores high over a traditional web server model. Node.js runs in a single process enabling application code running in a single thread and thereby needs less resources than other platforms.</p><p>If you know JavaScript, node.js is your silver bullet for asynchronous computing for the web. It&rsquo;s maturing quickly to handle modern web complexities and it&rsquo;s being deployed more and more in mission critical applications. With a rich eco system of tools and libraries, Node.js is going to be THE choice for building complex modern applications in coming days. If your use case doesn&rsquo;t contain CPU intensive operations, you can fully exploit benefits of Node.js and build scalable web applications. Welcome to the world of real time web Applications Development !!!</p>`,
         },
         {
-          title: 'Toward Naturalistic Voice Interfaces',
-          sub: 'Fictional Symposium on Human-Computer Interaction',
-          meta: '2023',
-          datetime: '2023',
+          title: raw('&ldquo;Spatially Enabling Your Data Warehouse&rdquo;'),
+          tag: 'Blog',
+          meta: 'May 2012',
+          datetime: '2012-05',
+          detail: html`<p>Many times we all are baffled by the challenges to exploit data from a traditional data warehouse using a map driven approach. One fine morning, if my customer asks me &ldquo;hey, I have such a nicely designed data warehouse rich in subject-oriented, integrated, nonvolatile collection of data that support my company&rsquo;s decision making process, However I am still struggling to know where is the best location for me to start a new store or how many customers will I have within five minutes drive from this store&rdquo;, then it&rsquo;s time for my customer to spatially enable the data warehouse.</p><p>Though data warehouses look at various types and dimensions of data, many are lacking in the spatial or location context of the data. Spatial data are the data related to objects that occupy space. Spatial database stores spatial objects represented by spatial data types and spatial relationships among such objects. Spatial data carries geographical, topological and/or distance information and it is often organized by spatial indexing structures and accessed by spatial access methods. These distinct features of a spatial database bring opportunities for mining information from spatial data. By using technology that integrates this spatial component with the data warehouse, an organization can unlock hidden potential in their data allowing them to see hidden relationships and patterns. A standard spatial data warehouse flow is given below:</p>${detailImage(
+            url,
+            'pub-spatial-dw-diagram',
+            'Diagram: a standard spatial data warehouse flow, from OLTP databases through extraction, transformation and spatial enabling to a spatial data warehouse and OLAP analysis',
+            673,
+            378,
+            html`The original diagram from the post.`,
+          )}<p>To be able to use spatial data, and to take full advantage of the spatial dimension, location element data has to be integrated in the data warehouse. There are four items which plays important role here:</p><p>Geo-reference: Making the objects without geo-references, spatial enable. Objects are connected to a model which represents the real world. This is done by giving the x- and y- co-ordinates in a co-ordinate system.</p><p>Geo-coding: Objects like statistics, are objects without a geo-reference. To make it possible to visualise them in the model of the real world, to display them on a map, they have to be connected to co-ordinates.</p><p>Topology: Separated objects which in the &ldquo;real world&rdquo; have relations with each other have to be in the model of the real world.</p><p>Spatial aggregation: Depending on the demands on the data warehouse, a certain aggregation of the data will be necessary. Not all the detail data has to be stored in the data warehouse.</p><p>A spatially enabled data warehouse provides following capabilities:</p><p>Presentation: Data which has a geo-reference can be visualized on a map. Maps itself are a powerful tool to visually relate seemingly disparate data. For instance marketing, engineering and financial data can be combined in a single analysis on a map.</p><p>Analyzing data: A spatial data warehouse makes it possible to perform spatial analysis. Now one can make network analyses, overlay analyses etc.</p><p>Aggregation of data: This makes it possible to aggregate information to a geographic boundary. An example is to aggregate data of neighborhoods to the city or to districts.</p><p>Spatial (re)organisation: Geographical boundaries change through times, for instance communities are being put together, or split into new ones. By adding geo-codes to historical and current records, analytic capabilities of data warehouse can be expanded. For example: By defining where your current prime customers and prospects and your competitors&rsquo; customers live, you can enhance targeted marketing, reducing advertising and direct mail spending while gaining new customers.</p><p>Statistical spatial analysis has been the most common approach for analyzing spatial data. It handles very well numerical data and usually comes up with realistic models of spatial phenomena. Upon closer inspection, one can find that data warehouse has geographic information. In fact, virtually every dimension and fact table contains geographic component starting from customer address in customer dimension to transactions and locations in their fact table. These geographic data attributes can be geo-coded thereby allowing the underlying data to be mapped. With the uses of mapping or geographic information systems and analytic tools expanding across the enterprise, one wants to choose flexible, robust geo-coding software to leverage investment. The software should cleanse and re-engineer data for data consistency to facilitate matching. This should also support advanced spatial analysis features like reverse geo-coding and point-in-polygon.</p><p>Organizations will benefit in following ways by spatially enabling the data warehouse: Organized data structure; Better integration of disparate data; Spatially enabled analysis; Reduced decision cycle time; Improved decisions.</p><p>Data warehouses handle the who, what and when, but the where is completely under-exploited. Spatial data enhances the who by creating new informational content as well as directly enabling analysis for the where. Putting it all together, one gets a business intelligence solution that is composed of a data warehouse and reports that are spatially enabled and maps that are data-driven. This is exciting technology that adds a physical dimension to business intelligence data.</p>`,
         },
         {
-          title: 'Speech Errors as a Window into Planning',
-          sub: 'Fictional Psycholinguistics Review',
-          meta: '2022',
-          datetime: '2022',
-        },
-        {
-          title: "Children's Acquisition of Conversational Timing",
-          sub: 'Fictional Journal of Child Language',
-          meta: '2021',
-          datetime: '2021',
-        },
-        /* The memoir, kept as one entry alongside the papers. */
-        {
-          title: 'The Long Table',
-          tag: 'Trade nonfiction',
-          sub: 'Fictional Publishing House',
-          meta: '2025',
-          datetime: '2025',
+          title: raw('&ldquo;Legacy Application Modernization &mdash; A Pragmatic View&rdquo;'),
+          tag: 'Blog',
+          meta: 'Nov 2010',
+          datetime: '2010-11',
+          detail: html`<p class="row-detail-q">Introduction</p><p>Changing business demands are forcing organizations to adapt and evolve faster than ever. Time for building new applications to support critical business needs is shorter and shorter, while swapping out legacy systems has become prohibitively challenging. Legacy applications run on old software and hardware are monolithic applications characterized by unsatisfactory performance; difficult to modify and maintain; non-interoperability across various applications; limited access to mission critical business logic and continuous run time expenses. The primary objective of Legacy Application Modernization is to improve operational efficiency, reduce the cost of doing business and improve information assets.</p><p class="row-detail-q">Modernization Options</p><p>Legacy applications are built, enhanced or tailored over long periods of time and usually become entrenched within an organization, which make their modernization complicated and involves several risks. There are many options available for organizations looking at the feasibility of modernizing their applications as given below: Enhancement to technical environment of existing application; Re-development on a newer language and platform; Re-engineer to utilize commercial &ldquo;off-the-shelf&rdquo; software; Convert or translate to a newer language and platform; Extend to web based application; Enterprise Application Integration to encapsulate and seamlessly link legacy application.</p><p>Careful analysis and selection of modernization options coupled with tools and technologies capable of providing complete end-to-end solution is key to success of modernization projects. Today, organizations are focusing on modernization strategy, which can aid in enabling business agility by creating software agility, improving ROI in existing software initiatives and extending the life of existing applications.</p><p class="row-detail-q">Risk Management</p><p>Risk assessment is a crucial part of the modernization strategy for organizations. The following aspects need to be carefully analyzed: (a) Is the modernization strategy appropriate for the organization? (b) What is going to be the projected cost of modernization? (c) How much time is it going to take? (d) Is it going to address all the business needs? (e) What are the anticipated challenges for the organization?</p><p>To mitigate the risk involved in modernization projects, organizations need to follow following strategy sequentially: Identify scope of modernization; Identify project stakeholders; Understand detailed requirements from stakeholders; Delineate business scenario; Perform source system understanding; Analyze target technology and define target architecture; Draw modernization strategy; Reconcile strategy with stakeholder needs; Perform resource estimation; Prepare modernization plan subject to feasibility &mdash; if not feasible, revisit modernization strategy; Move ahead with the project when feasibility study result is positive.</p><p class="row-detail-q">Modernization Approach Comparison</p><p>There are various approaches followed in the industry ranging from &ldquo;Rehosting&rdquo; to &ldquo;Rewrite-from-scratch&rdquo;. However the current trend is to &ldquo;Rewrite-using-current-source-code&rdquo; through usage of innovative tools and technologies. This approach brings productivity benefit, time to market advantage and ensures all business logic is retained via the automation brought in by these tools. A comparative study of three approaches is given below:</p><div class="row-detail-table-wrap"><table><thead><tr><th scope="col">Approach vs. Features</th><th scope="col">Rehosting</th><th scope="col">Rewrite using current source code</th><th scope="col">Rewrite from scratch</th></tr></thead><tbody><tr><th scope="row">Engineer to support infrastructure</th><td>Good (latest platform)</td><td>Good (latest platform)</td><td>Good (latest platform)</td></tr><tr><th scope="row">Engineer to support application</th><td>Not good (maintenance of legacy language and DBMS)</td><td>Good (modern development language and DBMS)</td><td>Good (modern development language and DBMS)</td></tr><tr><th scope="row">Integration of new technology</th><td>Not good (technical limitations)</td><td>Good (easy to implement)</td><td>Good (easy to implement)</td></tr><tr><th scope="row">Software development life cycle</th><td>Short (application has to be migrated later)</td><td>Long (maintain for longer period of time)</td><td>Long (maintain for longer period of time)</td></tr><tr><th scope="row">Business logic retention</th><td>Good (retain business logic as it is)</td><td>Good (retain business logic as it is, extracting from current source code)</td><td>Not good (difficult to re-create specification)</td></tr><tr><th scope="row">Duration of migration</th><td>Short</td><td>Middle</td><td>Long</td></tr><tr><th scope="row">Cost of migration</th><td>Lower</td><td>Middle</td><td>Higher</td></tr></tbody></table></div><p>As is evident from above analysis, the best-fit approach is to &ldquo;Rewrite-using-current-source-code&rdquo;.</p><p class="row-detail-q">Need for Standardization</p><p>Today, a strong cross-section of tool vendors and service providers are working in isolation to modernize legacy applications. This is leading to a lot of rework because of lack of knowledge sharing mechanism. A standardized modernization specification will ensure that organizations know upfront the investment they need to make in individual tools and the overall modernization strategy they need to follow. Standardization will also increase interoperability between different tools and processes. This will aid in collaboration between vendors and service providers leading to speedy execution of modernization projects, cost and time advantage and reduction in the risk involved in modernization. Object Management Group has already started taking initiatives in this direction and formed a task force to come up with modernization specifications.</p><p class="row-detail-q">Conclusion</p><p>Modernization of legacy applications poses a critical challenge for organizations and requires careful consideration and advanced planning. Before starting any legacy modernization effort, organizations need to evaluate and explore every possible option taking business and technology factors into account. A well-planned modernization initiative ensures long-term success for the organization.</p>`,
         },
       ],
     }),

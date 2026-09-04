@@ -18,3 +18,4 @@
   margin: 1.5rem 0 0.4rem;
 }
 .contact-detail + .contact-detail { margin-top: 0.4rem; }
+.contact-socials { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }

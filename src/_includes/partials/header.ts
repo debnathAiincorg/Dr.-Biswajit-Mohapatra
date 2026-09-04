@@ -1,6 +1,5 @@
 import { html, join, type Html } from '../lib/html.ts';
 import type { NavItem, PartialContext } from '../lib/types.ts';
-import { linkedInBadge } from './social-badges.ts';
 
 /**
  * One nav entry. `aria-current` marks the page you are on, which is what the
@@ -13,11 +12,15 @@ ${indent}<a href="${context.url(item.url)}"${current}>${item.label}</a>`;
 }
 
 export function header(context: PartialContext): Html {
-  const { nav, url, site } = context;
-  const badge = linkedInBadge(site);
+  const { nav, url } = context;
+  /* The homepage (About) stays out of the nav bar itself -- it's reachable
+     via the logo and is the root every other destination sits under. `nav`
+     still carries it for sitemap.xml, so it's filtered here rather than
+     dropped from the shared data. */
+  const visibleNav = nav.filter((item) => item.url !== '/');
 
-  const inlineLinks = join(nav.map((item) => navLink(item, '      ', context)));
-  const panelLinks = join(nav.map((item) => navLink(item, '    ', context)));
+  const inlineLinks = join(visibleNav.map((item) => navLink(item, '      ', context)));
+  const panelLinks = join(visibleNav.map((item) => navLink(item, '    ', context)));
 
   return html`<a class="skip-link" href="#main">Skip to content</a>
 
@@ -29,7 +32,6 @@ export function header(context: PartialContext): Html {
     </nav>
 
     <div class="header-actions">
-      ${badge}
       <button class="burger" id="burgerBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobilePanel">
         <span></span><span></span><span></span>
       </button>
@@ -37,10 +39,20 @@ export function header(context: PartialContext): Html {
   </div>
 
   <nav class="mobile-panel" id="mobilePanel" aria-label="Primary (compact)">${panelLinks}
-    <div class="mobile-socials">
-      ${badge}
-    </div>
   </nav>
 </header>
+
+<noscript><style>@media (max-width: 1249px) {
+  .burger { display: none; }
+  .mobile-panel {
+    display: flex;
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+    visibility: visible;
+    padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem;
+    border-top-width: 1px;
+  }
+}</style></noscript>
 `;
 }

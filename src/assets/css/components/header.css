@@ -140,6 +140,8 @@
 .header-actions > *:nth-child(1) { --nav-i: 14; }
 .header-actions > *:nth-child(2) { --nav-i: 15; }
 .header-actions > *:nth-child(3) { --nav-i: 16; }
+.header-actions > *:nth-child(4) { --nav-i: 17; }
+.header-actions > *:nth-child(5) { --nav-i: 18; }
 /* Circular outer shape, required: LinkedIn's official brand kit only ships
    the "in" mark as a filled rounded-SQUARE badge with the background baked
    into the file, so getting a true circle without clipping the letterforms

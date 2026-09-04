@@ -23,7 +23,7 @@
 .text-link,
 .content-head p a:not(.btn),
 .panel-inner p a:not(.btn),
-.contact-inner a:not(.btn) {
+.contact-inner a:not(.btn):not(.social-badge) {
   color: var(--hover-accent);
   padding-bottom: 2px;
   background-image:
@@ -46,8 +46,8 @@
 .content-head p a:not(.btn):focus-visible,
 .panel-inner p a:not(.btn):hover,
 .panel-inner p a:not(.btn):focus-visible,
-.contact-inner a:not(.btn):hover,
-.contact-inner a:not(.btn):focus-visible {
+.contact-inner a:not(.btn):not(.social-badge):hover,
+.contact-inner a:not(.btn):not(.social-badge):focus-visible {
   color: var(--terracotta-deep);
   background-size: 100% 1px, 100% 1px;
 }

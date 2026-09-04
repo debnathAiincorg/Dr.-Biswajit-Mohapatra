@@ -61,8 +61,8 @@
    to this exact nesting -- flex children of .footer-inner, itself a
    margin:auto-centered box inside the <footer> flex item -- where both
    compute ~15px narrower than the real viewport (matching the reserved
-   scrollbar-gutter width) and, on about/alumni/gallery/news/publications/
-   students specifically, off-center to one side rather than merely narrower.
+   scrollbar-gutter width) and, on about/board-roles/gallery/news/publications/
+   academic-engagement specifically, off-center to one side rather than merely narrower.
    That's what the previous audit surfaced as "inconsistent footer spacing
    across pages": both groups were wrong, one just wrong symmetrically.
    margin-top doesn't trigger it (verified: constant footer height across 21

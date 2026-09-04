@@ -19,17 +19,26 @@ const site: Site = {
 
   name: 'Dr. Biswajit Mohapatra',
   shortName: 'B. Mohapatra',
-  jobTitle: 'Professor & Director, Speech Lab',
-  organization: 'Ashfield University',
+  /* Reuses the homepage's own description verbatim, rather than new copy,
+     so the WebSite JSON-LD node has one stable value instead of drifting to
+     whichever page happened to render it last (see eleventyComputed.ts). */
+  description:
+    'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist who previously led CIO advisory and cloud transformation at AWS and IBM.',
+  jobTitle: 'VP & Head of Product and Solutions Engineering',
+  organization: 'Intuitive.ai',
   locale: 'en_US',
   lang: 'en',
 
-  /* Social/profile links used for JSON-LD sameAs and the header/footer badge. */
+  /* Social/profile links used for JSON-LD sameAs and the header/footer badges. */
   linkedin: 'https://in.linkedin.com/in/biswajitmohapatra',
+  youtube: 'https://www.youtube.com/channel/UCbpP51j1OHxslIBtV85hfjA',
+  x: 'https://x.com/mbiswajit',
+  facebook: 'https://www.facebook.com/biswajit.mohapatra.90',
+  email: 'biswajitm72@gmail.com',
 
   ogImage: '/assets/images/og-cover.jpg',
   ogImageAlt:
-    'Dr. Biswajit Mohapatra — Professor and Director of the Speech Lab, Ashfield University',
+    'Dr. Biswajit Mohapatra — VP & Head of Product and Solutions Engineering, Intuitive.ai',
 
   themeLight: '#EEE4DD',
   themeDark: '#2B2622',

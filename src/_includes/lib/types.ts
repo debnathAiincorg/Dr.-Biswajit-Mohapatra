@@ -23,11 +23,17 @@ export interface Site {
   readonly pathPrefix: string;
   readonly name: string;
   readonly shortName: string;
+  /** Stable, page-independent description for the WebSite JSON-LD node. */
+  readonly description: string;
   readonly jobTitle: string;
   readonly organization: string;
   readonly locale: string;
   readonly lang: string;
   readonly linkedin: string;
+  readonly youtube: string;
+  readonly x: string;
+  readonly facebook: string;
+  readonly email: string;
   readonly ogImage: string;
   readonly ogImageAlt: string;
   readonly themeLight: string;

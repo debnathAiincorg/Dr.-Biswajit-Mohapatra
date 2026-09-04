@@ -195,7 +195,7 @@
   /* Newsletter/panel band recolored to match the reference's measured panel
      background (#EEE4DD, its own Squarespace fallback color) instead of our
      sitewide --paper-dim. Scoped to the homepage only — news.html/
-     phd-opportunities.html keep the shared panel styling. */
+     patents.html keep the shared panel styling. */
   .page-home #news {
     background: #EEE4DD;
   }
