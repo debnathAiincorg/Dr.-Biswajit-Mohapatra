@@ -26,7 +26,7 @@ export function header(context: PartialContext): Html {
 
 <header class="site-header" id="siteHeader">
   <div class="container header-inner">
-    <a class="logo" href="${url('/')}">Dr. Biswajit <span>Mohapatra</span></a>
+    <a class="logo site-title" href="${url('/')}">Dr. Biswajit <span>Mohapatra</span></a>
 
     <nav class="nav-links" aria-label="Primary">${inlineLinks}
     </nav>

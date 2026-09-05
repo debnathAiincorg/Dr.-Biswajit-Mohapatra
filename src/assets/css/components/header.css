@@ -74,6 +74,30 @@
   color: var(--hover-accent);
 }
 
+/* ---------- Wordmark face ----------
+   Cinzel, and only here. This is the single element on the site set in a
+   serif; nav links, headings and body all stay on Inter (--font-sans), so
+   the rule is deliberately narrow and nothing below it inherits the face
+   except .logo's own <span>, which is the surname half of the same wordmark.
+
+   Two things about this selector are load-bearing:
+
+   1. It is compounded to (0,3,0) rather than written as a bare .site-title.
+      pages/home.css restates font-family: var(--font-sans) on
+      .page-home .logo at (0,2,0), and that file loads *after* main.css in
+      <head> -- so a single-class rule here would win on fifteen pages and
+      silently lose on the homepage, which is the one page where the wordmark
+      is most visible. This wins on all sixteen.
+   2. font-weight is declared, not inherited. Only 700 and 900 are requested
+      from Google Fonts, so .logo's 500 would fall through CSS font matching
+      to 700 anyway; saying so makes the rendered weight explicit instead of
+      an artifact of which weights happen to sit in the <link>. Swap to 900
+      here if the wordmark wants the heavier cut. */
+.site-header .logo.site-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+}
+
 /* The narrow-screen font-size stepdown that used to live here is gone: it
    existed because the uppercase serif wordmark ran the burger button off the
    viewport edge. Mixed-case sans is materially narrower at the same size and
