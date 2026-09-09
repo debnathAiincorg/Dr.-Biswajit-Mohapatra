@@ -30,7 +30,10 @@
   .page-home .logo {
     font-family: var(--font-sans);
     font-weight: 500;
-    font-size: 1.4rem;
+    /* Kept in sync with the fluid size in components/header.css -- see the
+       comment there for why it's a clamp() pinned to 1.4rem through the
+       1250px nav breakpoint rather than a flat bigger value. */
+    font-size: clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem);
     letter-spacing: 0.02em;
     text-transform: none;
     color: #fff;

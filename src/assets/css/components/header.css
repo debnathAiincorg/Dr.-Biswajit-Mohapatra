@@ -37,10 +37,18 @@
    carry. about.html restates these same values in its own .page-home .logo
    block and is unaffected either way; only color still differs there, because
    that header sits on a dark hero photo and this one sits on cream. */
+/* font-size is fluid rather than flat 2.2rem, and pinned deliberately: the
+   nav-collapse breakpoint below (1249px) was measured to within ~1px against
+   a 1.4rem wordmark, and there's no headless-browser tooling in this repo
+   right now to re-instrument that fit against a bigger flat size. Instead the
+   clamp() holds exactly 1.4rem for every viewport <=1250px -- so the already-
+   measured nav fit and the narrow-phone fit next to .burger are both
+   untouched -- and only grows the wordmark above that, reaching 2.2rem
+   (+57%) at 1600px+ where there's ample spare row width to absorb it. */
 .logo {
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: 1.4rem;
+  font-size: clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem);
   letter-spacing: 0.02em;
   text-transform: none;
   white-space: nowrap;
@@ -88,14 +96,14 @@
       <head> -- so a single-class rule here would win on fifteen pages and
       silently lose on the homepage, which is the one page where the wordmark
       is most visible. This wins on all sixteen.
-   2. font-weight is declared, not inherited. Only 700 and 900 are requested
-      from Google Fonts, so .logo's 500 would fall through CSS font matching
-      to 700 anyway; saying so makes the rendered weight explicit instead of
-      an artifact of which weights happen to sit in the <link>. Swap to 900
+   2. font-weight is declared, not inherited. 400, 700 and 900 are requested
+      from Google Fonts (head.ts), so declaring 400 here renders the actual
+      regular cut rather than falling through CSS font matching to whichever
+      bolder weight happens to be loaded. Swap to 900
       here if the wordmark wants the heavier cut. */
 .site-header .logo.site-title {
   font-family: 'Cinzel', serif;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 /* The narrow-screen font-size stepdown that used to live here is gone: it
