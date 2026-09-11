@@ -30,7 +30,6 @@ export const { data, render } = definePage({
     <div class="hero-scrim" aria-hidden="true"></div>
     <div class="container hero-full-inner">
       <div class="hero-full-content">
-        <span class="eyebrow">VP &amp; Head Of Product And Solutions Engineering &middot; INTUITIVE.AI</span>
         <h1 id="hero-title">Where <em>cloud, data and AI</em> meet business outcomes.</h1>
         <p class="lede">Dr. Biswajit Mohapatra leads Intuitive.ai&rsquo;s cloud, data, AI and security practice. An alumnus of IIT Bombay with more than three decades in enterprise technology, he previously led CIO advisory and cloud transformation for AWS across India and South Asia, and spent 15 years at IBM as Executive Director of its Hybrid Cloud Transformation practice. He holds patents in cloud automation and is the author of <em>The DevOps Odyssey</em>.</p>
         <div class="hero-ctas">

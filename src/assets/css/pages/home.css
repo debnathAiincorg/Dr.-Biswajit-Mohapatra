@@ -101,10 +101,6 @@
     padding-top: clamp(6rem, 14vw, 9rem);
     padding-bottom: clamp(2.5rem, 6vw, 5rem);
   }
-  /* Title case is written into the markup, so the sitewide eyebrow uppercasing
-     is switched off here and the line renders exactly as authored. It also
-     sets at regular weight rather than the shared eyebrow's 600. */
-  .hero-full-content .eyebrow { margin-bottom: 1.1rem; color: #fff; text-transform: none; font-weight: 400; }
   /* The only page heading whose text is left-aligned rather than centred.
      Scaling it about the block's centre would walk its left edge outwards as
      it grew; anchoring the origin to that edge keeps the first character
@@ -184,8 +180,8 @@
   }
   /* Hero cascade widened alongside the sitewide slowdown so each line still
      lands distinctly rather than overlapping into one blur at the longer
-     duration. Same four-step order and effect as before. */
-  .hero-full-content .eyebrow { animation-delay: 0.14s; }
+     duration. The eyebrow that opened this cascade (0.14s) has since been
+     removed; the three steps left keep their original timing. */
   .hero-full-content h1 { animation-delay: 0.28s; }
   .hero-full-content p.lede { animation-delay: 0.44s; }
   .hero-full-content .hero-ctas { animation-delay: 0.6s; }
