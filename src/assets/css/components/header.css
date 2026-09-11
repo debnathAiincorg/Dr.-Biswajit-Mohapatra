@@ -17,7 +17,22 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 1.1rem clamp(0.75rem, 1.2vw, 1.25rem);
+  /* Side inset, as a share of the viewport. It began at 1.2vw (capped at
+     1.25rem), went to 1.8vw, and is now 3.25vw: the bar's contents span ~3%
+     less than at 1.8vw. The 0.75rem floor holds below ~370px, deliberately --
+     at 360px the wordmark fills the row beside the burger with under 1px
+     spare. Between 1250px and 1290px the full nav row cannot afford this
+     inset; see the band just after the nav-collapse breakpoint below.
+     Kept as a custom property, not just a literal in `padding`, because
+     .site-brand's leftward shift below needs to know how much room this
+     inset actually leaves before it can safely eat into it. */
+  --header-pad-x: clamp(0.75rem, 3.25vw, 5rem);
+  /* Vertical padding was 1.1rem. 1.03rem is a ~2-3% cut to the bar's overall
+     height (2.8% at the shortest measured header, 81px at 360px; 2.3% at the
+     tallest, 98.5px at 1600px+) -- content, fonts, colours, gaps and the side
+     inset above are all untouched; this is the one dimension that is purely
+     the bar's own chrome. */
+  padding: 1.03rem var(--header-pad-x);
   gap: 0.5rem;
   max-width: none;
   margin: 0;
@@ -26,10 +41,12 @@
 /* Scrolled state also tightens the bar vertically, so the header visibly
    settles into a compact strip rather than only gaining a hairline. Padding is
    the only animated property here: the logo and nav keep their size, which
-   keeps the 14-item nav's fit at the 1250px breakpoint exactly as measured. */
+   keeps the 14-item nav's fit at the 1250px breakpoint exactly as measured.
+   0.66rem (was 0.72rem) is the same ~2-3% cut applied to the condensed state:
+   2.8% off the shortest measured condensed header, 2.2% off the tallest. */
 .site-header.is-scrolled .header-inner {
-  padding-top: 0.72rem;
-  padding-bottom: 0.72rem;
+  padding-top: 0.66rem;
+  padding-bottom: 0.66rem;
 }
 /* Wordmark typography is taken from about.html, the reference page, so the
    header reads identically on all 14 pages: mixed-case Inter at 1.4rem/500
@@ -52,8 +69,6 @@
   letter-spacing: 0.02em;
   text-transform: none;
   white-space: nowrap;
-  flex-shrink: 0;
-  margin-right: auto;
   animation: nav-logo-in 0.7s var(--ease-out) backwards;
 }
 /* The wordmark was the one link on every page with no hover state at all.
@@ -106,6 +121,52 @@
   font-weight: 400;
 }
 
+/* ---------- Brand lockup ----------
+   The wordmark with the job title set beneath it, left-aligned as one block.
+   The block, not the wordmark, is now the header row's first flex item, so it
+   carries the flex-shrink and the margin-right: auto that pushes the nav to
+   the far edge. align-items keeps the wordmark at its own width, so its hover
+   zoom still scales about the name's centre rather than the block's. */
+.site-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+  margin-right: auto;
+  /* Shifts the wordmark and title 6.5% of the block's own width to the left
+     (5%, then 1.5% more), without touching layout: transform doesn't reflow,
+     so the nav stays exactly where it was (margin-right: auto above still
+     measures the pre-shift box). Capped at --header-pad-x, the room the
+     header's own left inset leaves, so the text can never be pushed past the
+     viewport edge. From ~650px up the full 6.5% (~21px) fits; narrower than
+     that, the cap lands the block flush against the edge instead. At exactly
+     1250px, where the band below pulls the inset in, it clears by ~1px. */
+  transform: translateX(calc(-1 * min(6.5%, var(--header-pad-x))));
+}
+/* Tighter than the inherited 1.6 so the title sits under the name rather than
+   a line's worth of leading below it; the title's own margin-top sets the gap.
+   This also keeps the two-line block within ~3px of the 44px burger, so below
+   1250px the header is barely taller than it was before the title was added. */
+.site-brand .logo { line-height: 1.2; }
+/* Sized to fit, not picked. This string measures ~30.8px wide per pixel of
+   font-size. At 0.66rem (325px) the 1250px nav row still fits, with ~17px
+   between the title and the first link. Below ~420px the size tracks the
+   viewport instead, so the title still fits beside the burger: 100vw - 80px
+   is the row less its padding (at most ~13px a side at these widths), gap and
+   burger. Re-measure if the text or the header inset changes. */
+.site-tagline {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(0.55rem, calc((100vw - 80px) * 0.032), 0.66rem);
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--ink-soft);
+  margin-top: 0.4rem;
+  animation: nav-logo-in 0.7s var(--ease-out) backwards;
+  animation-delay: 90ms;
+}
+
 /* The narrow-screen font-size stepdown that used to live here is gone: it
    existed because the uppercase serif wordmark ran the burger button off the
    viewport edge. Mixed-case sans is materially narrower at the same size and
@@ -117,11 +178,21 @@
   gap: 0.5rem;
   flex-wrap: nowrap;
   overflow: visible;
+  /* The whole link row shifted right by 3.5% of its own width (~30px of a
+     ~855px row), the mirror of .site-brand's shift left. A transform, so the
+     row's layout box -- and with it the measured 1250px fit -- is unchanged.
+     Capped at --header-pad-x: the row normally ends that inset plus the 0.5rem
+     gap short of the edge, so at the cap "Social" still keeps 8px clear
+     rather than running off-screen, which only happens between 1250px and
+     ~1265px, where the band below has pulled the inset in. */
+  transform: translateX(min(3.5%, var(--header-pad-x)));
 }
+/* Regular weight, not medium: the nav reads as plain text rather than bold.
+   Inter 400 sets narrower than 500, so the measured 1250px fit only gains room. */
 .nav-links a {
   position: relative;
   font-size: 0.68rem;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: none;
   white-space: nowrap;
@@ -265,7 +336,7 @@
 .mobile-panel > a {
   padding: 0.85rem 0;
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.02em;
   border-bottom: 1px solid var(--line);
   border-radius: var(--radius);
@@ -338,4 +409,15 @@
   .mobile-panel { display: flex; }
   /* The nav links this delay was meant to trail are hidden here. */
   .header-actions > * { animation-delay: 170ms; }
+}
+/* Where the full nav row first appears it has ~9px to spare in total, so it
+   cannot take the 3.25vw inset above until ~1290px. Across this band the inset
+   starts from the 1.8vw the row fits at 1250px and takes half of every extra
+   pixel per side, holding the title ~16-18px clear of the first link, until it
+   meets 3.25vw at ~1287px. */
+@media (min-width: 1250px) and (max-width: 1289px) {
+  .header-inner {
+    --header-pad-x: min(3.25vw, calc(1.8vw + (100vw - 1250px) / 2));
+    padding-inline: var(--header-pad-x);
+  }
 }

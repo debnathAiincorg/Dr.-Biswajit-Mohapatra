@@ -38,12 +38,16 @@
     text-transform: none;
     color: #fff;
   }
+  /* Same white as the hero lede, which sits on this same photograph. */
+  .page-home .site-tagline { color: rgba(255, 255, 255, 0.88); }
   /* The home header is an absolute overlay that scrolls away with the hero,
      so the shared condense-on-scroll would retitle a bar the reader is
-     already losing. Held at full height here. */
+     already losing. Held at full height here -- kept equal to header-inner's
+     own resting padding (1.03rem) so "full height" still means the same
+     thing after that value's ~2-3% trim. */
   .page-home .site-header.is-scrolled .header-inner {
-    padding-top: 1.1rem;
-    padding-bottom: 1.1rem;
+    padding-top: 1.03rem;
+    padding-bottom: 1.03rem;
   }
   .page-home .nav-links a { color: #fff; }
   .page-home .nav-links a::after { background: #fff; }
@@ -97,7 +101,10 @@
     padding-top: clamp(6rem, 14vw, 9rem);
     padding-bottom: clamp(2.5rem, 6vw, 5rem);
   }
-  .hero-full-content .eyebrow { margin-bottom: 1.1rem; color: #fff; }
+  /* Title case is written into the markup, so the sitewide eyebrow uppercasing
+     is switched off here and the line renders exactly as authored. It also
+     sets at regular weight rather than the shared eyebrow's 600. */
+  .hero-full-content .eyebrow { margin-bottom: 1.1rem; color: #fff; text-transform: none; font-weight: 400; }
   /* The only page heading whose text is left-aligned rather than centred.
      Scaling it about the block's centre would walk its left edge outwards as
      it grew; anchoring the origin to that edge keeps the first character

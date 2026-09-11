@@ -97,7 +97,9 @@
 .footer-text { text-align: left; }
 .footer-socials { display: flex; gap: 1rem; flex-shrink: 0; }
 .footer-copy { font-size: 0.85rem; color: var(--ink); margin-bottom: 0.4rem; }
-.footer-credit { font-size: 0.75rem; color: var(--ink-soft); }
+/* balance: on phones the credit wraps, and unbalanced it strands the middot
+   at the end of line one with INTUITIVE.AI alone beneath it. */
+.footer-credit { font-size: 0.75rem; color: var(--ink-soft); text-wrap: balance; }
 
 @media (max-width: 640px) {
   .footer-inner { flex-direction: column-reverse; text-align: center; }
