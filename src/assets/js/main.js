@@ -14,7 +14,6 @@ import { initMobileMenu, markCurrentNavLink } from './modules/nav.js';
 import { initReveal } from './modules/reveal.js';
 import { initLightbox } from './modules/lightbox.js';
 import { initFooterShuffle } from './modules/footer-shuffle.js';
-import { initDepth } from './modules/depth.js';
 
 /* First statement in the bundle: see reveal-arm.js for why this ordering is
    load-bearing rather than incidental. */
@@ -56,14 +55,4 @@ try {
   initFooterShuffle();
 } catch {
   /* Non-fatal: the footer badges simply hold still. */
-}
-
-try {
-  /* Pointer tilt and hero parallax. Guarded separately for the same reason as
-     the two above: everything it does is an enhancement over a page that is
-     already complete, and every value it writes is inert at its default, so a
-     throw here leaves the surfaces flat rather than leaving them broken. */
-  initDepth();
-} catch {
-  /* Non-fatal: cards sit flat and the hero holds still. */
 }

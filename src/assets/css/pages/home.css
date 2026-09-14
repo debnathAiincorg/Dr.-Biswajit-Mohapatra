@@ -191,112 +191,12 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* The settle animates the `scale` PROPERTY, not transform: scale().
-
-     It used to be transform, and that was fine while nothing else touched the
-     hero photo. It is not fine now. An animation in its forwards fill state
-     wins over the transform property outright, so the cursor parallax below
-     -- which writes translate3d on this same element -- would have been
-     overridden permanently by a keyframe that finished 1.9s after load. The
-     parallax would have worked for the length of the animation and then
-     silently stopped.
-
-     `scale` is a separate animatable property that composes with `translate`
-     and `transform` rather than replacing them, so the settle and the
-     parallax now occupy different channels and neither has to know about the
-     other. Same GPU-composited result, same visual settle. This is the same
-     move base/tokens.css already documents for the hover zoom. */
   .hero-full .hero-bg {
     animation: heroImgSettle 1.9s ease-out forwards;
   }
   @keyframes heroImgSettle {
-    from { scale: 1.06; }
-    to { scale: 1; }
-  }
-
-  /* ---------- Hero cursor parallax ----------
-
-     --px and --py are written on .hero-full by js/modules/depth.js, each in
-     the range -1..1, as the pointer's offset from the centre of the hero.
-     Unset -- no JS, touch device, reduced motion -- they resolve to 0 and
-     every layer below sits exactly where it always did.
-
-     The photo moves against the pointer and the copy moves with it. That
-     opposition is what produces the depth cue: matching directions would just
-     slide the whole hero about. The scrim moves with the photo, but less, so
-     the gradient does not detach from the image it is darkening.
-
-     translate3d, not translate, so each layer gets its own compositor layer
-     and the pointer move never touches layout. */
-  /* Overscan, and it is required rather than defensive.
-
-     Both layers are inset: 0, i.e. exactly the size of the hero. Translating
-     a layer that exactly fills its frame pulls its trailing edge inward and
-     exposes whatever is behind it -- which showed up as a pale strip down the
-     right edge and across the top of the hero the moment the pointer moved.
-
-     Each layer is therefore grown by more than its own maximum travel, so the
-     edge it is uncovering is always still outside the frame. The hero already
-     clips (overflow: hidden), so the extra area is never visible. The margins
-     are deliberately larger than --parallax-bg (14px) and --parallax-scrim
-     (6px): if either token is raised, the overscan has room before the seam
-     comes back, and these values are the first thing to check if it does. */
-  .hero-full .hero-bg {
-    inset: -24px;
-    /* base/reset.css sets `* { max-width: 100% }` as a sitewide overflow
-       guard. That clamp applies here too, and it silently defeats the inset
-       above: the layer is positioned 24px left of the frame but its width is
-       still capped at 100% of it, so it ends 24px SHORT of the right edge --
-       measured as exactly the 24px strip that was showing. The inset alone
-       looked correct in the source and was wrong in the browser.
-       Overridden by name; the guard still governs everything else. */
-    max-width: none;
-    translate:
-      calc(var(--px, 0) * var(--parallax-bg) * -1)
-      calc(var(--py, 0) * var(--parallax-bg) * -1);
-  }
-  .hero-full .hero-scrim {
-    inset: -12px;
-    max-width: none;   /* same clamp as the photo layer above */
-    translate:
-      calc(var(--px, 0) * var(--parallax-scrim) * -1)
-      calc(var(--py, 0) * var(--parallax-scrim) * -1);
-  }
-  /* The copy block, not its children: each child already runs its own
-     heroFadeUp entrance on `transform`, so translating the parent composes
-     with all three cascade steps instead of fighting them. */
-  .hero-full-content {
-    translate:
-      calc(var(--px, 0) * var(--parallax-copy))
-      calc(var(--py, 0) * var(--parallax-copy));
-  }
-
-  /* Eased, not instant. The pointer moves in discrete jumps between frames;
-     without a short transition the layers step rather than glide. Long enough
-     to smooth that, short enough that the hero still feels attached to the
-     cursor rather than trailing it. */
-  .hero-full .hero-bg,
-  .hero-full .hero-scrim,
-  .hero-full-content {
-    transition: translate 0.45s var(--ease-out);
-  }
-  .hero-full.is-tracking .hero-bg,
-  .hero-full.is-tracking .hero-scrim,
-  .hero-full.is-tracking .hero-full-content {
-    transition: translate 0.12s linear;
-  }
-
-  /* The photo is promoted for the whole life of the page rather than on
-     enter: it is already a compositor layer from the settle animation, it is
-     the largest paint on the site, and the hero is above the fold, so there
-     is no moment where promoting it late would avoid a cost. */
-  .hero-full .hero-bg { will-change: translate, scale; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-full .hero-bg,
-    .hero-full .hero-scrim,
-    .hero-full-content { translate: none !important; }
-    .hero-full .hero-bg { will-change: auto; }
+    from { transform: scale(1.06); }
+    to { transform: scale(1); }
   }
 
   /* Newsletter/panel band recolored to match the reference's measured panel

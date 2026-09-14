@@ -452,62 +452,35 @@ indentation while every other page starts at two spaces, and Gallery and the
 homepage put a blank line before their `card-grid` where Projects and Students
 do not. Both are noted in the source.
 
-## Depth Layer (v6, 2026-09-12)
+## Depth Layer (v6, 2026-09-12) — 3D removed 2026-09-14
 
-Pointer-driven 3D depth, added without a new dependency and without touching
-the palette, the type scale or any of v2's Fidelity Decisions. `+5.6KB` across
-both bundles: `components/depth.css`, `js/modules/depth.js`, and additions to
-`base/reset.css`, `utils/reveal.css` and `pages/home.css`.
+v6 added a pointer-driven 3D layer: parallax on the homepage hero, card tilt
+with a cursor-tracked specular sheen, and a 4deg entrance hinge on cards,
+alongside 2D card elevation and a scrolled-header shadow. **The 3D parts were
+removed on 2026-09-14 at the site owner's request** — remove the 3D animation,
+keep every other animation. Do not reintroduce `perspective()`,
+`rotateX`/`rotateY`, tilt, sheen or pointer-driven parallax without being asked.
 
-Four surfaces: the homepage hero (three layers parallaxing under the cursor),
-cards (tilt plus a cursor-tracked specular sheen), card elevation, and a real
-elevation shadow on the scrolled header.
+Removed:
 
-### Four things that will bite you
+- `js/modules/depth.js` and its `initDepth()` call in `main.js`. The module
+  drove only the tilt, the sheen and the parallax.
+- The 3D card transform in `utils/reveal.css`. Cards reveal with the same 2D
+  rise as every other `.reveal` element again.
+- The hero parallax block in `pages/home.css` (layer overscan, `translate`
+  transitions, `will-change`). The hero photo's settle animation is kept, back
+  in its original `transform: scale()` form — v6 had moved it to the `scale`
+  property only so the parallax could compose with it.
+- The 3D tokens in `base/reset.css`: `--depth-perspective`, `--tilt-*`,
+  `--parallax-*` and `--reveal-tilt`.
 
-1. **`transform` on `.reveal`/`.card` still belongs to `utils/reveal.css`.**
-   That file's existing comment explains why hover zoom had to use the
-   separate `scale` property; tilt has the same problem and could not take the
-   same escape, because a tilt needs two axes and the individual `rotate`
-   property takes one. So the reveal rule's resting state now reads
-   `rotateX(var(--tilt-x)) rotateY(var(--tilt-y))` instead of `none`, and
-   `depth.js` writes those two variables. **Never write `transform` on a card
-   from anywhere else** — compose through the variables.
+Kept, in `components/depth.css`: 2D elevation only — the resting `--elev-1`
+shadow and hover lift on project cards and gallery photos, and the `--elev-2`
+shadow on the scrolled header, with their reduced-motion and
+`@media (hover: none)` guards. The `--elev-*` tokens stay in `base/reset.css`.
 
-2. **3D is scoped to `.card` and nothing else, deliberately.** `perspective()`
-   puts an element into a 3D rendering context, and text rasterised in one can
-   pick up visible edge softening. `.reveal` is carried by every heading,
-   eyebrow, paragraph and row-list `<li>` on the site, and the row-list pages
-   (Awards, Experience, Certifications) are almost entirely body text. An
-   earlier draft gave every `.reveal` the 3D form and was reverted for that
-   reason. Rows keep their 2D rise. Do not widen the selector.
-
-3. **The hero layers need both `inset: -24px` AND `max-width: none`.**
-   Translating a layer that exactly fills its frame uncovers the edge behind
-   it — measured as a 24px pale strip down the right of the hero. The negative
-   inset is the fix, but `base/reset.css` sets `* { max-width: 100% }` as an
-   overflow guard, which clamps the widened layer back and leaves the strip
-   showing on the right only. Both declarations are load-bearing; removing
-   either brings the seam back. `.hero-bg` also had to move its settle
-   animation from `transform: scale()` to the `scale` property, or the
-   animation's forwards fill would permanently override the parallax.
-
-4. **`depth.js`'s rAF write must check the card is still active.** The write is
-   batched to one per frame, so it lands a frame after the pointermove that
-   queued it — and a `pointerout` or the scroll listener can clear the card in
-   between, at which point the stale frame writes the tilt straight back onto
-   a released card that has already lost `.is-tilting` (and with it the 0s
-   transition, so it does not ease back either). Lenis emits scroll events
-   continuously, so this fired on essentially every hover rather than being a
-   rare race. The guard is `if (card !== active) return;`.
-
-Accessibility and failure posture match the rest of the site: no JS means the
-variables are never written and every surface sits flat; `initDepth()` is
-individually `try/catch`ed in `main.js`; reduced motion is handled in *both*
-the module (early return) and the stylesheet (tokens zeroed), so one edit
-cannot silently re-enable it; and the module never attaches on a coarse
-pointer, with `@media (hover: none)` holding elevation at rest so a tap cannot
-strand a raised card.
+`docs/superpowers/specs/2026-09-12-depth-layer-design.md` still describes the
+full v6 layer. It is a historical record, not the current state.
 
 ## Constraints
 
