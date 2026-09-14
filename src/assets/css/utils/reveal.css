@@ -43,6 +43,18 @@
     calc(var(--reveal-i, 0) * var(--reveal-stagger)),
     0s;
 }
+/* The 2D entrance, unchanged, and deliberately still the default for every
+   .reveal element on the site.
+
+   An earlier draft of the depth system gave this rule the 3D form below, so
+   that any revealed element could tilt. That was wrong: perspective() puts an
+   element into a 3D rendering context, and text rasterised in one can pick up
+   visible edge softening. .reveal is carried by every heading, eyebrow,
+   paragraph and row-list <li> on the site -- the row-list pages (Awards,
+   Experience, Certifications) are almost entirely body text -- so that draft
+   traded legibility on the most text-dense pages for a hinge effect nobody
+   asked for. Cards are photographs and short blurbs, and are where the tilt
+   actually pays; they opt in below, and nothing else does. */
 .js-reveal .reveal,
 .js-reveal .card {
   opacity: 0;
@@ -52,6 +64,43 @@
 .js-reveal .card.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* ---------- The 3D entrance: cards only ----------
+
+   Both states list the SAME four transform functions in the SAME order, and
+   that is load-bearing rather than tidy. When two transform lists differ in
+   length or function order the browser cannot interpolate them
+   function-by-function and falls back to decomposing both to matrices and
+   interpolating that -- which carries the rotation through a different arc
+   than the one written here and visibly changes an easing curve that was
+   tuned against --ease-out. Matching the lists keeps each function
+   interpolating on its own terms.
+
+   perspective() comes first because a transform list applies right-to-left:
+   it must be the outermost function for the rotations inside it to be
+   projected rather than flattened. A list ending in perspective() would
+   rotate in 2D and the whole depth system would silently do nothing.
+
+   The end state resolves to the identity whenever the variables sit at their
+   defaults (base/reset.css), so a card with no JavaScript computes what it
+   always computed -- but it leaves --tilt-x/--tilt-y as a seam that
+   js/modules/depth.js writes into without ever taking ownership of
+   `transform` away from this file. That ownership is the constraint the
+   header block exists to protect; composing through variables respects it. */
+.js-reveal .card {
+  transform:
+    perspective(var(--depth-perspective))
+    translateY(var(--reveal-shift))
+    rotateX(var(--reveal-tilt))
+    rotateY(0deg);
+}
+.js-reveal .card.is-visible {
+  transform:
+    perspective(var(--depth-perspective))
+    translateY(0)
+    rotateX(var(--tilt-x))
+    rotateY(var(--tilt-y));
 }
 
 /* Belt-and-braces for scripting genuinely disabled. Redundant now that visible

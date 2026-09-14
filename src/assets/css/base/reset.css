@@ -98,4 +98,57 @@ html::-webkit-scrollbar {
   --hover-zoom: 1.03;
   --hover-accent: var(--terracotta-text);
   --hover-rule: var(--line);
+
+  /* ---------- Depth system ----------
+
+     The viewing distance every 3D transform on the site resolves against.
+     Stated once, here, because perspective is only coherent if every surface
+     shares it: two cards tilting the same number of degrees under different
+     perspective values read as two different rooms. 1100px is far enough that
+     a 6deg tilt reads as the card leaning rather than as a fisheye, and near
+     enough that the lean is legible at all.
+
+     Applied as the perspective() *function* inside the transform list in
+     utils/reveal.css, not as the `perspective` property on a parent. That is
+     forced, not stylistic: the property form has to sit on the ancestor of the
+     transformed element, and .card-grid is a grid container whose children are
+     the cards themselves -- so the function form is what lets a card own its
+     whole transform without introducing a wrapper element. */
+  --depth-perspective: 1100px;
+
+  /* Maximum tilt a card reaches at the far corner of its own box. Deliberately
+     small: past about 8deg the text inside a project card shows visible
+     keystoning and its edges soften, which reads as a rendering fault rather
+     than as depth. */
+  --tilt-max: 6deg;
+
+  /* Live tilt, written per-card by js/modules/depth.js on pointermove and
+     cleared on pointerleave. Declared at rest here so the transform in
+     reveal.css resolves to exactly the identity it always did when no script
+     runs -- the no-JS fallback is the current site, not a broken one. */
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+
+  /* How far the hero's layers separate under the cursor, in px at full
+     deflection. The photo moves against the pointer and the copy with it, so
+     the felt separation is the sum, not the largest single value. */
+  --parallax-bg: 14px;
+  --parallax-scrim: 6px;
+  --parallax-copy: 7px;
+
+  /* Entrance hinge: how far a row or card rotates about its own centre as it
+     rises, before settling flat. Opt-in, not global -- the default is 0deg so
+     headings, eyebrows and body copy, which also carry .reveal, rise without
+     rotating. Text rendered through a 3D rotation picks up visible edge
+     softening: on a heading that is a defect, on a photograph it is invisible.
+     components/depth.css opts in the two kinds of element that should have it. */
+  --reveal-tilt: 0deg;
+
+  /* Elevation, warm rather than neutral. A grey shadow over cream reads as
+     dirt on the paper; these are the --ink hue at low alpha, so a lifted card
+     casts a shadow onto the page instead of smudging it. Two layers each: a
+     tight contact shadow and a wider ambient one. */
+  --elev-1: 0 1px 2px rgba(43, 38, 34, 0.04), 0 2px 8px rgba(43, 38, 34, 0.03);
+  --elev-2: 0 2px 4px rgba(43, 38, 34, 0.06), 0 8px 24px rgba(43, 38, 34, 0.07);
+  --elev-3: 0 4px 8px rgba(43, 38, 34, 0.07), 0 18px 48px rgba(43, 38, 34, 0.10);
 }

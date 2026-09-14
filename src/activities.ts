@@ -1,5 +1,6 @@
 import { listPage } from './_includes/components/list-page.ts';
 import { html, raw, type Html } from './_includes/lib/html.ts';
+import { assetUrl } from './_includes/lib/asset.ts';
 import { definePage } from './_includes/lib/page.ts';
 
 /*
@@ -27,11 +28,11 @@ import { definePage } from './_includes/lib/page.ts';
  */
 
 function photoFigure(slug: string, alt: string, width: number, height: number, caption: string): Html {
-  return html`<figure><a class="proof-zoom" href="/assets/images/photos/${slug}.jpg" data-caption="${caption}" data-alt="${alt}"><img src="/assets/images/photos/${slug}.jpg" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a><figcaption>${caption}</figcaption></figure>`;
+  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/photos/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}"><img src="${assetUrl(`/assets/images/photos/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a><figcaption>${caption}</figcaption></figure>`;
 }
 
 function proofGridFigure(slug: string, alt: string, width: number, height: number, caption: string): Html {
-  return html`<figure><a class="proof-zoom" href="/assets/images/proof/${slug}.jpg" data-caption="${caption}" data-alt="${alt}"><img src="/assets/images/proof/${slug}.jpg" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a></figure>`;
+  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}"><img src="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a></figure>`;
 }
 
 export const { data, render } = definePage({

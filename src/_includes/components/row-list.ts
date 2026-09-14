@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs';
 import { html, join, raw, type Html, type Renderable } from '../lib/html.ts';
+import { assetUrl } from '../lib/asset.ts';
 import type { Source } from '../content/sources.ts';
 
 /* Computed once per build, not per row: which proof slugs have a WebP
@@ -118,14 +119,14 @@ const EXPAND_GLYPH = raw(
  *  small figure whose anchor the lightbox module intercepts, exactly like a
  *  proof-only row's anchor, just nested one level deeper. */
 function proofFigure(proof: ProofImage): Html {
-  const jpg = `/assets/images/proof/${proof.slug}.jpg`;
+  const jpg = assetUrl(`/assets/images/proof/${proof.slug}.jpg`);
   const img = html`<img src="${jpg}" alt="${proof.alt}" width="${proof.width}" height="${proof.height}" loading="lazy" decoding="async">`;
   /* The <a> always points at the JPEG regardless -- that is what keeps this
      working with JavaScript off (see the comment atop lightbox.js) and
      what the lightbox itself opens via trigger.href, so a slug's WebP
      savings apply to this inline figure, not to the lightbox view. */
   const picture = PROOF_WEBP_SLUGS.has(proof.slug)
-    ? html`<picture><source type="image/webp" srcset="/assets/images/proof/${proof.slug}.webp">${img}</picture>`
+    ? html`<picture><source type="image/webp" srcset="${assetUrl(`/assets/images/proof/${proof.slug}.webp`)}">${img}</picture>`
     : img;
   return html`<figure><a class="proof-zoom" href="${jpg}" data-caption="${proof.caption ?? ''}" data-alt="${proof.alt}">${picture}</a>${proof.caption ? html`<figcaption>${proof.caption}</figcaption>` : null}</figure>`;
 }
@@ -140,7 +141,7 @@ function rowItem(row: Row, indent: string): Html {
      third would let it float to the middle instead of hugging the title. */
   const titleInner = html`${row.title}${tag}${sub}`;
   const leading = row.logo
-    ? html`<span class="row-lead"><img class="org-logo" src="/assets/images/logos/${row.logo}.png" alt="" width="40" height="40" loading="lazy" decoding="async"><span class="row-title">${titleInner}</span></span>`
+    ? html`<span class="row-lead"><img class="org-logo" src="${assetUrl(`/assets/images/logos/${row.logo}.png`)}" alt="" width="40" height="40" loading="lazy" decoding="async"><span class="row-title">${titleInner}</span></span>`
     : html`<span class="row-title">${titleInner}</span>`;
 
   /* An expandable row is a <details> disclosure: the browser owns its open
@@ -180,13 +181,13 @@ ${indent}<li class="reveal"><details class="row-details"><summary class="row-sta
      rows across the eight pages sharing this renderer still take this path. */
   if (row.source) {
     return html`
-${indent}<li class="reveal"><a class="row-static row-sourced" href="${row.source.url}" target="_blank" rel="noopener noreferrer">${row.logo ? html`<span class="row-lead"><img class="org-logo" src="/assets/images/logos/${row.logo}.png" alt="" width="40" height="40" loading="lazy" decoding="async"><span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — verification: ${row.source.label}. Opens in a new tab.</span></span></span>` : html`<span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — verification: ${row.source.label}. Opens in a new tab.</span></span>`}${rowMeta(row)}</a></li>`;
+${indent}<li class="reveal"><a class="row-static row-sourced" href="${row.source.url}" target="_blank" rel="noopener noreferrer">${row.logo ? html`<span class="row-lead"><img class="org-logo" src="${assetUrl(`/assets/images/logos/${row.logo}.png`)}" alt="" width="40" height="40" loading="lazy" decoding="async"><span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — verification: ${row.source.label}. Opens in a new tab.</span></span></span>` : html`<span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — verification: ${row.source.label}. Opens in a new tab.</span></span>`}${rowMeta(row)}</a></li>`;
   }
 
   if (row.proofImage) {
     const proof = row.proofImage;
     return html`
-${indent}<li class="reveal"><a class="row-static row-sourced proof-zoom" href="/assets/images/proof/${proof.slug}.jpg" data-caption="${proof.caption ?? ''}" data-alt="${proof.alt}">${row.logo ? html`<span class="row-lead"><img class="org-logo" src="/assets/images/logos/${row.logo}.png" alt="" width="40" height="40" loading="lazy" decoding="async"><span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — view proof image: ${proof.alt}.</span></span></span>` : html`<span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — view proof image: ${proof.alt}.</span></span>`}${rowMeta(row)}</a></li>`;
+${indent}<li class="reveal"><a class="row-static row-sourced proof-zoom" href="${assetUrl(`/assets/images/proof/${proof.slug}.jpg`)}" data-caption="${proof.caption ?? ''}" data-alt="${proof.alt}">${row.logo ? html`<span class="row-lead"><img class="org-logo" src="${assetUrl(`/assets/images/logos/${row.logo}.png`)}" alt="" width="40" height="40" loading="lazy" decoding="async"><span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — view proof image: ${proof.alt}.</span></span></span>` : html`<span class="row-title">${titleInner}${PROOF_GLYPH}<span class="visually-hidden"> — view proof image: ${proof.alt}.</span></span>`}${rowMeta(row)}</a></li>`;
   }
 
   return html`

@@ -1,0 +1,208 @@
+/* ==========================================================================
+   Depth layer: tilt, sheen and elevation.
+
+   The site's motion was single-axis before this file: things faded and rose.
+   Everything here adds a second axis -- surfaces that sit at a distance, lean
+   under the pointer, and cast a shadow onto the page.
+
+   Three rules govern the whole file:
+
+   1. `transform` on .reveal / .card belongs to utils/reveal.css and is not
+      written here. Tilt is contributed as --tilt-x / --tilt-y, which that
+      rule's end state already reads. Nothing below competes for the channel.
+   2. Every effect is inert at its default value, so the no-JS page is the
+      page as it was.
+   3. Warm shadows only. See --elev-* in base/reset.css.
+   ========================================================================== */
+
+/* ---------- Entrance hinge ----------
+   Opt-in per --reveal-tilt's contract in base/reset.css, and the opt-in list
+   is exactly one selector.
+
+   Row-list items are NOT on it, though an earlier draft had them hinging from
+   their lower edge. utils/reveal.css carries the full reasoning: a hinge needs
+   perspective(), perspective() creates a 3D rendering context, and text in one
+   can rasterise soft. Awards, Experience and Certifications are wall-to-wall
+   body text in row-lists, so that draft spent legibility on the pages that
+   have the least to spare. Rows keep the 2D rise they already had and take
+   their depth from elevation and the hover hairline instead.
+
+   Cards are photographs and two lines of caption, where 4deg is invisible as
+   a rendering artefact and legible as depth. */
+.card { --reveal-tilt: 4deg; }
+
+/* A project card is six lines of body copy inside a border; a gallery card is
+   a photograph with two lines of caption beneath it. At the shared 6deg the
+   project card's text showed visible keystoning -- the near edge of a line
+   rendering perceptibly larger than the far edge -- which reads as the page
+   mis-rendering rather than as the card leaning. 4deg keeps the lean legible
+   and the type flat enough not to notice.
+
+   js/modules/depth.js reads this per card on pointerenter, so lowering it
+   here is the whole change; there is no matching constant in the module. */
+.project-card { --tilt-max: 4deg; }
+
+/* ---------- Pointer tilt ----------
+   The tilt itself lives in the variables; what this rule owns is the timing.
+
+   While a card is tracking the pointer it must follow 1:1, so the transform
+   transition is suppressed outright. Without this the card lags the cursor by
+   --reveal-duration (0.78s) and the tilt feels like dragging something heavy
+   through water rather than like a surface responding.
+
+   .is-tilting is added on pointerenter and removed on pointerleave, so the
+   return to rest DOES transition -- it falls back to the reveal timing and
+   eases flat. Suppressing the transition in both directions would make the
+   card snap back, which reads as the effect breaking rather than releasing.
+
+   opacity is restated so the shorthand's other channels are not reset to
+   their initial values by listing transform alone. */
+.card.is-tilting {
+  transition:
+    opacity var(--reveal-duration) var(--ease-out),
+    transform 0s linear,
+    scale var(--hover-duration) var(--ease);
+  transition-delay: 0s;
+}
+
+/* Promoted only while actually tilting. A standing will-change on every card
+   would hold a compositor layer for all 38 gallery photographs permanently,
+   which costs more memory than the effect is worth; scoping it to .is-tilting
+   means at most one card is promoted at a time. */
+.card.is-tilting { will-change: transform; }
+
+/* ---------- Specular sheen ----------
+   A soft highlight that tracks the pointer across the surface, as though the
+   card were catching light as it leans. --mx/--my are written by depth.js as
+   percentages of the card's own box; at rest they sit at centre and the sheen
+   is fully transparent, so nothing paints until a pointer arrives.
+
+   On the photo card the sheen goes inside .photo-figure, which already
+   establishes a clip and a radius, so it can never escape the image frame.
+
+   `mix-blend-mode: soft-light` rather than a flat white overlay: it lifts the
+   midtones of whatever is underneath instead of washing the photograph out,
+   so a bright image gains a sheen rather than a grey film. */
+.photo-figure::after,
+.project-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--hover-duration) var(--ease);
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.14) 32%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  mix-blend-mode: soft-light;
+  z-index: 2;
+}
+.card:hover .photo-figure::after,
+.card:hover.project-card::after {
+  opacity: 1;
+}
+
+/* .photo-figure already sets position: relative and overflow: hidden in
+   utils/reveal.css. .project-card sets neither, and both are required before
+   an inset pseudo-element can be positioned against it or kept inside its
+   corner radius. */
+.project-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---------- Elevation ----------
+   Cards were flat: a 1px border and nothing else. A resting contact shadow
+   separates them from the paper, and the hover state lifts them toward the
+   reader, which is the same thing the tilt is saying in another register.
+
+   The lift is `translate`, the individual property -- not `transform`, which
+   belongs to the reveal rule (see the file header). The two compose: the card
+   tilts and rises at once without either rule knowing about the other. */
+.project-card {
+  box-shadow: var(--elev-1);
+  translate: 0 0;
+  transition:
+    box-shadow var(--hover-duration) var(--ease),
+    translate var(--hover-duration) var(--ease),
+    border-color var(--hover-duration) var(--ease);
+}
+.project-card:hover,
+.project-card:focus-within {
+  box-shadow: var(--elev-3);
+  translate: 0 var(--hover-lift);
+  border-color: var(--terracotta);
+}
+
+/* The gallery photograph lifts too, but from its frame rather than its card:
+   the caption below it stays put on the page while the image rises, which
+   keeps the text sharp and reads as the photograph being the physical object. */
+.photo-figure {
+  box-shadow: var(--elev-1);
+  transition:
+    box-shadow var(--hover-duration) var(--ease),
+    translate var(--hover-duration) var(--ease);
+}
+.card:hover .photo-figure {
+  box-shadow: var(--elev-3);
+  translate: 0 var(--hover-lift);
+}
+
+/* ---------- Header elevation ----------
+   The scrolled header already had a 1px hairline shadow, which at 0.03 alpha
+   states that content passes beneath it without ever quite showing it. This
+   gives the bar a real edge once it is actually overlapping content, matched
+   to the same warm elevation scale as everything else.
+
+   The homepage is untouched by design: pages/home.css holds its header
+   transparent and shadowless because it is an overlay on the hero photograph,
+   and that rule loads after this one. */
+.site-header.is-scrolled {
+  box-shadow: var(--elev-2);
+}
+
+/* ---------- Reduced motion ----------
+   The global block in base/tokens.css collapses durations to ~0, which makes
+   motion instant but not absent -- a tilted card would still jump to its
+   tilted angle. These zero the inputs themselves, so the geometry never
+   leaves rest regardless of timing.
+
+   This is the second of the two layers described in the spec: depth.js also
+   returns early under the same query. Either alone would be sufficient; both
+   means a later edit to one cannot silently re-enable the motion. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tilt-max: 0deg;
+    --reveal-tilt: 0deg;
+    --parallax-bg: 0px;
+    --parallax-scrim: 0px;
+    --parallax-copy: 0px;
+  }
+  .card.is-tilting { will-change: auto; }
+  .photo-figure::after,
+  .project-card::after { display: none; }
+  .project-card:hover,
+  .project-card:focus-within,
+  .card:hover .photo-figure { translate: none !important; }
+}
+
+/* ---------- Coarse pointers ----------
+   depth.js never attaches on a touch device, so --tilt-x/y and --mx/my are
+   never written and tilt and sheen are already inert. The hover-driven
+   elevation is not: a tap on a touch screen leaves :hover latched on many
+   mobile browsers until the next tap elsewhere, which would strand one card
+   raised. Elevation holds at rest here, and the cards stay flat. */
+@media (hover: none) {
+  .project-card:hover,
+  .project-card:focus-within {
+    box-shadow: var(--elev-1);
+    translate: 0 0;
+  }
+  .card:hover .photo-figure {
+    box-shadow: var(--elev-1);
+    translate: 0 0;
+  }
+}

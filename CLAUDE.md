@@ -254,8 +254,15 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   under `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
 - **esbuild** bundles `src/assets/css/main.css` (collapsing its `@import` graph)
   and `src/assets/js/main.js` (ES modules into one IIFE), minified in production.
-- **Google Fonts: Inter only**, weights 400/500/600, headings and body — the
-  serif was dropped in `a4cfabf` (see Fidelity Decisions).
+- **Google Fonts: Inter (400/500/600) and Cinzel (400/700/900).** Inter sets
+  headings and body sitewide. Cinzel is a serif and is loaded on every page,
+  but applied to exactly one element: the `.site-title` wordmark in the header
+  (`components/header.css`). **Earlier revisions of this file said "Inter only
+  … no serif face loaded on any of the 14 pages". That has been untrue since
+  `3a7e528`** (Cinzel applied to the site title) and `715afbb` (its weight
+  pinned to 400); the Playfair Display removal in `a4cfabf` is what that
+  sentence originally described, and it was never updated when Cinzel arrived.
+  `header.css` is the authority on which element gets the serif.
 - Design tokens and the type scale live in `src/assets/css/base/tokens.css` and
   the files `main.css` imports. **The nav collapse breakpoint is
   `@media (max-width: 1249px)`, and it lives in
@@ -443,6 +450,63 @@ indentation while every other page starts at two spaces, and Gallery and the
 homepage put a blank line before their `card-grid` where Projects and Students
 do not. Both are noted in the source.
 
+## Depth Layer (v6, 2026-09-12)
+
+Pointer-driven 3D depth, added without a new dependency and without touching
+the palette, the type scale or any of v2's Fidelity Decisions. `+5.6KB` across
+both bundles: `components/depth.css`, `js/modules/depth.js`, and additions to
+`base/reset.css`, `utils/reveal.css` and `pages/home.css`.
+
+Four surfaces: the homepage hero (three layers parallaxing under the cursor),
+cards (tilt plus a cursor-tracked specular sheen), card elevation, and a real
+elevation shadow on the scrolled header.
+
+### Four things that will bite you
+
+1. **`transform` on `.reveal`/`.card` still belongs to `utils/reveal.css`.**
+   That file's existing comment explains why hover zoom had to use the
+   separate `scale` property; tilt has the same problem and could not take the
+   same escape, because a tilt needs two axes and the individual `rotate`
+   property takes one. So the reveal rule's resting state now reads
+   `rotateX(var(--tilt-x)) rotateY(var(--tilt-y))` instead of `none`, and
+   `depth.js` writes those two variables. **Never write `transform` on a card
+   from anywhere else** — compose through the variables.
+
+2. **3D is scoped to `.card` and nothing else, deliberately.** `perspective()`
+   puts an element into a 3D rendering context, and text rasterised in one can
+   pick up visible edge softening. `.reveal` is carried by every heading,
+   eyebrow, paragraph and row-list `<li>` on the site, and the row-list pages
+   (Awards, Experience, Certifications) are almost entirely body text. An
+   earlier draft gave every `.reveal` the 3D form and was reverted for that
+   reason. Rows keep their 2D rise. Do not widen the selector.
+
+3. **The hero layers need both `inset: -24px` AND `max-width: none`.**
+   Translating a layer that exactly fills its frame uncovers the edge behind
+   it — measured as a 24px pale strip down the right of the hero. The negative
+   inset is the fix, but `base/reset.css` sets `* { max-width: 100% }` as an
+   overflow guard, which clamps the widened layer back and leaves the strip
+   showing on the right only. Both declarations are load-bearing; removing
+   either brings the seam back. `.hero-bg` also had to move its settle
+   animation from `transform: scale()` to the `scale` property, or the
+   animation's forwards fill would permanently override the parallax.
+
+4. **`depth.js`'s rAF write must check the card is still active.** The write is
+   batched to one per frame, so it lands a frame after the pointermove that
+   queued it — and a `pointerout` or the scroll listener can clear the card in
+   between, at which point the stale frame writes the tilt straight back onto
+   a released card that has already lost `.is-tilting` (and with it the 0s
+   transition, so it does not ease back either). Lenis emits scroll events
+   continuously, so this fired on essentially every hover rather than being a
+   rare race. The guard is `if (card !== active) return;`.
+
+Accessibility and failure posture match the rest of the site: no JS means the
+variables are never written and every surface sits flat; `initDepth()` is
+individually `try/catch`ed in `main.js`; reduced motion is handled in *both*
+the module (early return) and the stylesheet (tokens zeroed), so one edit
+cannot silently re-enable it; and the module never attaches on a coarse
+pointer, with `@media (hover: none)` holding elevation at rest so a tap cannot
+strand a raised card.
+
 ## Constraints
 
 - **No real content from the source site**: no real names, bios, quotes, headlines, article/
@@ -462,8 +526,11 @@ do not. Both are noted in the source.
 
 > **Partly superseded.** The SEO, image-optimisation and indexing-gate work
 > below is all still live, but it now happens in the Eleventy build rather than
-> in checked-in files: there is no `docs/` directory, no `styles.css` /
-> `script.js`, and the published output is `dist/`, built by CI and gitignored.
+> in checked-in files: there is no `styles.css` / `script.js`, and the
+> published output is `dist/`, built by CI and gitignored. (This paragraph
+> used to say there is no `docs/` directory either. There is — it holds the
+> design specs under `docs/superpowers/specs/`. It is not published: only
+> `dist/` is deployed, and `docs/` sits outside it.)
 > See **Tech Approach** for the current layout.
 
 This revision did not change the design system, the persona, or the section
@@ -475,7 +542,14 @@ carry forward. It closed the gap between "a good-looking prototype" and
 no state, no data fetching, no interactivity beyond a menu toggle and a scroll
 observer. A framework would add a build step, a toolchain to maintain, and a
 JS bundle to download, in exchange for nothing this site needs. Plain
-HTML/CSS/JS remains correct, and the whole site now loads in ~290KB.
+HTML/CSS/JS remains correct, and a typical page still loads in a few hundred
+KB. **The "whole site loads in ~290KB" figure this line used to carry was
+never re-measured after the gallery grew from 8 photographs to 38.** `dist/`
+now totals ~14MB, almost entirely images: 8.7MB of proof/certificate scans and
+4.2MB of photographs. That is a *repository* figure, not a page-weight one —
+every image is `loading="lazy"` and no single page requests more than a
+fraction of it — but the two numbers are not interchangeable and this line
+previously implied they were. The CSS and JS bundles together are ~33KB.
 
 **Repository layout.** *(Superseded — the published tree is now `dist/`, built
 by Eleventy and gitignored, and GitHub Pages deploys the build artifact rather
@@ -522,8 +596,10 @@ homepage teaser render from it, so a corrected caption is a one-line edit.
 
 `Photo 7.png` was deleted: it was byte-identical to `Photo 6.png` (verified by
 md5), so the homepage gallery had been rendering the same photograph twice
-under two different captions. The gallery is 8 unique photographs; restoring a
-full 3x3 grid needs a genuinely new ninth image.
+under two different captions. The gallery was 8 unique photographs at the time
+of that fix. **It is now 38** — see the real-content pass at the end of this
+file, which added the award and certificate images; `content/photos.ts` is the
+count of record.
 
 **SEO.** Per-page canonical, Open Graph and Twitter tags; JSON-LD `@graph`
 (WebSite + Person + per-page WebPage/CollectionPage/ProfilePage/ContactPage +
@@ -546,7 +622,7 @@ SITE_URL=https://user.github.io PATH_PREFIX=/repo/ npm run build  # project page
 `ALLOW_INDEXING=true` opens `robots.txt` and swaps every page to `index, follow`.
 
 **Deploy pipeline ownership — unresolved, do not assume.** The repo carries
-two independent deploy configs that currently point at different places, and
+**three** independent deploy configs that point at different places, and
 nothing in the repo says which one is actually production:
 
 - **`.github/workflows/deploy.yml`** (GitHub Actions → GitHub Pages) is
@@ -562,6 +638,12 @@ nothing in the repo says which one is actually production:
   evidence Netlify is actually the live host. Whether Netlify's dashboard has
   `biswajitmohapatra.com` attached, and whether its DNS actually points there,
   are dashboard/DNS facts this repo cannot answer.
+- **`vercel.json`** sets `buildCommand: npm run build`, `outputDirectory:
+  dist` and `trailingSlash: true`, and — like Netlify — sets no `SITE_URL`,
+  no `PATH_PREFIX` and no `ALLOW_INDEXING`, so a Vercel build also falls
+  through to `site.ts`'s `https://biswajitmohapatra.com` default. This file
+  went unmentioned in this document until 2026-09-12; the paragraph above
+  counted two configs while three were committed.
 
 **Do not wire `CNAME_DOMAIN: biswajitmohapatra.com` into the GitHub Actions
 workflow without first confirming Netlify does not also claim that domain** —
