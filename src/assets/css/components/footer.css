@@ -137,11 +137,13 @@
 
 @media (max-width: 640px) {
   .footer-inner { flex-direction: column-reverse; text-align: center; }
-  .footer-text { text-align: center; }
-  /* The indent above corrects a left edge. Centred there is no left edge to
-     correct, and text-indent still applies to a centred line -- it would just
-     push the credit 0.79px off centre. */
-  .footer-credit { text-indent: 0; }
+  /* Left, not centred: centred lines of unequal length each start at a
+     different x, so the lockup came apart on phones. .footer-inner's
+     align-items still centres the block itself whenever both lines fit on one
+     row; once the credit wraps, the block spans the bar and the lines start at
+     its left edge. With a shared left edge again, the credit's 0.79px ink
+     indent above applies here too. */
+  .footer-text { text-align: left; }
   /* column-reverse lifts the socials above the text, so the cascade swaps to
      keep running top-to-bottom rather than jumping back up the bar. */
   .site-footer.footer-rule .footer-socials { transition-delay: 0.16s; }
