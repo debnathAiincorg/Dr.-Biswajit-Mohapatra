@@ -29,7 +29,7 @@ const site: Site = {
   /* What the header and footer print. Styled casing lives here rather than in
      jobTitle/organization, which feed the Person JSON-LD and keep the
      organisation's real name. */
-  tagline: 'VP & Head Of Product And Solutions Engineering · INTUITIVE.AI',
+  tagline: 'VP & Head Of Product And Solutions Engineering · Intuitive . Ai',
   locale: 'en_US',
   lang: 'en',
 

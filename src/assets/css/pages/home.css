@@ -30,10 +30,11 @@
   .page-home .logo {
     font-family: var(--font-sans);
     font-weight: 500;
-    /* Kept in sync with the fluid size in components/header.css -- see the
-       comment there for why it's a clamp() pinned to 1.4rem through the
-       1250px nav breakpoint rather than a flat bigger value. */
-    font-size: clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem);
+    /* The same value components/header.css sets, read from the property it
+       declares on .site-header rather than restated -- .site-tagline derives
+       its own size from that property too, so a literal here would let the
+       homepage wordmark drift out of step with the tagline beneath it. */
+    font-size: var(--wordmark-fs);
     letter-spacing: 0.02em;
     text-transform: none;
     color: #fff;

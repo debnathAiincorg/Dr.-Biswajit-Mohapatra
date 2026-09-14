@@ -254,8 +254,10 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   under `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
 - **esbuild** bundles `src/assets/css/main.css` (collapsing its `@import` graph)
   and `src/assets/js/main.js` (ES modules into one IIFE), minified in production.
-- **Google Fonts: Inter (400/500/600) and Cinzel (400/700/900).** Inter sets
-  headings and body sitewide. Cinzel is a serif and is loaded on every page,
+- **Google Fonts: Inter (300/400/500/600) and Cinzel (400/700/900).** Inter sets
+  headings and body sitewide. 300 is used by exactly two elements -- the
+  `.site-tagline` in the header and the `.footer-credit` that prints the same
+  string -- and was added for them; everything else is 400 and up. Cinzel is a serif and is loaded on every page,
   but applied to exactly one element: the `.site-title` wordmark in the header
   (`components/header.css`). **Earlier revisions of this file said "Inter only
   … no serif face loaded on any of the 14 pages". That has been untrue since

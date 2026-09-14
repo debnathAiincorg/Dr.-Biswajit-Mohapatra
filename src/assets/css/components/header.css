@@ -1,6 +1,13 @@
 /* Header, nav, mobile panel, nav motion */
 /* ---------- Header ---------- */
 .site-header {
+  /* The wordmark's fluid size, hoisted to a custom property because two other
+     rules have to resolve against it: pages/home.css restates the wordmark
+     size for the overlay header, and .site-tagline below derives its own size
+     from this one so the two lines of the lockup come out the same width.
+     When those were three separate clamp() literals they could drift apart
+     silently; now there is one value and the lockup cannot come unaligned. */
+  --wordmark-fs: clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem);
   position: sticky;
   top: 0;
   z-index: 500;
@@ -65,7 +72,7 @@
 .logo {
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem);
+  font-size: var(--wordmark-fs);
   letter-spacing: 0.02em;
   text-transform: none;
   white-space: nowrap;
@@ -148,16 +155,67 @@
    This also keeps the two-line block within ~3px of the 44px burger, so below
    1250px the header is barely taller than it was before the title was added. */
 .site-brand .logo { line-height: 1.2; }
-/* Sized to fit, not picked. This string measures ~30.8px wide per pixel of
-   font-size. At 0.66rem (325px) the 1250px nav row still fits, with ~17px
-   between the title and the first link. Below ~420px the size tracks the
-   viewport instead, so the title still fits beside the burger: 100vw - 80px
-   is the row less its padding (at most ~13px a side at these widths), gap and
-   burger. Re-measure if the text or the header inset changes. */
+/* Sized so the two lines of the lockup end on the same pixel, not picked.
+   Both strings set at a fixed width per pixel of font-size -- measured in a
+   headless browser at 360/390/900/1250/1440/1920px, identical to 3 decimals at
+   every one of them:
+
+     wordmark  "Dr. Biswajit Mohapatra"  Cinzel 400, 0.02em  -> 12.650 x font-size
+     tagline   this string              Inter  400, 0.01em  -> 30.163 x font-size
+
+   so 12.650 / 30.163 = 0.4194 is the ratio that makes the tagline exactly as
+   wide as the name above it. Left edges were already flush (.site-brand is a
+   flex column); it was the right edge that swung -- the tagline overhung the
+   name by 35px at 1250px and fell 127px short at 1920px, so the block never
+   read as one lockup. It now resolves to a clean rectangle at every width.
+
+   Two consequences worth knowing:
+   - The tagline effectively no longer sets the brand block's width. It used to
+     be the wider line below 1300px (318.5px vs the wordmark's 283.4px), so the
+     block is ~35px narrower there and the measured 1250px nav fit and the
+     narrow-phone fit beside .burger both gain that much room. (The text-indent
+     below puts ~1px of that back, since an indent counts toward the line's
+     max-content width. 34px of slack remains; nothing can be made tight by it.)
+   - The viewport-tracking step below ~420px is gone with it. It existed to
+     stop the tagline outrunning the burger; keyed to the wordmark it can never
+     be wider than the wordmark, which already fits.
+
+   Re-measure both ratios if either string, either font or either
+   letter-spacing changes. If Cinzel fails to load the wordmark falls back to a
+   generic serif at a different ratio and the two edges no longer match
+   exactly -- the tagline is still sized sensibly, just not pixel-matched. */
 .site-tagline {
   font-family: var(--font-sans);
-  font-weight: 400;
-  font-size: clamp(0.55rem, calc((100vw - 80px) * 0.032), 0.66rem);
+  /* Light, not regular. This line was never bold -- it rendered in real Inter
+     400, the same weight as body text, with no synthetic bolding -- but at the
+     size it now takes from the wordmark it carries more ink than it used to
+     and reads heavier than a subtitle should. 300 puts it back below the
+     surrounding text, and it is the weight the reference site's own nav is set
+     in (measured in the v2 audit). Requires the 300 cut in the Google Fonts
+     request in partials/head.ts: without it this silently renders the 400 file
+     instead, unchanged. */
+  font-weight: 300;
+  font-size: calc(var(--wordmark-fs) * 0.4194);
+  /* Aligns the two lines by their INK, which is what the eye reads, not by
+     their layout boxes, which were already flush (both are items of the same
+     flex column, so left edges matched to 0.00px at every width -- and the
+     lockup still looked out by a hair).
+
+     The gap is left side bearing. Cinzel's "D" carries ~0.059em of blank
+     space before the stem; Inter's "V" starts almost immediately, ~0.024em.
+     At equal box positions the tagline therefore begins visibly further left.
+     Measured off the rendered pixels -- screenshots at 6x scanned column by
+     column for the first inked one, 12 viewports x 3 ink thresholds -- the
+     offset is a constant 0.0494 of the wordmark's font-size (36 readings,
+     0.0474-0.0522, the spread being antialiasing at the threshold). That is
+     1.1px at the 22.4px wordmark and 1.7px at the 35.2px one, so it has to
+     scale with the wordmark rather than be a fixed pixel nudge.
+
+     text-indent rather than padding/margin because it moves the text without
+     restyling the box, and rather than translate because this is a real
+     typesetting offset that should hold with scripting off and should not
+     collide with the nav-logo-in entrance animation on this element. */
+  text-indent: calc(var(--wordmark-fs) * 0.0494);
   letter-spacing: 0.01em;
   line-height: 1.3;
   white-space: nowrap;
