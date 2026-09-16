@@ -137,28 +137,6 @@
    height -- only the blurb should stretch to push this line to the bottom. */
 .project-card p.project-link { flex-grow: 0; margin-top: 0.9rem; font-size: 0.85rem; }
 
-/* Student card */
-.student-card { text-align: center; }
-.student-avatar {
-  width: 96px; height: 96px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 0 auto 1rem;
-  border: 1px solid var(--line);
-}
-.student-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.student-card h2,
-.student-card h3 { font-size: 1.05rem; margin-bottom: 0.15rem; }
-.student-role {
-  display: block;
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--terracotta-text);
-  margin-bottom: 0.5rem;
-}
-.student-card p { color: var(--ink-soft); font-size: 0.88rem; }
-
 /* Centred call-to-action closing a section (homepage gallery teaser, 404). */
 .section-cta {
   margin-top: clamp(2rem, 4vw, 3rem);

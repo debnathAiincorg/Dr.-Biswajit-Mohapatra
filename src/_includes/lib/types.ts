@@ -35,7 +35,6 @@ export interface Site {
   readonly youtube: string;
   readonly x: string;
   readonly facebook: string;
-  readonly email: string;
   readonly ogImage: string;
   readonly ogImageAlt: string;
   readonly themeLight: string;

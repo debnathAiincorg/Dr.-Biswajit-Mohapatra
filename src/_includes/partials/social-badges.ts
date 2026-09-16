@@ -54,14 +54,7 @@ function badgeFor(site: Site, platform: Platform): Html {
   }
 }
 
-/**
- * Rendered on every page: header (desktop + mobile panel) and footer.
- * `exclude` drops a platform from one of those three spots without
- * affecting the others -- e.g. the header omits YouTube while the footer
- * and Social page still show all four.
- */
-export function socialBadges(site: Site, options?: { readonly exclude?: readonly Platform[] }): Html {
-  const exclude = options?.exclude ?? [];
-  const platforms = ALL_PLATFORMS.filter((platform) => !exclude.includes(platform));
-  return join(platforms.map((platform) => badgeFor(site, platform)));
+/** Rendered on the Contact page and in the footer of every page -- all four platforms. */
+export function socialBadges(site: Site): Html {
+  return join(ALL_PLATFORMS.map((platform) => badgeFor(site, platform)));
 }

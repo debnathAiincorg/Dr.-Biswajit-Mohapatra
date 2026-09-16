@@ -387,10 +387,6 @@
     opacity 0.38s var(--ease),
     visibility 0s;
 }
-/* Child combinator, not a descendant selector: these style the panel's nav
-   rows, and .mobile-socials holds an <a class="social-badge"> further down
-   the panel. As a descendant selector this would apply the nav rows' own
-   padding and border-bottom to that link too. */
 .mobile-panel > a {
   padding: 0.85rem 0;
   font-size: 0.92rem;
@@ -406,15 +402,9 @@
   background-color: rgba(181, 80, 46, 0.1);
 }
 .mobile-panel > a[aria-current="page"] { color: var(--terracotta-text); }
-.mobile-panel.is-open > a,
-.mobile-panel.is-open .mobile-socials {
+.mobile-panel.is-open > a {
   animation: nav-item-in 0.55s var(--ease-out) backwards;
   animation-delay: calc(110ms + var(--nav-i, 0) * 36ms);
-}
-.mobile-panel .mobile-socials {
-  display: flex;
-  gap: 0.9rem;
-  padding-top: 1.25rem;
 }
 
 /* ---------- Header motion ----------

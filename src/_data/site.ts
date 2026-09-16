@@ -38,7 +38,6 @@ const site: Site = {
   youtube: 'https://www.youtube.com/channel/UCbpP51j1OHxslIBtV85hfjA',
   x: 'https://x.com/mbiswajit',
   facebook: 'https://www.facebook.com/biswajit.mohapatra.90',
-  email: 'biswajitm72@gmail.com',
 
   ogImage: '/assets/images/og-cover.jpg',
   ogImageAlt:
