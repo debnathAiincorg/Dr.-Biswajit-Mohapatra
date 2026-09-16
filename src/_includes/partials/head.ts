@@ -30,6 +30,16 @@ export function head(data: PageData, url: (path: string) => string): Html {
     ? html`<link rel="preload" as="image" href="${url(preloadImage)}" type="image/webp" fetchpriority="high">`
     : null;
 
+  /*
+   * Only two of the five self-hosted faces are preloaded: Inter 400 (body
+   * copy) and Cinzel 400 (the header wordmark), which are what paint first on
+   * every page. The other three are discovered when main.css parses, which is
+   * early enough for type that is either below the fold or a heading weight.
+   *
+   * `crossorigin` is required even though these are same-origin: fonts are
+   * always fetched in CORS mode, and a preload whose mode does not match the
+   * later request is simply downloaded a second time.
+   */
   return html`<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
@@ -64,9 +74,8 @@ ${robots}
 <link rel="apple-touch-icon" href="${url('/assets/icons/apple-touch-icon.png')}">
 <link rel="manifest" href="${url('/site.webmanifest')}">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff2" href="${url('/assets/fonts/inter-latin-400-normal.woff2')}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="${url('/assets/fonts/cinzel-latin-400-normal.woff2')}" crossorigin>
 <link rel="stylesheet" href="${url('/assets/css/main.css')}">
 ${pageStylesheet}
 ${preload}

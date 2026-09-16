@@ -254,7 +254,7 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   under `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
 - **esbuild** bundles `src/assets/css/main.css` (collapsing its `@import` graph)
   and `src/assets/js/main.js` (ES modules into one IIFE), minified in production.
-- **Google Fonts: Inter (300/400/500/600) and Cinzel (400/700/900).** Inter sets
+- **Self-hosted fonts: Inter (300/400/500/600) and Cinzel (400).** Inter sets
   headings and body sitewide. 300 is used by exactly two elements -- the
   `.site-tagline` in the header and the `.footer-credit` that prints the same
   string -- and was added for them; everything else is 400 and up. Cinzel is a serif and is loaded on every page,
@@ -265,6 +265,20 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   pinned to 400); the Playfair Display removal in `a4cfabf` is what that
   sentence originally described, and it was never updated when Cinzel arrived.
   `header.css` is the authority on which element gets the serif.
+
+  > **These came from Google Fonts until 2026-09-16 and no longer do.** Two
+  > preconnects plus a render-blocking `<link>` to `fonts.googleapis.com` were
+  > replaced by five woff2 files served from `/assets/fonts/`, declared in
+  > `src/assets/css/base/fonts.css` and copied out of the `@fontsource/inter`
+  > and `@fontsource/cinzel` devDependencies by `eleventy.config.js`. Same
+  > reasoning already recorded for `vendor-lenis.css`: no blocking cross-origin
+  > round trip before first paint, no third-party outage risk, and no request
+  > to Google per visitor. Cinzel's 700 and 900 cuts were dropped because
+  > nothing has ever applied them. Only the `latin` subset ships -- verified,
+  > every character on all 16 built pages falls inside that range; `fonts.css`
+  > documents how to add `latin-ext` if content ever needs it. The `url()`s in
+  > that file are relative **deliberately**, so they survive `PATH_PREFIX`; see
+  > the note there before changing them to root-absolute paths.
 - Design tokens and the type scale live in `src/assets/css/base/tokens.css` and
   the files `main.css` imports. **The nav collapse breakpoint is
   `@media (max-width: 1249px)`, and it lives in
@@ -493,9 +507,15 @@ full v6 layer. It is a historical record, not the current state.
 - Structural/layout and numeric-spacing similarity is the goal; visual asset and color-theme
   similarity is not (see Fidelity Decisions).
 - Multi-page deliverable: the 14 nav destinations plus `/404.html`, an `/about.html` redirect
-  stub, `robots.txt` and `sitemap.xml` — built from `src/*.ts` into `dist/` (see Tech
-  Approach). Supersedes both the original "single file" constraint and v3's hand-written
-  `styles.css` / `script.js` pair.
+  stub, `robots.txt`, `sitemap.xml` and `site.webmanifest` — built from `src/*.ts` into
+  `dist/` (see Tech Approach). Supersedes both the original "single file" constraint and v3's
+  hand-written `styles.css` / `script.js` pair.
+
+  > `site.webmanifest` joined that list on 2026-09-16. It used to be a static file
+  > passthrough-copied from `src/`, which meant the paths **inside** it never got the
+  > `url` filter — so on the project-page build `.github/workflows/deploy.yml` configures,
+  > its `start_url`/`scope` pointed at the domain root and all three icons 404ed. It is
+  > now `src/webmanifest.ts`. Do not turn it back into a static file; see the note there.
 
 ## Production Readiness Pass (v4)
 

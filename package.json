@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Personal academic site for Dr. Biswajit Mohapatra \u2014 static site built with Eleventy.",
+  "description": "Personal academic site for Dr. Biswajit Mohapatra — static site built with Eleventy.",
   "engines": {
     "node": ">=20.6"
   },
@@ -17,6 +17,8 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
+    "@fontsource/cinzel": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
     "@types/node": "^26.4.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.24.0",

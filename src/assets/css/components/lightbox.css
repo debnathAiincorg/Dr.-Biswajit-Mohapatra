@@ -4,6 +4,7 @@
    failed, a.proof-zoom still just navigates to the full-size image -- this
    file only styles the enhanced path. */
 .proof-lightbox {
+  position: relative;
   border: none;
   padding: 0.75rem;
   max-width: min(90vw, 900px);
@@ -11,6 +12,39 @@
   background: var(--paper);
   border-radius: var(--radius);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+}
+
+/* Sits over the image's top-right corner rather than in the paper margin:
+   the dialog's padding is 0.75rem, nowhere near a 44px target, and the image
+   is what fills the box at every size. The dark disc is what keeps the glyph
+   legible over an arbitrary photograph -- these are scans and certificates,
+   so the corner behind it is usually, but not reliably, white.
+   44px because it is the one control here a touch user must be able to hit;
+   .burger is sized the same way for the same reason. */
+.proof-lightbox-close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(20, 16, 12, 0.55);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--hover-duration) var(--ease);
+}
+.proof-lightbox-close:hover,
+.proof-lightbox-close:focus-visible {
+  background: rgba(20, 16, 12, 0.82);
+}
+.proof-lightbox-close svg {
+  display: block;
 }
 .proof-lightbox::backdrop {
   background: rgba(20, 16, 12, 0.72);

@@ -10,6 +10,10 @@
   Page-specific styles live in ./pages/ and are loaded only by the pages that
   need them; see the `pageCss` front-matter key.
 */
+/* First, so the @font-face declarations are parsed before anything that sets
+   a font-family. Added at the top rather than inserted anywhere in the list
+   below, so the existing cascade order is untouched. */
+@import "./base/fonts.css";
 @import "./base/reset.css";
 @import "./base/tokens.css";
 @import "./base/layout.css";

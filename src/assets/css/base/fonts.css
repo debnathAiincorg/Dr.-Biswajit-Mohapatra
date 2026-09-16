@@ -1,0 +1,85 @@
+/* ==========================================================================
+   Self-hosted webfonts.
+
+   These used to come from Google Fonts: two preconnects and a render-blocking
+   <link> to fonts.googleapis.com in the <head> of every page, which then
+   pulled the font files themselves from a second origin, fonts.gstatic.com.
+   That is the same cost this project already refused to pay for Lenis' 513
+   bytes of CSS -- "a request that had to resolve before first paint, from a
+   host outside our control" (see vendor-lenis.css). It applies with more
+   force here: the fonts block text rendering, not just a scroll behaviour,
+   and it made every visitor's browser announce itself to Google.
+
+   The files are the same ones Google serves, repackaged by @fontsource
+   (a devDependency, pinned in package.json) and passthrough-copied to
+   /assets/fonts/ by eleventy.config.js.
+
+   Two things to know before editing:
+
+   1. The url()s are RELATIVE, deliberately. This stylesheet is bundled into
+      /assets/css/main.css, and a CSS url() resolves against the stylesheet's
+      own address -- so "../fonts/x.woff2" lands on /assets/fonts/x.woff2 and,
+      under PATH_PREFIX, on /<prefix>/assets/fonts/x.woff2, with nothing
+      needing to know the prefix. A root-absolute "/assets/fonts/..." would
+      break on a project-page build exactly as src/site.webmanifest did.
+      esbuild is told to leave these alone via `external: ['*.woff2']`.
+
+   2. Only the `latin` subset is shipped. Checked, not assumed: every
+      character rendered across all 16 built pages falls inside the range
+      below. If content ever adds one outside it -- a Romanian or Polish name,
+      say -- that glyph silently falls back to the system font. The fix is to
+      add the matching *-latin-ext-*.woff2 files as a second @font-face per
+      weight with the latin-ext unicode-range; @fontsource already ships them.
+   ========================================================================== */
+
+/* Google's own `latin` unicode-range, so the declarations stay interchangeable
+   with what the CDN served. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../fonts/inter-latin-300-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/inter-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/inter-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../fonts/inter-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Cinzel 400 only. The CDN request asked for 400;700;900, but exactly one
+   element on the site is set in Cinzel -- the .site-title wordmark, pinned to
+   400 in components/header.css -- so the other two cuts were never applied to
+   anything. Requesting them cost nothing (a browser only downloads the faces
+   it uses), but shipping them would put two unused files in dist/. */
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/cinzel-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
