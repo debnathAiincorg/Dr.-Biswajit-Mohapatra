@@ -8,8 +8,9 @@ import { definePage } from './_includes/lib/page.ts';
 export const { data, render } = definePage({
   data: {
     title: 'Dr. Biswajit Mohapatra — VP & Head of Product and Solutions Engineering',
+    /* Kept identical to site.ts's description -- see the comment there. */
     description:
-      'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist who previously led CIO advisory and cloud transformation at AWS and IBM.',
+      'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist.',
     navLabel: 'About',
     schemaType: 'ProfilePage',
     permalink: '/index.html',

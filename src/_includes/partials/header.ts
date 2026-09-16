@@ -35,7 +35,7 @@ export function header(context: PartialContext): Html {
     </nav>
 
     <div class="header-actions">
-      <button class="burger" id="burgerBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobilePanel">
+      <button type="button" class="burger" id="burgerBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobilePanel">
         <span></span><span></span><span></span>
       </button>
     </div>

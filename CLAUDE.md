@@ -598,9 +598,11 @@ count of record.
 
 **SEO.** Per-page canonical, Open Graph and Twitter tags; JSON-LD `@graph`
 (WebSite + Person + per-page WebPage/CollectionPage/ProfilePage/ContactPage +
-BreadcrumbList); `robots.txt`; `sitemap.xml` with image entries; a three-file
-favicon set plus `site.webmanifest`; one `<h1>` per page with no skipped
-heading levels; and real meta descriptions replacing the old
+BreadcrumbList); `robots.txt`; `sitemap.xml` (`<loc>`/`<lastmod>` per URL --
+**not** image entries; `sitemap.ts` has never emitted `<image:image>`, this
+line just said so); a three-file favicon set plus `site.webmanifest`; one
+`<h1>` per page with no skipped heading levels; and real meta descriptions
+replacing the old
 "Demo content only" placeholders.
 
 **Base URL.** *(Superseded — do not hand-edit built files.)* The origin is no

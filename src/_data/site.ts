@@ -21,9 +21,15 @@ const site: Site = {
   shortName: 'B. Mohapatra',
   /* Reuses the homepage's own description verbatim, rather than new copy,
      so the WebSite JSON-LD node has one stable value instead of drifting to
-     whichever page happened to render it last (see eleventyComputed.ts). */
+     whichever page happened to render it last (see eleventyComputed.ts).
+     Trimmed 2026-09-16 (from a 194-char version ending "...who previously led
+     CIO advisory and cloud transformation at AWS and IBM.") -- that length
+     was a clear outlier against every other page's meta description (92-149
+     chars) and risked truncation in search results. Edit index.ts's copy
+     alongside this one; letting them diverge is what this comment exists to
+     prevent. */
   description:
-    'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist who previously led CIO advisory and cloud transformation at AWS and IBM.',
+    'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist.',
   jobTitle: 'VP & Head of Product and Solutions Engineering',
   organization: 'Intuitive.ai',
   /* What the header and footer print. Styled casing lives here rather than in

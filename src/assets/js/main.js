@@ -2,9 +2,13 @@
  * Shared entry point, loaded by every page.
  *
  * Bundled by esbuild into a single classic script, so the modules below are an
- * authoring structure rather than extra requests. Page-specific behaviour, if
- * any page ever needs it, belongs in its own entry under ./pages/ and is
- * loaded only by that page -- see the `pageJs` front-matter key.
+ * authoring structure rather than extra requests. No page currently needs
+ * behaviour of its own -- everything here runs on all 16 pages. If one ever
+ * does, the CSS side already has the pattern to follow: `pageCss` in a page's
+ * front matter (see lib/types.ts's PageMeta) loads a stylesheet only for that
+ * page (see pages/home.css and head.ts). A `pageJs` front-matter key wired the
+ * same way through eleventy.config.js's esbuild step would be the equivalent
+ * for script -- not built, because nothing has needed it yet.
  */
 import { armReveal, disarmReveal } from './modules/reveal-arm.js';
 import { exposeScrollbarWidth } from './modules/scrollbar-width.js';
