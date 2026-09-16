@@ -668,20 +668,44 @@ is still literally true, and it is why that file is opt-in.
   > Vercel falls through to the identical default and is the one actually
   > serving. Matching the fallback is not evidence of being the live host.
 
-- **`vercel.json`** sets `buildCommand: npm run build`, `outputDirectory:
-  dist` and `trailingSlash: true`, and — like Netlify — sets no `SITE_URL`,
-  no `PATH_PREFIX` and no `ALLOW_INDEXING`. **It is the de facto host.**
+- **`vercel.json`** sets `outputDirectory: dist`, `trailingSlash: true`, no
+  `PATH_PREFIX` and no `ALLOW_INDEXING`. **It is the de facto host.** Its
+  `buildCommand` carries `SITE_URL` as an environment prefix:
 
-  > **It publishes URLs for a domain it does not serve.** With no `SITE_URL`
-  > it falls through to `site.ts`'s default, so every canonical, `og:url`,
-  > sitemap `<loc>` and JSON-LD URL on the live Vercel deployment points at
-  > `biswajitmohapatra.com` — which serves the unrelated WordPress blog above.
-  > Confirmed live: its `robots.txt` opens `# https://biswajitmohapatra.com/robots.txt`.
-  > This is harmless **only** because `ALLOW_INDEXING` is false, so every page
-  > ships `noindex` and `robots.txt` disallows everything. One environment
-  > variable separates "harmless" from "publishing canonicals that point at
-  > someone else's site". **Set `SITE_URL` on Vercel before ever setting
-  > `ALLOW_INDEXING=true`.**
+  ```
+  "buildCommand": "SITE_URL=https://dr-biswajit-mohapatra.vercel.app npm run build"
+  ```
+
+  > **That prefix is load-bearing. Do not simplify it back to `npm run build`.**
+  > Until 2026-09-16 the command had no prefix, so the build fell through to
+  > `site.ts`'s default and every canonical, `og:url`, `og:image`, sitemap
+  > `<loc>`, JSON-LD URL and the `Sitemap:` line on the live deployment named
+  > `biswajitmohapatra.com` — the WordPress-forwarded domain above, which
+  > returns **404 for `/awards/` and for `/assets/images/og-cover.jpg`**. So
+  > the site was advertising a canonical that did not exist and a preview
+  > image that did not load. `noindex` did not contain this: it stops search
+  > indexing, but LinkedIn, X, WhatsApp and Slack read `og:` tags anyway, so
+  > every shared link already rendered with a broken image and the wrong
+  > domain attributed to it.
+  >
+  > The value is set in `vercel.json` rather than a dashboard variable
+  > deliberately: a dashboard value is invisible to the repo, which is the
+  > exact failure mode that left Netlify's status unverifiable below. JSON
+  > takes no comments, which is why this note lives here.
+  >
+  > **At domain cutover this value changes with DNS, not before it.** A
+  > canonical must point at a URL serving the same content, so it stays on the
+  > `.vercel.app` origin for as long as that is what actually serves the site.
+  >
+  > `SITE_URL` reaches seven places, all absolute-URL metadata: `head.ts:14`
+  > (canonical, `og:url`), `head.ts:15` (`og:image`, `twitter:image`),
+  > `eleventyComputed.ts:33` (all JSON-LD), `sitemap.ts:18`, `robots.ts:16,32`
+  > and `about.ts:25`. It never touches internal links, asset paths or the
+  > manifest — those go through `url()`, which applies only `pathPrefix`. That
+  > is why a wrong value cannot fail a build or break navigation, and why this
+  > went unnoticed: it is silent by construction. Note also that
+  > `SITE_URL=""` is **not** a safe way to unset it — the empty string is
+  > falsy, so it hits the `||` default and silently restores the bug.
 
 ### Still open, and the standing warning
 

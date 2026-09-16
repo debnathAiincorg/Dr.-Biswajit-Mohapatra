@@ -114,4 +114,8 @@ defined once in `src/_data/nav.ts` and drive the header, the compact menu and
 - **GitHub Pages** — `.github/workflows/deploy.yml` builds and publishes on
   push to `main`. Set Settings → Pages → Source to **GitHub Actions**.
 - **Netlify** — `netlify.toml` is included; set `SITE_URL` in the UI.
-- **Vercel / any static host** — build command `npm run build`, output `dist`.
+- **Vercel** — `vercel.json` is included. Its `buildCommand` sets `SITE_URL`
+  inline, so the origin in canonicals and Open Graph tags is version-controlled
+  rather than living in a dashboard; update that value at domain cutover.
+- **Any other static host** — build command `npm run build`, output `dist`,
+  and set `SITE_URL` to the origin it serves from.
