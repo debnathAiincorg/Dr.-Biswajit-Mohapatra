@@ -616,39 +616,83 @@ SITE_URL=https://user.github.io PATH_PREFIX=/repo/ npm run build  # project page
 `CNAME` is opt-in and never written by default: set `CNAME_DOMAIN` at cutover.
 `ALLOW_INDEXING=true` opens `robots.txt` and swaps every page to `index, follow`.
 
-**Deploy pipeline ownership — unresolved, do not assume.** The repo carries
-**three** independent deploy configs that point at different places, and
-nothing in the repo says which one is actually production:
+**Deploy pipeline ownership — measured 2026-09-16.** The repo carries **three**
+independent deploy configs pointing at different places. This section used to
+say nothing in the repo could tell you which was production, and asked the site
+owner to state it. Most of that is now answered from outside the repo — DNS,
+live response headers, the GitHub API and the workflow run history. The
+headline: **none of the three serves `biswajitmohapatra.com`, and the one
+actually serving this site is Vercel.**
+
+### What is live, as measured
+
+| URL | What it serves | How it was identified |
+|---|---|---|
+| `biswajitmohapatra.com` | A 489-byte HTML4 **frameset wrapping `http://biswajitmohapatra.wordpress.com`** | A records `15.197.225.128` / `3.33.251.168` (AWS registrar-forwarding range, not Pages/Netlify/Vercel); `Server: ip-100-74-5-75.eu-west-2.compute.internal` |
+| `dr-biswajit-mohapatra.vercel.app` | **This site, current build** | `Server: Vercel`; serves the real homepage; also the repo's own `homepage` field |
+| `debnathaiincorg.github.io/Dr.-Biswajit-Mohapatra/` | **Jekyll rendering `README.md`** — not this site | `generator: Jekyll v3.10.0`; `/robots.txt` and `/assets/css/main.css` both 404 |
+
+So the production domain is on **registrar domain forwarding to a legacy
+WordPress blog**. That is what `eleventy.config.js`'s `CNAME_DOMAIN` comment
+means by "the production domain currently serves a different, live site" — it
+is still literally true, and it is why that file is opt-in.
+
+### Per-config status
 
 - **`.github/workflows/deploy.yml`** (GitHub Actions → GitHub Pages) is
   hardwired to a *project-page* build: `SITE_URL: https://<owner>.github.io`,
   `PATH_PREFIX: /<repo>/`, `ALLOW_INDEXING: 'false'`. It never sets
   `CNAME_DOMAIN`, so it never writes a `CNAME` file — this pipeline is
   structurally incapable of serving `biswajitmohapatra.com` as committed.
+
+  > **Its output is currently built and then discarded.** The workflow runs and
+  > succeeds on every push, but a *second* workflow — GitHub's built-in `pages
+  > build and deployment` — runs alongside it, and its existence means
+  > **Settings → Pages → Source is still "Deploy from a branch"**, which is
+  > exactly the step this workflow's own header comment tells you to change.
+  > Jekyll's render of `README.md` is what gets published; the uploaded
+  > artifact is not. Verified on the live URL, above. Flipping the Source to
+  > "GitHub Actions" is a *repo setting*, not a code change — nothing in this
+  > tree can fix it.
+
 - **`netlify.toml`** sets no `SITE_URL`/`ALLOW_INDEXING` at all; its own
   header comment defers both to the Netlify UI. With nothing set, a Netlify
   build silently falls back to `site.ts`'s default
-  (`https://biswajitmohapatra.com`) — which happens to be the intended
-  production domain, but that's a coincidence of the fallback value, not
-  evidence Netlify is actually the live host. Whether Netlify's dashboard has
-  `biswajitmohapatra.com` attached, and whether its DNS actually points there,
-  are dashboard/DNS facts this repo cannot answer.
+  (`https://biswajitmohapatra.com`). **This is the one genuine unknown left:**
+  there is no external evidence that any Netlify site is attached to this repo
+  at all. Do not delete `netlify.toml` as dead config without checking the
+  dashboard — if a site *is* attached, removing it breaks that build.
+
+  > An earlier revision of this section reasoned that Netlify's fallback
+  > "happens to be the intended production domain." That proves nothing:
+  > Vercel falls through to the identical default and is the one actually
+  > serving. Matching the fallback is not evidence of being the live host.
+
 - **`vercel.json`** sets `buildCommand: npm run build`, `outputDirectory:
   dist` and `trailingSlash: true`, and — like Netlify — sets no `SITE_URL`,
-  no `PATH_PREFIX` and no `ALLOW_INDEXING`, so a Vercel build also falls
-  through to `site.ts`'s `https://biswajitmohapatra.com` default. This file
-  went unmentioned in this document until 2026-09-12; the paragraph above
-  counted two configs while three were committed.
+  no `PATH_PREFIX` and no `ALLOW_INDEXING`. **It is the de facto host.**
+
+  > **It publishes URLs for a domain it does not serve.** With no `SITE_URL`
+  > it falls through to `site.ts`'s default, so every canonical, `og:url`,
+  > sitemap `<loc>` and JSON-LD URL on the live Vercel deployment points at
+  > `biswajitmohapatra.com` — which serves the unrelated WordPress blog above.
+  > Confirmed live: its `robots.txt` opens `# https://biswajitmohapatra.com/robots.txt`.
+  > This is harmless **only** because `ALLOW_INDEXING` is false, so every page
+  > ships `noindex` and `robots.txt` disallows everything. One environment
+  > variable separates "harmless" from "publishing canonicals that point at
+  > someone else's site". **Set `SITE_URL` on Vercel before ever setting
+  > `ALLOW_INDEXING=true`.**
+
+### Still open, and the standing warning
 
 **Do not wire `CNAME_DOMAIN: biswajitmohapatra.com` into the GitHub Actions
-workflow without first confirming Netlify does not also claim that domain** —
-two hosts both configured for the same custom domain is a DNS collision, and
-the loser silently stops serving traffic with nothing in either config
-revealing why.
-
-This needs the site owner to state, once, which pipeline is authoritative for
-`biswajitmohapatra.com` today (or confirm neither is live yet) — until then,
-treat both as non-production and this paragraph as the standing warning.
+workflow without first confirming no other host claims that domain** — two
+hosts configured for the same custom domain is a DNS collision, and the loser
+silently stops serving traffic with nothing in either config revealing why.
+The domain is currently on registrar forwarding, so a cutover means changing
+DNS at the registrar *and* deciding which of the three hosts wins. That
+decision is still the site owner's; what is no longer open is *which one is
+live today*.
 
 **No longer placeholder — real content pass (this revision).** The fictional
 "Speech Lab / Ashfield University" academic persona described earlier in this
