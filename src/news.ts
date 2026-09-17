@@ -32,7 +32,7 @@ export const { data, render } = definePage({
         <span class="eyebrow reveal">Latest</span>
         <h1 class="reveal">News</h1>
       </div>
-      ${rowList(asRows(), '      ', 'row-list with-cta')}
+      ${rowList(asRows({ movableBlocksBeside: true }), '      ', 'row-list with-cta')}
       <a class="btn btn-primary reveal" href="${url('/contact/')}">Get in Touch</a>
     </div>
   </section>

@@ -59,14 +59,16 @@ export const { data, render } = definePage({
           sub: 'Notion Press',
           meta: '2026',
           datetime: '2026',
-          detail: html`${detailImage(
+          detailAside: detailImage(
             url,
             'pub-devops-odyssey-cover',
             'Cover of The DevOps Odyssey by Dr. Biswajit Mohapatra',
             160,
             185,
             html`Cover image, from the book&rsquo;s LinkedIn launch post. This is the only resolution available in the source material.`,
-          )}<p>&ldquo;I am also the author of &lsquo;The DevOps Odyssey&rsquo;, where I share practical insights on scaling DevOps and building high-performance engineering cultures.&rdquo;</p><p>&ldquo;It&rsquo;s a reflection of real-world experiences, leadership lessons and practical insights from the evolving world of DevOps, SRE, Observability and Chaos Engineering &mdash; built for practitioners, CXOs and builders who are shaping modern, scalable and resilient technology ecosystems.&rdquo;</p><p>From the launch post: &ldquo;Grateful for the incredible response so far. Your feedback, conversations and encouragement have been the real fuel behind this journey.&rdquo;</p><p>Available via Amazon, Flipkart and Notion Press.</p>`,
+          ),
+          detailAsideSize: { width: 160, height: 185 },
+          detail: html`<p>&ldquo;I am also the author of &lsquo;The DevOps Odyssey&rsquo;, where I share practical insights on scaling DevOps and building high-performance engineering cultures.&rdquo;</p><p>&ldquo;It&rsquo;s a reflection of real-world experiences, leadership lessons and practical insights from the evolving world of DevOps, SRE, Observability and Chaos Engineering &mdash; built for practitioners, CXOs and builders who are shaping modern, scalable and resilient technology ecosystems.&rdquo;</p><p>From the launch post: &ldquo;Grateful for the incredible response so far. Your feedback, conversations and encouragement have been the real fuel behind this journey.&rdquo;</p><p>Available via Amazon, Flipkart and Notion Press.</p>`,
         },
         {
           title: 'Interview: Open Source Allows Us to Lower Costs, Accelerate Delivery, and Customise Solutions',
@@ -74,14 +76,16 @@ export const { data, render } = definePage({
           sub: 'Open Source For You magazine',
           meta: 'Apr 2024',
           datetime: '2024-04',
-          detail: html`${detailImage(
+          detailAside: detailImage(
             url,
             'pub-osfy-interview-tearsheet',
             'Scanned pages of the Open Source For You interview with Dr. Biswajit Mohapatra, April 2024',
             1364,
             1929,
             html`The original tearsheet, pages 18&ndash;21 of Open Source For You, April 2024. This page is shared with an unrelated article; only the interview at right (page 18) and both full pages 20&ndash;21 are Dr. Mohapatra&rsquo;s. Click to view full size.`,
-          )}<p>&ldquo;Open source allows us to lower costs, accelerate delivery, and customise solutions to meet the market&rsquo;s fast-paced demands.&rdquo;</p><p>Open source is crucial for cost reduction and accelerated delivery of tailored solutions to meet market demands. At OSI 2023, OSFY&rsquo;s Yashasvini Razdan got a chance to speak to Dr Biswajit Mohapatra, Head, Customer Solutions at Amazon Web Services, who spoke about how open source empowered businesses with flexibility, experimentation, and agile methodologies for genuine customer satisfaction.</p>${qa(
+          ),
+          detailAsideSize: { width: 1364, height: 1929 },
+          detail: html`<p>&ldquo;Open source allows us to lower costs, accelerate delivery, and customise solutions to meet the market&rsquo;s fast-paced demands.&rdquo;</p><p>Open source is crucial for cost reduction and accelerated delivery of tailored solutions to meet market demands. At OSI 2023, OSFY&rsquo;s Yashasvini Razdan got a chance to speak to Dr Biswajit Mohapatra, Head, Customer Solutions at Amazon Web Services, who spoke about how open source empowered businesses with flexibility, experimentation, and agile methodologies for genuine customer satisfaction.</p>${qa(
             html`What AI/ML opportunity do you see in India?`,
             html`According to India&rsquo;s NASSCOM report, the country&rsquo;s GDP is predicted to be US&#36; 5 trillion by 2025. The GDP from AI and data will be around US&#36; 500 billion, which means that almost 10% of this entire US&#36; 5 trillion GDP will come from AI and data. Around 45% of this 500 billion will be used by India&rsquo;s finance, retail and agriculture industries. AI/ML is pervasive across every nook and cranny of India, from large banks and insurance companies to remote rural places. So that&rsquo;s the opportunity that India is offering.`,
           )}${qa(

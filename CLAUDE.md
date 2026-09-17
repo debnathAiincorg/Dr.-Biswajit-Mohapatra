@@ -496,6 +496,130 @@ shadow on the scrolled header, with their reduced-motion and
 `docs/superpowers/specs/2026-09-12-depth-layer-design.md` still describes the
 full v6 layer. It is a historical record, not the current state.
 
+## Expanded rows put their figure beside the text (2026-09-17)
+
+An expandable `row-list` row carrying both a figure and text lays them out in
+two columns -- text left, figure right -- instead of stacking the figure above
+the first sentence, where an 800px-tall certificate scan sat between a row's
+title and the words it belongs to. 58 rows across ten pages: Awards 32,
+Activities 11, News and the homepage teaser 3 each, Academic Engagement 3,
+Publications 2, and one each on Patents, Board & Advisory, Certifications and
+Education.
+
+### Who decides what
+
+Three things size these rows, and it is worth knowing which to reach for,
+because they were arrived at in that order by fixing what the previous one got
+wrong.
+
+- **`asideTrack` in `components/row-list.ts` decides the figure's size**, per
+  row, and is what stops a row being tall for no reason:
+
+      height = clamp(360px, estimated text height x 1.6, 640px)
+      width  = clamp(240px, height x aspect ratio, the image's own px width)
+
+  It arrives in the CSS as `--row-aside-cap`, an inline pixel width on the
+  body. The 44 rows with under 400 characters all land on a ~350px figure
+  height whatever their aspect ratio -- that uniform height is what gives a
+  page of opened rows a consistent rhythm -- with widths between 240px and
+  431px. Rows with real prose scale up to 640px. **Two floors, guarding
+  different things:** 360px of height keeps a certificate legible in place,
+  240px of width keeps a two-line caption from setting as seven lines.
+- **`--row-aside-share` in `components/row-list.css` decides how much of the
+  body a figure may take at all**, and is what makes the layout responsive:
+  36% (41% with `.is-prose`), stepping down at 1200px and 1024px. It binds on
+  a narrower window, where a fixed px cap would leave the text nothing, and on
+  a landscape image, whose aspect ratio asks for more width than the body can
+  spare. The two compose as `min(share, cap)`.
+- **The text takes the rest** (`1fr`), capped to a measure -- 80ch, or 72ch
+  with `.is-prose`, which the renderer adds at 400 characters. The figure is
+  in the last track, so whatever the numbers settle on, its right edge is on
+  the body's right margin, in line with the row's date above it: measured
+  right-hand void is 4px, the body's own padding, on all 58 rows at every
+  width. Width the figure does not take becomes gutter, not a hole at the
+  margin.
+
+Stacks text-first at 768px, where the figure keeps its per-row cap
+(`clamp(300px, cap, 400px)`) so the height budget survives the reflow -- left
+to fill the column, a portrait scan would come out *taller* stacked than
+side-by-side.
+
+### Two slots, and the vertical trade-off
+
+`Row.detailAside` is the slot for a figure a page builds itself -- the book
+cover and magazine tearsheet on Publications, the same two in
+`content/lab-notes.ts` -- with `Row.detailAsideSize` giving the renderer that
+image's pixel dimensions, which it cannot read out of pre-rendered markup and
+needs for `asideTrack`. A `proofImage` carries its own size and reaches the
+same column on its own.
+
+The text is centred against the figure (`align-self: center` on
+`.row-detail-main`) and the figure is top-aligned, so it never hangs lower
+than its text. **A one-line citation beside a legible scan still leaves around
+400px of space under the text, and that is the floor, not an oversight**: the
+text is 47px and the figure cannot go below the legibility floor, so the ratio
+cannot be closed -- only the absolute height, which went from ~600px to ~410px
+when sizing became content-aware. `ASIDE_MIN_HEIGHT` in `row-list.ts` is the
+one number to change if a shorter row is worth a smaller image.
+
+### The News press grid moves too
+
+The Intuitive.ai appointment row is the one row whose images are a grid rather
+than a figure. Its text runs to 11,789 characters, and with no aside the body
+was capped at 68ch -- a 631px column of text inside a 1204px container, with
+the six congratulations graphics 2,513px below the first paragraph. The grid
+now sits in the figure column: text at 72ch, grid 450px wide, 3 x 2 tiles at
+142px, which is within 5px of what the tiles measured in the flow, so the
+graphics moved without being resized. Row height went from 2,909px to 2,288px.
+
+**The mechanism is `movableBlock` in `content/lab-notes.ts`.** That module is
+the single source for both /news/ and the homepage teaser, and `asRows` takes
+`movableBlocksBeside` -- **both callers pass it**, so the two pages render
+these rows identically, which is verified: all four detail bodies match
+byte for byte once the minifier's per-document attribute sort is normalised,
+and the rendered geometry matches at ten widths from 320px to 1920px.
+
+The option stays a parameter rather than becoming the only behaviour because
+the fallback is what makes the block *movable* rather than simply relocated:
+a caller that cannot give a row two columns gets the grid back at the end of
+the text instead of losing it. Default `false` keeps that the safe case for a
+new caller.
+
+`Row.detailAsideTrack` is how the width gets set: a grid of thumbnails has no
+aspect ratio, so `asideTrack`'s height budget has nothing to work from and the
+row states 450px outright. The share still caps it, so a tablet steps the grid
+down to 2 columns and a narrow window is unaffected.
+
+Two CSS rules go with it, both scoped to `.row-detail-aside` so the only other
+`.proof-grid` on the site -- the four jury letters on Activities, in the flow
+of a three-line paragraph, already beside what introduces them -- is untouched
+and still renders at 623px, 4 columns, 147px tiles, byte-identical.
+
+### What deliberately did *not* move
+
+An image the prose introduces in passing (the spatial-data-warehouse diagram
+Publications calls "given below"), the Activities `.proof-grid`, whose own
+heading sits directly above it in the text, and the four Activities rows whose
+whole `detail` is a photograph with no text beside it. Those stay in the flow
+at full width, and their HTML is byte-identical to before this change --
+verified by diffing all 78 detail bodies against the pre-change build.
+
+On a phone every aside stacks text-first, so the press grid is at the end of
+the article there. That is the site-wide stacked rule and is exactly where it
+was before this change; the alternative is putting six thumbnails above the
+headline text for one row only.
+
+### Measured
+
+288 page/width combinations (16 pages x 18 widths, 320-1920px) with every row
+expanded, 1152 aside bodies: no text/figure overlap, no body overflow, no
+figure past the body's edge, no figure sitting below the top of its text, and
+no rendered line over 80ch. Stacked below 768px, all 58 rows put text first
+with an 18px gap and no image wider than its column. Median row height at
+1440px is 433px. The 27px `scrollWidth` overhang the homepage shows at 320px
+is unchanged from before and comes from its `width: 100vw` band, not from this
+layout.
+
 ## Constraints
 
 - **No real content from the source site**: no real names, bios, quotes, headlines, article/

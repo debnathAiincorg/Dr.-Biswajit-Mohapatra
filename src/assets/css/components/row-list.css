@@ -241,6 +241,195 @@
   display: block;
 }
 
+/* ---------- Figure beside text inside an expanded row ----------
+
+   An expanded row carrying both a figure and text is two columns: text left,
+   figure right. The figure used to render above the text at the body's full
+   width, so an 800px-tall certificate scan sat between a row's title and its
+   first sentence -- on Awards, on 32 consecutive rows of it.
+
+   Grid rather than `float: right`: a float lets short text wrap back
+   underneath the figure, so the layout stops being two columns exactly where
+   the text is shortest, and it leaves a tall figure hanging out of the body's
+   bottom edge unless the body clears it. Grid over bare auto-placement, too
+   -- each paragraph would take a row of its own and the figure cannot be
+   spanned down implicit row tracks without inventing a row count. That is
+   what the .row-detail-main wrapper in the renderer is for.
+
+   The first pass at this sized both columns rigidly -- 68ch of text and a
+   260px figure -- which on a 1440px screen left 313px of the body empty at
+   its right-hand edge and made the prose a narrow ribbon beside it. The
+   second gave the figure a flat 36% of the body, which used the width but
+   made every row as tall as its image: a portrait scan came out 560px tall
+   beside two lines of text.
+
+   So the figure's size is decided per row, in components/row-list.ts, from
+   how much text the row has and the image's own aspect ratio -- `asideTrack`
+   there carries the reasoning and the numbers. It arrives here as
+   `--row-aside-cap`, a pixel width, and the share below caps it from above.
+
+   The division of labour is worth keeping straight when changing either:
+
+   - the cap decides the figure's size, and is what stops a row being tall
+     for no reason. It is a fixed pixel value, the same on a 1440px screen as
+     on a 1920px one, because it is derived from a height budget in px.
+   - the share decides how much of the body a figure may take *at all*, and
+     is what makes the layout responsive. It binds on a narrower window,
+     where a fixed px cap would leave the text nothing, and on a landscape
+     image, whose aspect ratio would otherwise ask for more width than the
+     body can spare.
+
+   Whatever the two settle on, the figure is in the last track, so its
+   right-hand edge is on the body's right margin, in line with the row's date
+   above it. Width the figure does not take goes to the gutter between the
+   columns -- the text is capped to a measure and stays on the left margin --
+   so a smaller figure never reopens the hole at the right-hand edge that the
+   first version of this layout had. */
+.row-detail-body.has-aside {
+  /* Share of the body the figure column takes. Stepped down as the window
+     narrows, because the text column is what is left over and 36% of a 940px
+     body leaves it too little. */
+  --row-aside-share: 36%;
+  /* Set inline by the renderer, per row: see the note above and `asideTrack`
+     in components/row-list.ts. The 100% here is the fallback for a figure
+     whose size the renderer was not given -- the share alone then applies. */
+  --row-aside-cap: 100%;
+  display: grid;
+  /* 1fr, not a fixed measure: the text absorbs whatever the figure does not
+     take, so the two columns always meet the body's edges. Where the text is
+     long enough for line length to matter, .is-prose below caps the measure
+     and the slack lands in the gutter instead -- it does not reappear at the
+     right-hand margin, because the figure's track is still the last one. */
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, min(var(--row-aside-share), var(--row-aside-cap)));
+  column-gap: clamp(1.5rem, 2.6vw, 3rem);
+  /* The figure is pinned to the top of the row. It is the first thing in the
+     opened row and should never hang lower than the text it belongs to --
+     which is also why the figure's own 0.9rem top margin is dropped below. */
+  align-items: start;
+  max-width: none;
+}
+
+/* Two jobs.
+
+   `min-width: 0` -- a grid item's automatic minimum size is its min-content
+   width, which would hold the text track open at the widest unbreakable thing
+   inside it whatever the minmax(0, ...) above says. The one genuinely wide
+   element a detail body can hold, the comparison table on Publications,
+   already scrolls inside .row-detail-table-wrap, whose min-content size is 0;
+   this covers everything else, a long URL or a long compound word.
+
+   `align-self: center` -- for the short rows described above, text pinned to
+   the top reads as a label that fell off the image, and puts the whole of the
+   figure's height below it, which is exactly the "image sitting low" this
+   layout is meant to avoid. Centred, the text and the figure share a middle
+   line and read as a caption set beside its image. When the text is the
+   taller of the two -- the Publications interview, at 11,789 characters --
+   the row is already its height and centring changes nothing, so this needs
+   no per-row switch. */
+.row-detail-main {
+  min-width: 0;
+  align-self: center;
+  /* A ceiling on line length for every aside row, including the short ones
+     whose track is `1fr`. It matters more now that the figure is sized to
+     the row rather than to the body: a short row with a small figure leaves
+     a text track of 800px or more, which is 110+ characters a line. Capped,
+     the surplus becomes gutter instead. */
+  max-width: 80ch;
+}
+
+/* Rows whose text runs past about four lines keep a measure; the renderer
+   adds .is-prose at 400 characters, which is where this set of rows divides
+   (44 below, 14 above, median 297). Without it the Publications interview
+   would set 28 paragraphs at ~98 characters a line, which is past comfortable
+   reading. Below that threshold the text is short enough that the wider
+   measure costs nothing and buys the layout its full width.
+
+   The share goes up with it, to 41%, which is the right direction for the
+   content -- a row with more text is a taller row, and a taller row carries a
+   larger figure without looking front-heavy. On a desktop the per-row cap is
+   usually below both numbers and is what actually binds; the pair matters at
+   the widths where the share takes over. */
+.row-detail-body.has-aside.is-prose {
+  --row-aside-share: 41%;
+}
+.row-detail-body.has-aside.is-prose .row-detail-main {
+  max-width: 72ch;
+}
+
+
+/* .row-detail-body figure/img carry a 0.9rem vertical margin for the in-flow
+   case; in the aside that would drop the figure below the first line of text
+   it sits level with. The 0.2rem replacing it is roughly the leading above
+   the first line's cap height, so the figure's top edge lines up with the top
+   of the text rather than with the top of its line box. */
+.row-detail-aside figure {
+  margin: 0.2rem 0 0;
+}
+.row-detail-aside figure + figure {
+  margin-top: 0.9rem;
+}
+.row-detail-aside img {
+  margin: 0;
+}
+
+/* Laptop and tablet: the figure gives width back before the layout stacks,
+   so the text column keeps a readable measure the whole way down. */
+@media (max-width: 1200px) {
+  .row-detail-body.has-aside { --row-aside-share: 34%; }
+  .row-detail-body.has-aside.is-prose { --row-aside-share: 38%; }
+}
+@media (max-width: 1024px) {
+  .row-detail-body.has-aside { --row-aside-share: 32%; }
+  .row-detail-body.has-aside.is-prose { --row-aside-share: 35%; }
+}
+
+/* Phones and small tablets: one column, text first and the figure below it.
+   Below 768px a 32% figure leaves the prose around 45 characters a line,
+   which is where two columns stop being an improvement on one.
+
+   The figure carries the per-row cap through the reflow, so the height budget
+   survives it. Letting it fill the column instead would make a portrait scan
+   *taller* stacked than it is side-by-side -- 392px wide is 523px tall at a
+   0.75 aspect, against 349px on a desktop -- which is the opposite of the
+   point.
+
+   The cap is clamped at both ends here, and both ends are load-bearing. The
+   400px ceiling stands in for the share, which is not in this template: a
+   landscape row's cap can be 800px, because on a desktop the share is what
+   holds it down, and without a ceiling such a row would fill a tablet's whole
+   column. The 300px floor keeps a narrow portrait cap from setting a phone's
+   image at a third of the screen. Neither can overflow: the figure is a block
+   and takes the column's width when the clamp lands above it.
+
+   768px is the site's existing content breakpoint (layout/responsive.css),
+   the same width at which a row's own summary switches to stacked, so a row
+   and its opened body reflow together. It is declared here rather than there
+   because it is this component's geometry -- the same reason the nav collapse
+   lives in components/header.css. */
+@media (max-width: 768px) {
+  .row-detail-body.has-aside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .row-detail-aside {
+    margin-top: 1.1rem;
+  }
+  .row-detail-aside figure {
+    margin-top: 0;
+    max-width: clamp(300px, var(--row-aside-cap), 400px);
+  }
+  /* The clamp above is on `figure`, so it does not reach a grid of them.
+     Without a width of its own the stacked press grid fills the column and
+     auto-fill hands it five columns for six graphics, leaving one alone on a
+     second row. 420px keeps it to three columns on a tablet and two on a
+     phone -- both of which divide six evenly -- at a tile size within a few
+     pixels of the side-by-side layout's. */
+  .row-detail-aside .proof-grid {
+    max-width: 420px;
+  }
+}
+
 /* html, body carry `overflow-x: clip` sitewide (see base/reset.css) so the
    sticky header has a non-scrolling ancestor to resolve against. `clip`
    silently truncates anything that overflows it rather than letting the
@@ -339,4 +528,34 @@
 }
 .row-detail-body .proof-grid figcaption {
   font-size: 0.72rem;
+}
+
+/* The same grid in a row's figure column rather than in the flow of its text,
+   which is where /news/ puts the Intuitive.ai appointment's six graphics (see
+   `movableBlock` in content/lab-notes.ts). Only the column floor changes: the
+   tiles, their gap, their captions and their 1:1 crop are the flow grid's.
+
+   110px rather than 140px so the count steps 3 / 2 / 2 across the figure
+   column's widths -- 450px on a desktop, 330px at 1024px, 247px at 769px --
+   instead of collapsing to a single 247px-wide stack of six on a tablet. At
+   450px that is a 142px tile, which is what the six were already rendering at
+   in the flow of the text (147px), so this moves the graphics without
+   resizing them, and 3 x 2 is a full grid where the flow's 623px width gave a
+   ragged 4 + 2.
+
+   Scoped to .row-detail-aside: the only other .proof-grid on the site, the
+   four jury letters on Activities, is in the flow of a three-line paragraph
+   where the images are already beside what introduces them, and is left
+   exactly as it is. */
+.row-detail-aside .proof-grid {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  margin-top: 0.55rem;
+}
+
+/* A `.row-detail-q` heading leads the grid into the column. It is the same
+   heading the text used when the grid sat at the end of it, so it keeps the
+   same weight and colour; what it loses is the 1.1rem of space that separated
+   it from the paragraph above, since in the column there is nothing above it. */
+.row-detail-aside p.row-detail-q {
+  margin-top: 0;
 }

@@ -52,7 +52,7 @@ export const { data, render } = definePage({
         <h2 class="reveal" id="news-title">News</h2>
         <p class="reveal">Recent updates on roles, publications, awards, and speaking engagements.</p>
       </div>
-      ${rowList(asRows(), '      ', 'row-list with-cta')}
+      ${rowList(asRows({ movableBlocksBeside: true }), '      ', 'row-list with-cta')}
       <a class="btn btn-primary reveal" href="${url('/news/')}">All news</a>
     </div>
   </section>
