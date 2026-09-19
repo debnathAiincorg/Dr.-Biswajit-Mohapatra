@@ -995,3 +995,46 @@ nothing under `dist/assets/` is unreferenced — checked in both the default and
 `PATH_PREFIX` builds. A check that only scans `href`/`src` will report false
 orphans: the manifest icons are JSON, and `og-cover.jpg` is only ever named as
 an absolute URL.
+
+## The lightbox opened top-left on every page (fixed 2026-09-19)
+
+`components/lightbox.css` set `position: relative` on the `<dialog>` so that
+`.proof-lightbox-close` could anchor to it. **That one declaration broke the
+centring of every image and video on the site.**
+
+A modal `<dialog>` is centred by three UA declarations acting together --
+`position: fixed`, `inset: 0` and `margin: auto`, with width and height
+resolving to `fit-content`. Override any one and the centring is gone:
+`relative` puts the dialog back in normal flow, where auto block margins
+compute to zero. Measured at 1440x900 before the fix, the viewer sat **0px
+from the left with 524px of space on the right, and 0px from the top with
+166px below**.
+
+The close button never needed it — `fixed` is itself a positioned ancestor.
+
+All five properties are now written out in that rule. **Do not trim them back
+to the UA defaults**: the centring holds only while all five agree, and
+leaving four implicit is exactly what let a single-property change reposition
+every lightbox on the site without anything failing.
+
+Measured after the fix, across landscape photographs, portrait photographs,
+tall certificate scans and the video, at 1440x900, 1024x768 and 390x844:
+left gap equals right gap and top equals bottom in **all 12 combinations**.
+
+### The video also opened at the wrong shape
+
+`<video>` with no loaded metadata takes its intrinsic size from its poster,
+and `preload="none"` means metadata is never loaded until someone presses
+play. The viewer was being handed the *card's* poster -- cropped to the 4:5
+the grid enforces -- so it opened as a 559x724 portrait box and snapped to
+landscape the moment the first bytes arrived.
+
+There are now two posters, and `videoCard` explains which is which:
+
+| File | Used by | Size |
+|---|---|---|
+| `<slug>-poster.jpg` / `.webp` | the grid card | 600x750, cropped to 4:5 |
+| `<slug>-lightbox.jpg` | the `<video>` poster attribute | 848x480, the video's own frame |
+
+The lightbox poster has no WebP sibling on purpose: it is a `poster`
+attribute, not a `<picture>`, so a second format could never be selected.

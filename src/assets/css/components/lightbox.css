@@ -3,12 +3,37 @@
    Native <dialog>, opened by assets/js/modules/lightbox.js. With JS off or
    failed, a.proof-zoom still just navigates to the full-size image -- this
    file only styles the enhanced path. */
+/* Centring, stated in full rather than inherited from the UA.
+
+   A modal <dialog> is centred by three UA declarations acting together --
+   `position: fixed`, `inset: 0` and `margin: auto` -- with `width`/`height`
+   resolving to fit-content. Override any one of them and the centring is
+   gone, which is what happened here: this rule set `position: relative` so
+   that .proof-lightbox-close could anchor to it. That drops the dialog back
+   into normal flow, where auto block margins compute to zero, and it pinned
+   to the top-left corner: measured at 1440x900, the viewer sat 0px from the
+   left with 524px of space on the right, and 0px from the top with 166px
+   below. Every image and video on every page opened there.
+
+   The close button never needed it. `fixed` is itself a positioned ancestor,
+   so the absolutely-positioned button anchors to the dialog either way.
+
+   All five properties are written out because the centring only holds while
+   all five agree -- leaving four to the UA is what made a one-property change
+   silently reposition every lightbox on the site. */
 .proof-lightbox {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
   border: none;
   padding: 0.75rem;
   max-width: min(90vw, 900px);
   max-height: 90vh;
+  /* The image and video are capped below this, but the caption can still push
+     a tall portrait past 90vh; without this its last line is unreachable. */
+  overflow: auto;
   background: var(--paper);
   border-radius: var(--radius);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);

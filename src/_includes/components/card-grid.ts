@@ -89,7 +89,17 @@ export function videoCard(
   priority: PhotoPriority = 'lazy',
 ): Html {
   const src = url(`/assets/video/${video.slug}.mp4`);
-  const poster = url(`/assets/video/${video.slug}-poster.jpg`);
+  /*
+   * Two posters, because the card and the viewer need different shapes.
+   *
+   * The card's is cropped to the 4:5 the grid enforces. The viewer's is the
+   * full broadcast frame, at the video's own 848x480. A <video> with no
+   * metadata yet -- which is every video here, since preload is "none" --
+   * takes its intrinsic size from its poster, so handing the viewer the 4:5
+   * crop opened it as a 559x724 portrait box that then snapped to landscape
+   * the moment the first bytes arrived.
+   */
+  const poster = url(`/assets/video/${video.slug}-lightbox.jpg`);
 
   return html`<figure class="card card-video">
           <div class="photo-figure"><a class="video-zoom" href="${src}" data-caption="${video.captionText}" data-alt="${video.alt}" data-poster="${poster}">${cardPicture(video, url, '/assets/video', `${video.slug}-poster`, priority)}<span class="video-badge" aria-hidden="true">${raw(PLAY_GLYPH)}<span class="video-duration">${video.duration}</span></span><span class="visually-hidden">Play video: ${video.alt} (${video.duration})</span></a></div>

@@ -208,6 +208,28 @@ export const galleryItems: readonly GalleryItem[] = [
   },
   {
     kind: 'photo',
+    slug: 'intuitive-ai-colleagues-2026',
+    alt: 'Two photographs of Dr. Biswajit Mohapatra with Intuitive.ai colleagues in a hotel lounge, all wearing the company’s branded tops.',
+    caption: 'With Intuitive.ai colleagues',
+    /* Dated by the Intuitive.ai star mark on the clothing, which he could not
+       have worn before joining in April 2026 -- the same reasoning this file
+       has always applied to that mark, rather than guessing from the photo. */
+    date: '2026',
+    /*
+     * 480x480, where every other entry here is 1200px on the long edge.
+     *
+     * This one arrived as a loose file in the repository root named
+     * 1787966414971.jpg and was restored from git history when it was wanted
+     * back in the Gallery. There is no master: it predates image-src/ and came
+     * from `dr/`, which is not in the repository, so 480px is the ceiling
+     * until a higher-resolution original turns up. Placed near the end partly
+     * for that reason.
+     */
+    width: 480,
+    height: 480,
+  },
+  {
+    kind: 'photo',
     slug: 'route-mobile-office-visit',
     alt: 'Dr. Biswajit Mohapatra with six colleagues at the Route Mobile offices, standing in front of the company’s reception signage.',
     caption: 'At the Route Mobile offices',
