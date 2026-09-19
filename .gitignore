@@ -19,3 +19,8 @@ node_modules/
 # already extracted into the site content; not meant to be committed or published.
 dr/
 
+
+# Video master: 22MB of third-party broadcast footage. The shipped encode in
+# src/assets/video/ is reproducible from it (see image-src/README.md), so the
+# master is kept locally but never committed.
+image-src/video/

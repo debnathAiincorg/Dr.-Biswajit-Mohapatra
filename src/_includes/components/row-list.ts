@@ -1,19 +1,7 @@
-import { readdirSync } from 'node:fs';
 import { html, join, raw, type Html, type Renderable } from '../lib/html.ts';
 import { assetUrl } from '../lib/asset.ts';
+import { proofPicture } from '../lib/proof-picture.ts';
 import type { Source } from '../content/sources.ts';
-
-/* Computed once per build, not per row: which proof slugs have a WebP
-   sibling next to their JPEG. proofFigure() below only emits a <source> for
-   a slug that appears here, so a slug with no WebP (there is one --
-   proof-azteca-honorary-doctorate, checked at the time this was written)
-   still renders correctly, just without the WebP <source>, instead of a
-   <picture> pointing a browser at a file that 404s. */
-const PROOF_WEBP_SLUGS = new Set(
-  readdirSync('src/assets/images/proof')
-    .filter((name) => name.endsWith('.webp'))
-    .map((name) => name.slice(0, -'.webp'.length)),
-);
 
 /*
  * The `row-list` block.
@@ -156,9 +144,7 @@ function proofFigure(proof: ProofImage): Html {
      working with JavaScript off (see the comment atop lightbox.js) and
      what the lightbox itself opens via trigger.href, so a slug's WebP
      savings apply to this inline figure, not to the lightbox view. */
-  const picture = PROOF_WEBP_SLUGS.has(proof.slug)
-    ? html`<picture><source type="image/webp" srcset="${assetUrl(`/assets/images/proof/${proof.slug}.webp`)}">${img}</picture>`
-    : img;
+  const picture = proofPicture(proof.slug, img);
   return html`<figure><a class="proof-zoom" href="${jpg}" data-caption="${proof.caption ?? ''}" data-alt="${proof.alt}">${picture}</a>${proof.caption ? html`<figcaption>${proof.caption}</figcaption>` : null}</figure>`;
 }
 

@@ -1,6 +1,7 @@
 import type { ProofImage, Row } from '../components/row-list.ts';
 import { html } from '../lib/html.ts';
 import { assetUrl } from '../lib/asset.ts';
+import { proofPicture } from '../lib/proof-picture.ts';
 import type { Renderable } from '../lib/html.ts';
 
 /*
@@ -48,7 +49,8 @@ export interface LabNote {
 }
 
 function pressGridFigure(slug: string, alt: string, width: number, height: number, caption: string): Renderable {
-  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}"><img src="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a></figure>`;
+  const img = html`<img src="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async">`;
+  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}">${proofPicture(slug, img)}</a></figure>`;
 }
 
 /** Like pressGridFigure, but for an image outside /assets/images/proof/ -- the
@@ -80,7 +82,7 @@ const gccExpoDetail = html`<p>&ldquo;GCC Expo Award Winner &mdash; Dr. Biswajit 
  *  expanded row's right-hand column beside the text -- the same slot
  *  Publications puts it in. */
 const devOpsOdysseyCover = figureAt(
-  '/assets/images/photos/pub-devops-odyssey-cover',
+  '/assets/images/publications/devops-odyssey-cover',
   'Cover of The DevOps Odyssey by Dr. Biswajit Mohapatra',
   160,
   185,
@@ -93,7 +95,7 @@ const devOpsOdysseyPublishDetail = html`<p>&ldquo;It&rsquo;s a reflection of rea
  *  13-question transcript lives on Publications; duplicating all of it here
  *  as well would be re-typing the same interview twice on the same site. */
 const osfyTearsheet = figureAt(
-  '/assets/images/photos/pub-osfy-interview-tearsheet',
+  '/assets/images/publications/osfy-interview-tearsheet',
   'Scanned pages of the Open Source For You interview with Dr. Biswajit Mohapatra, April 2024',
   1364,
   1929,

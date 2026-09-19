@@ -1,6 +1,7 @@
 import { listPage } from './_includes/components/list-page.ts';
 import { html, raw, type Html } from './_includes/lib/html.ts';
 import { assetUrl } from './_includes/lib/asset.ts';
+import { proofPicture } from './_includes/lib/proof-picture.ts';
 import { definePage } from './_includes/lib/page.ts';
 
 /*
@@ -27,12 +28,18 @@ import { definePage } from './_includes/lib/page.ts';
  * images carry the rest.
  */
 
-function photoFigure(slug: string, alt: string, width: number, height: number, caption: string): Html {
-  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/photos/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}"><img src="${assetUrl(`/assets/images/photos/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a><figcaption>${caption}</figcaption></figure>`;
+/* Like proofGridFigure, but captioned: these rows are a single photograph
+   standing alone as the row's whole detail, so the image needs to say what it
+   shows. Both read from proof/ -- these five moved there when the Gallery was
+   rebuilt from new material and stopped carrying them. */
+function proofFigure(slug: string, alt: string, width: number, height: number, caption: string): Html {
+  const img = html`<img src="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async">`;
+  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}">${proofPicture(slug, img)}</a><figcaption>${caption}</figcaption></figure>`;
 }
 
 function proofGridFigure(slug: string, alt: string, width: number, height: number, caption: string): Html {
-  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}"><img src="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></a></figure>`;
+  const img = html`<img src="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async">`;
+  return html`<figure><a class="proof-zoom" href="${assetUrl(`/assets/images/proof/${slug}.jpg`)}" data-caption="${caption}" data-alt="${alt}">${proofPicture(slug, img)}</a></figure>`;
 }
 
 export const { data, render } = definePage({
@@ -111,7 +118,7 @@ export const { data, render } = definePage({
           title: 'Jury Member, Digital Transformation (DX) Best Practice Award',
           sub: 'CII–Tata Communications Centre for Digital Transformation',
           meta: raw('2022&ndash;2025'),
-          detail: html`<p>Four consecutive editions of jury service, each documented by its own CII&ndash;CDT appreciation letter (the full citation for each is quoted on Awards): the 4th edition (2022), 5th (2023), 6th (2024) and 7th (2025, &ldquo;Driving Innovation towards Achieving the Vision of a Viksit Bharat&rdquo;, 3 December 2025, New Delhi).</p><div class="proof-grid">${proofGridFigure('proof-award-cii-dx-jury-2022', 'CII Tata Communications Centre for Digital Transformation appreciation letter, 4th edition, 2022', 600, 800, '4th edition, 2022')}${proofGridFigure('proof-award-cii-dx-jury-2023', 'CII Tata Communications Centre for Digital Transformation appreciation letter, 5th edition, 2023', 594, 800, '5th edition, 2023')}${proofGridFigure('proof-award-cii-dx-jury-2024', 'CII Tata Communications Centre for Digital Transformation appreciation letter, 6th edition, 2024', 623, 800, '6th edition, 2024')}${photoFigure('gallery-cii-dx-jury-2025', 'CII DX Awards & Summit 2025 photo collage, 7th edition jury recognition, New Delhi', 480, 480, '7th edition, 2025')}</div>`,
+          detail: html`<p>Four consecutive editions of jury service, each documented by its own CII&ndash;CDT appreciation letter (the full citation for each is quoted on Awards): the 4th edition (2022), 5th (2023), 6th (2024) and 7th (2025, &ldquo;Driving Innovation towards Achieving the Vision of a Viksit Bharat&rdquo;, 3 December 2025, New Delhi).</p><div class="proof-grid">${proofGridFigure('proof-award-cii-dx-jury-2022', 'CII Tata Communications Centre for Digital Transformation appreciation letter, 4th edition, 2022', 600, 800, '4th edition, 2022')}${proofGridFigure('proof-award-cii-dx-jury-2023', 'CII Tata Communications Centre for Digital Transformation appreciation letter, 5th edition, 2023', 594, 800, '5th edition, 2023')}${proofGridFigure('proof-award-cii-dx-jury-2024', 'CII Tata Communications Centre for Digital Transformation appreciation letter, 6th edition, 2024', 623, 800, '6th edition, 2024')}${proofFigure('proof-award-cii-dx-jury-2025', 'CII DX Awards & Summit 2025 photo collage, 7th edition jury recognition, New Delhi', 480, 480, '7th edition, 2025')}</div>`,
         },
         {
           title: 'Keynote Speaker',
@@ -216,12 +223,12 @@ export const { data, render } = definePage({
           sub: 'World DevOps Summit',
           meta: 'May 2020',
           datetime: '2020-05',
-          detail: photoFigure(
-            'photo-12',
+          detail: proofFigure(
+            'proof-activity-world-devops-summit-2020',
             'Certificate of Honor presented to Dr. Biswajit Mohapatra for a thought leadership talk at the World DevOps Summit',
             800,
             560,
-            'World DevOps Summit, May 2020 — the same photograph shown on Gallery.',
+            'World DevOps Summit, May 2020.',
           ),
         },
         {
@@ -229,12 +236,12 @@ export const { data, render } = definePage({
           sub: "iTSM Summit India '19, organized by NovelVista",
           meta: '2019',
           datetime: '2019',
-          detail: photoFigure(
-            'photo-11',
+          detail: proofFigure(
+            'proof-activity-itsm-summit-2019',
             "Photo collage from iTSM Summit India '19 including a speaker plaque honoring Dr. Biswajit Mohapatra",
             300,
             300,
-            'iTSM Summit India ‘19 — the same photograph shown on Gallery.',
+            'iTSM Summit India ‘19.',
           ),
         },
         {
@@ -242,12 +249,12 @@ export const { data, render } = definePage({
           sub: 'DevOps Institute Partner Days',
           meta: '2019',
           datetime: '2019',
-          detail: photoFigure(
-            'photo-3',
+          detail: proofFigure(
+            'proof-activity-devops-partner-days-2019',
             'Photo collage from DevOps Institute Partner Days 2019: Dr. Biswajit Mohapatra speaking on stage, sitting on a panel, and with his Partner Days certificate',
             600,
             600,
-            'DevOps Institute Partner Days 2019 — the same photograph shown on Gallery.',
+            'DevOps Institute Partner Days 2019.',
           ),
         },
         {
@@ -255,12 +262,12 @@ export const { data, render } = definePage({
           sub: 'Pune Agile UnConference (PAUC19)',
           meta: 'Aug 2019',
           datetime: '2019-08',
-          detail: photoFigure(
-            'photo-4',
+          detail: proofFigure(
+            'proof-activity-pune-agile-unconference-2019',
             'Photo collage from the Pune Agile UnConference 2019 at Hyatt Regency Pune, showing Dr. Biswajit Mohapatra speaking and the speaker plaque presented to him',
             768,
             768,
-            'Pune Agile UnConference 2019, Hyatt Regency Pune — the same photograph shown on Gallery.',
+            'Pune Agile UnConference 2019, Hyatt Regency Pune.',
           ),
         },
       ],

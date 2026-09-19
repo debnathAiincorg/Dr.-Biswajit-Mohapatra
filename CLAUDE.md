@@ -706,9 +706,11 @@ homepage's page-specific CSS is `src/assets/css/pages/home.css`, loaded only
 where `pageCss` is set in a page's front matter.
 
 **Images.** All photographs are served as WebP with JPEG fallback via
-`<picture>`. The optimised pairs live in `src/assets/images/photos/` and are
-passthrough-copied to `dist/assets/images/photos/`; the masters stay in
-`image-src/`, outside the build entirely. This took the site from 5.9MB of
+`<picture>`. **The single `images/photos/` folder described here was split by
+purpose on 2026-09-19** — see *Gallery rebuild* at the end of this file. The
+optimised pairs now live in `src/assets/images/{gallery,hero,publications,
+proof,social}/` and are passthrough-copied under `dist/assets/images/`; the
+masters stay in `image-src/`, outside the build entirely. This took the site from 5.9MB of
 images to ~320KB. The set is defined once in `src/_includes/content/photos.ts`
 — captions, alt text and dimensions — and both the Gallery page and the
 homepage teaser render from it, so a corrected caption is a one-line edit.
@@ -716,9 +718,9 @@ homepage teaser render from it, so a corrected caption is a one-line edit.
 `Photo 7.png` was deleted: it was byte-identical to `Photo 6.png` (verified by
 md5), so the homepage gallery had been rendering the same photograph twice
 under two different captions. The gallery was 8 unique photographs at the time
-of that fix. **It is now 38** — see the real-content pass at the end of this
-file, which added the award and certificate images; `content/photos.ts` is the
-count of record.
+of that fix. It later grew to 38, and **is now 14 photographs plus one video**
+— the whole set was replaced on 2026-09-19 (see *Gallery rebuild* below).
+`content/photos.ts` is the count of record.
 
 **SEO.** Per-page canonical, Open Graph and Twitter tags; JSON-LD `@graph`
 (WebSite + Person + per-page WebPage/CollectionPage/ProfilePage/ContactPage +
@@ -877,3 +879,119 @@ guessed; gaps in the source material were left out rather than invented.
 `allowIndexing` (see above) is still environment-controlled and still
 defaults to `false` — populating real content did not flip it. That remains a
 separate, explicit publishing decision for the site owner.
+
+## Gallery rebuild — new material, new asset layout (2026-09-19)
+
+The Gallery's 36 photographs were **replaced wholesale** with 14 photographs
+and one video from the owner's own `ig/` export, at his request. The old set
+was mostly multi-panel collages — one was six crops of a single frame, one was
+300×300 — and three entries republished documents already served from `proof/`
+under different filenames (`photo-10`, `photo-14`, `photo-15` duplicated
+`proof-board-devops-institute-ambassador`, `proof-award-world-cio-200-2022`
+and `proof-patent-cloud-services`).
+
+Full reasoning, including which source images were rejected and why, is in
+`docs/superpowers/specs/2026-09-19-gallery-media-refresh-design.md`.
+
+### Ordering is no longer chronological
+
+`photos.ts` used to document *"Ordered newest to oldest, undated entries
+last."* **That is superseded.** The array is ordered *best first*, because the
+owner asked for the strongest images at the top; `date` no longer drives
+sequence. Dates are still evidence-only — a date appears only where it is
+printed in the photograph or fixed by a visible role marker, otherwise the
+entry renders an em dash rather than a guess.
+
+### Five images moved to `proof/` rather than being deleted with the rest
+
+`activities.ts` renders five photographs as row detail through its own figure
+helper, and they were gallery slugs. Deleting the Gallery set would have
+broken that page, so they moved into `proof/` — which is what they actually
+are — and were renamed accordingly:
+
+| Was | Now |
+|---|---|
+| `gallery-cii-dx-jury-2025` | `proof-award-cii-dx-jury-2025` |
+| `photo-12` | `proof-activity-world-devops-summit-2020` |
+| `photo-11` | `proof-activity-itsm-summit-2019` |
+| `photo-3` | `proof-activity-devops-partner-days-2019` |
+| `photo-4` | `proof-activity-pune-agile-unconference-2019` |
+
+Their captions on Activities said *"the same photograph shown on Gallery."*
+That is no longer true and the phrase was removed.
+
+### `Photo.focus` — why gallery cards gained a field
+
+`.photo-figure` is `aspect-ratio: 4/5` with `object-fit: cover`, so every card
+image is centre-cropped to portrait. The old collages were square and never
+showed this. **The new set is mostly landscape and it broke them**: centring
+put the subject of `gcc-leadership-conclave` hard against the right edge,
+partly cut. `focus` is optional, emits `object-position`, and is set on five
+entries. The full frame is still served, so the lightbox shows the uncropped
+photograph.
+
+If a future landscape photograph looks wrong in its card, `focus` is the knob —
+not a re-crop of the file.
+
+### Video
+
+One video, carried as a poster card that opens the existing `<dialog>`
+lightbox. `photos.ts` exports a discriminated union (`GalleryItem = Photo |
+GalleryVideo`) so it sits *in* the order rather than being appended; `photos`
+is still exported as the stills-only view, so the homepage teaser is unchanged.
+
+The card's `<a href>` points at the `.mp4`, so it still plays with JavaScript
+off. `preload="none"` means the 9.8MB file costs nothing until clicked, and
+the lightbox pauses and clears `src` on close so audio cannot outlive the
+dialog.
+
+> The footage is Kalinga TV's broadcast coverage of the book launch. Whether to
+> self-host third-party broadcast material is the site owner's call; swapping
+> the entry to a link-out is a one-line change.
+
+**`src/assets/video/` needs its own passthrough-copy line in
+`eleventy.config.js`.** It is not under `assets/images/`, so the existing sweep
+did not pick it up and the first build silently produced a page referencing
+three files that were never copied.
+
+### 11 WebP files were being built and deployed but never requested
+
+`row-list.ts` had a `PROOF_WEBP_SLUGS` directory scan so it only emitted a
+`<source>` for a slug that actually had a WebP. But `lab-notes.ts` and
+`activities.ts` render proof images too, both with a bare `<img>` — so every
+WebP reachable only through those two files was dead weight.
+
+That scan is now `src/_includes/lib/proof-picture.ts` and all three call sites
+use it. **Use `proofPicture()` for any new inline proof image**; a bare `<img>`
+silently wastes the WebP.
+
+Four slugs remain WebP-less on purpose: a proof-*only* row renders as a link
+with no `<img>` at all, and the lightbox opens `trigger.href`, which is always
+the JPEG. Nothing can serve a WebP for those, so they have none.
+
+### Asset layout
+
+```
+src/assets/images/{gallery,hero,publications,proof,logos,social}/
+src/assets/video/
+image-src/{gallery,hero,publications,proof,video}/   # mirrors the above
+```
+
+`image-src/README.md` records the exact ffmpeg commands each served asset was
+produced with, and warns that the folder is **not** a complete archive — most
+`proof/` images have no master there, and the logos and `og-cover.jpg` have
+none at all.
+
+`proof/` filenames keep their redundant `proof-` prefix deliberately: those
+slugs are referenced across eight page templates, so renaming them is real
+regression risk for a cosmetic gain. Gallery slugs live in one file, so they
+dropped theirs when the folder took the name.
+
+### Verifying asset paths
+
+Every `src`/`href`/`poster`/`srcset`, every CSS `url()`, the manifest's icons
+and the absolute `og:`/`twitter:` image URLs resolve against `dist/`, and
+nothing under `dist/assets/` is unreferenced — checked in both the default and
+`PATH_PREFIX` builds. A check that only scans `href`/`src` will report false
+orphans: the manifest icons are JSON, and `og-cover.jpg` is only ever named as
+an absolute URL.

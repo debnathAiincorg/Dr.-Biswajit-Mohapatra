@@ -29,7 +29,7 @@ function detailImage(
   height: number,
   caption: Html,
 ): Html {
-  return html`<figure><a class="row-detail-image-link" href="${url(`/assets/images/photos/${slug}.jpg`)}" target="_blank" rel="noopener noreferrer"><picture><source type="image/webp" srcset="${url(`/assets/images/photos/${slug}.webp`)}"><img src="${url(`/assets/images/photos/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></picture></a><figcaption>${caption}</figcaption></figure>`;
+  return html`<figure><a class="row-detail-image-link" href="${url(`/assets/images/publications/${slug}.jpg`)}" target="_blank" rel="noopener noreferrer"><picture><source type="image/webp" srcset="${url(`/assets/images/publications/${slug}.webp`)}"><img src="${url(`/assets/images/publications/${slug}.jpg`)}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></picture></a><figcaption>${caption}</figcaption></figure>`;
 }
 
 /** One Q&A pair from the interview transcript. */
@@ -61,7 +61,7 @@ export const { data, render } = definePage({
           datetime: '2026',
           detailAside: detailImage(
             url,
-            'pub-devops-odyssey-cover',
+            'devops-odyssey-cover',
             'Cover of The DevOps Odyssey by Dr. Biswajit Mohapatra',
             160,
             185,
@@ -78,7 +78,7 @@ export const { data, render } = definePage({
           datetime: '2024-04',
           detailAside: detailImage(
             url,
-            'pub-osfy-interview-tearsheet',
+            'osfy-interview-tearsheet',
             'Scanned pages of the Open Source For You interview with Dr. Biswajit Mohapatra, April 2024',
             1364,
             1929,
@@ -141,7 +141,7 @@ export const { data, render } = definePage({
           datetime: '2012-05',
           detail: html`<p>Many times we all are baffled by the challenges to exploit data from a traditional data warehouse using a map driven approach. One fine morning, if my customer asks me &ldquo;hey, I have such a nicely designed data warehouse rich in subject-oriented, integrated, nonvolatile collection of data that support my company&rsquo;s decision making process, However I am still struggling to know where is the best location for me to start a new store or how many customers will I have within five minutes drive from this store&rdquo;, then it&rsquo;s time for my customer to spatially enable the data warehouse.</p><p>Though data warehouses look at various types and dimensions of data, many are lacking in the spatial or location context of the data. Spatial data are the data related to objects that occupy space. Spatial database stores spatial objects represented by spatial data types and spatial relationships among such objects. Spatial data carries geographical, topological and/or distance information and it is often organized by spatial indexing structures and accessed by spatial access methods. These distinct features of a spatial database bring opportunities for mining information from spatial data. By using technology that integrates this spatial component with the data warehouse, an organization can unlock hidden potential in their data allowing them to see hidden relationships and patterns. A standard spatial data warehouse flow is given below:</p>${detailImage(
             url,
-            'pub-spatial-dw-diagram',
+            'spatial-dw-diagram',
             'Diagram: a standard spatial data warehouse flow, from OLTP databases through extraction, transformation and spatial enabling to a spatial data warehouse and OLAP analysis',
             673,
             378,

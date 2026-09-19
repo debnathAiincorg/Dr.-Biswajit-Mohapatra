@@ -1,5 +1,5 @@
-import { cardGrid, photoCard, type PhotoPriority } from './_includes/components/card-grid.ts';
-import { photos } from './_includes/content/photos.ts';
+import { cardGrid, galleryCard, type PhotoPriority } from './_includes/components/card-grid.ts';
+import { galleryItems } from './_includes/content/photos.ts';
 import { html } from './_includes/lib/html.ts';
 import { definePage } from './_includes/lib/page.ts';
 
@@ -30,7 +30,7 @@ export const { data, render } = definePage({
   data: {
     title: 'Gallery — Dr. Biswajit Mohapatra',
     description:
-      'Photographs from talks, conferences, awards and industry events featuring Dr. Biswajit Mohapatra.',
+      'Photographs and video from talks, conferences, awards and industry events featuring Dr. Biswajit Mohapatra.',
     navLabel: 'Gallery',
     schemaType: 'CollectionPage',
     permalink: '/gallery/',
@@ -45,7 +45,7 @@ export const { data, render } = definePage({
       </div>
 
       ${cardGrid(
-        photos.map((photo, index) => photoCard(photo, url, galleryPriority(index))),
+        galleryItems.map((item, index) => galleryCard(item, url, galleryPriority(index))),
         '      ',
       )}
     </div>

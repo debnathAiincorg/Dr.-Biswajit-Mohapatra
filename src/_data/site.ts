@@ -45,7 +45,7 @@ const site: Site = {
   x: 'https://x.com/mbiswajit',
   facebook: 'https://www.facebook.com/biswajit.mohapatra.90',
 
-  ogImage: '/assets/images/og-cover.jpg',
+  ogImage: '/assets/images/social/og-cover.jpg',
   ogImageAlt:
     'Dr. Biswajit Mohapatra — VP & Head of Product and Solutions Engineering, Intuitive.ai',
 

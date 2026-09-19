@@ -49,7 +49,8 @@
 .proof-lightbox::backdrop {
   background: rgba(20, 16, 12, 0.72);
 }
-.proof-lightbox img {
+.proof-lightbox img,
+.proof-lightbox video {
   display: block;
   max-width: 100%;
   max-height: calc(90vh - 3.5rem);
@@ -57,6 +58,17 @@
   height: auto;
   margin: 0 auto;
   object-fit: contain;
+}
+/* The viewer swaps between the two; [hidden] alone loses to the display:block
+   above, so the pair below is what actually hides the idle one. */
+.proof-lightbox img[hidden],
+.proof-lightbox video[hidden] {
+  display: none;
+}
+/* The video is 848x480: without a floor it opens as a small rectangle in the
+   middle of a large dialog on a wide screen. */
+.proof-lightbox video {
+  width: min(880px, 100%);
 }
 .proof-lightbox-caption {
   margin-top: 0.6rem;

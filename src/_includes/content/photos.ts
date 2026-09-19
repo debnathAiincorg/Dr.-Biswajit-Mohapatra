@@ -1,332 +1,238 @@
 import { raw, type Renderable } from '../lib/html.ts';
 
 /*
- * The photograph set, defined once.
+ * The Gallery's contents, defined once and rendered by both /gallery/ and the
+ * homepage teaser.
  *
- * gallery.njk carried all eight as hand-written <figure> blocks and index.njk
- * repeated three of them verbatim, so a corrected caption or alt text had to be
- * edited in two places. They are now one list; the homepage takes a slice.
+ * Ordered BEST FIRST, at the site owner's request. Earlier revisions ordered
+ * these newest-to-oldest with undated entries last; that convention is
+ * superseded, and `date` no longer drives sequence. The strongest image leads
+ * because it is the Gallery's LCP element -- see gallery.ts.
  *
- * Captions carry HTML entity references, as the Nunjucks markup did, so they
- * are marked `raw`. Alt text uses literal characters and is escaped normally.
+ * Every entry comes from the owner's own photographs. The previous set of 36
+ * was replaced wholesale: it was mostly multi-panel collages (one was six
+ * crops of a single frame, another 300x300), and three entries republished
+ * documents already served from proof/ under different filenames. See
+ * docs/superpowers/specs/2026-09-19-gallery-media-refresh-design.md.
  *
- * Ordered newest to oldest, undated entries last. Two entries whose photo
- * itself has no visible date were assigned 2026 because the Intuitive.ai
- * star mark is visible on his clothing in them (gallery-googlecloudnext-
- * candid, gallery-informal-photos) -- he joined Intuitive.ai in April 2026,
- * so that logo dates the photo at least that precisely even without a
- * printed date. Every other undated entry was checked for the same mark and
- * does not carry it, so stays undated rather than guessed.
- *
- * photo-9 (a close-up with a fellow delegate), photo-5 (Nirmaan Leadership
- * Summit, IIM Sirmaur -- first cropped to drop a plaque-handoff panel, then
- * removed entirely) and gallery-aws-certified-portrait (an AWS-jacket
- * portrait) were removed at the user's request.
+ * Dates are evidence-only, the standard CLAUDE.md sets for this project: a
+ * date appears only where it is printed in the photograph itself, or where a
+ * visible role marker dates it. Everything else is DATE_UNKNOWN, not a guess.
  */
 
-export interface Photo {
-  /** Basename under /assets/images/photos, without extension. */
+/** Rendered where a photograph carries no evidence of its date. */
+const DATE_UNKNOWN = raw('&mdash;');
+
+interface GalleryItemBase {
+  /** Basename of the asset, without extension. */
   readonly slug: string;
   readonly alt: string;
   readonly caption: Renderable;
-  readonly date: string;
+  readonly date: Renderable;
+  /** Intrinsic size of the still, so cards reserve space before it loads. */
   readonly width: number;
   readonly height: number;
+  /*
+   * `object-position` for the card's crop, set only where centring is wrong.
+   *
+   * .photo-figure is `aspect-ratio: 4/5` with `object-fit: cover`, so a
+   * landscape photograph is cropped hard to portrait. The set this replaced
+   * was square collages and never showed it; these are mostly landscape, and
+   * centring pushed the subject of gcc-leadership-conclave against the right
+   * edge, partly cut. The full frame is still what gets served -- this moves
+   * the visible window, and the lightbox shows the whole photograph.
+   */
+  readonly focus?: string;
 }
 
-export const photos: readonly Photo[] = [
+/** A still photograph, served from /assets/images/gallery. */
+export interface Photo extends GalleryItemBase {
+  readonly kind: 'photo';
+}
+
+/** A video, served from /assets/video with a poster still beside it. */
+export interface GalleryVideo extends GalleryItemBase {
+  readonly kind: 'video';
+  /** Running time, shown on the card and announced to screen readers. */
+  readonly duration: string;
+  /*
+   * The caption as plain text, for the lightbox's `data-caption`.
+   *
+   * `caption` may carry markup -- this one italicises a book title -- and an
+   * attribute value cannot. Left as `caption` it would reach the viewer as a
+   * literal `<em>`, since the lightbox writes it with textContent.
+   */
+  readonly captionText: string;
+}
+
+export type GalleryItem = Photo | GalleryVideo;
+
+/*
+ * The discriminant is what lets the video sit in the order rather than being
+ * appended to it -- it is the third card, inside the first desktop row.
+ */
+export const galleryItems: readonly GalleryItem[] = [
   {
-    slug: 'gallery-gcc-expo-ceremony-2026',
-    alt: 'Photo collage from the GCC Expo Award Ceremony 2026, Bengaluru, showing the Distinguished Speaker and Customer Impact Award trophies, a panel discussion, and the ceremony stage.',
-    caption: 'GCC Expo Award Ceremony, Bengaluru',
-    date: 'August 2026',
-    width: 480,
-    height: 480,
+    kind: 'photo',
+    slug: 'passion-vista-cover-2021',
+    alt: 'Dr. Biswajit Mohapatra on the cover of Passion Vista magazine, Collector’s Edition, under the heading The Most Admired Global Indians 2021, captioned Digital Transformation Evangelist.',
+    caption: raw('Cover, <em>Passion Vista</em> &mdash; The Most Admired Global Indians'),
+    date: 'December 2021',
+    width: 928,
+    height: 1200,
   },
   {
-    slug: 'gallery-cio500-acceleratorx-2026',
-    alt: 'Photo collage from the Enterprise IT World CIO500 & Accelerator X Awards 2026, Pune, including the event backdrop, his award, and a panel discussion.',
-    caption: raw('CIO500 &amp; Accelerator X Awards 2026, Pune'),
-    date: 'August 2026',
-    width: 480,
-    height: 480,
+    kind: 'photo',
+    slug: 'keynote-insights-experiment',
+    alt: 'Dr. Biswajit Mohapatra speaking on stage beside a slide reading “To get insights, you need to experiment.”',
+    caption: raw('&ldquo;To get insights, you need to experiment&rdquo;'),
+    date: DATE_UNKNOWN,
+    width: 1200,
+    height: 800,
+    focus: '35% 50%',
   },
   {
-    slug: 'gallery-googlecloudnext26-portrait',
-    alt: 'Promotional portrait of Dr. Bishwajit Mohapatra announcing his appearance at Google Cloud Next 26, April 22–24.',
-    caption: 'Speaking at Google Cloud Next 26',
-    date: 'April 2026',
-    width: 480,
-    height: 480,
+    kind: 'video',
+    slug: 'devops-odyssey-kalinga-tv',
+    alt: 'Kalinga TV news coverage of the launch of The DevOps Odyssey by Dr. Biswajit Mohapatra.',
+    caption: raw('Television coverage of <em>The DevOps Odyssey</em> launch'),
+    captionText: 'Television coverage of The DevOps Odyssey launch',
+    date: 'September 2026',
+    width: 600,
+    height: 750,
+    duration: '3:03',
   },
   {
-    slug: 'gallery-googlecloudnext26-catalyst-card',
-    alt: '"The Catalyst" promotional persona card for Dr. Biswajit Mohapatra at Google Cloud Next 26.',
-    caption: raw('&ldquo;The Catalyst,&rdquo; Google Cloud Next 26'),
-    date: 'April 2026',
-    width: 480,
-    height: 430,
+    kind: 'photo',
+    slug: 'conference-speaking-portrait',
+    alt: 'Dr. Biswajit Mohapatra addressing a conference audience, holding a presentation clicker, with his slides projected behind him.',
+    caption: 'Addressing a conference audience',
+    date: DATE_UNKNOWN,
+    width: 900,
+    height: 1200,
   },
   {
-    slug: 'gallery-googlecloudnext-candid',
-    alt: 'Candid photographs of Dr. Biswajit Mohapatra at Google Cloud Next, including at the Intuitive booth and with fellow attendees.',
-    caption: 'At Google Cloud Next',
+    kind: 'photo',
+    slug: 'renaissance-developer-keynote',
+    alt: 'Dr. Biswajit Mohapatra presenting a slide titled “The Dawn of Renaissance Developer,” illustrated with a Vitruvian-man drawing holding a laptop.',
+    caption: raw('&ldquo;The Dawn of the Renaissance Developer&rdquo;'),
+    date: DATE_UNKNOWN,
+    width: 1200,
+    height: 900,
+    focus: '30% 50%',
+  },
+  {
+    kind: 'photo',
+    slug: 'iim-sambalpur-ceo-programme-2026',
+    alt: 'Dr. Biswajit Mohapatra speaking at a lectern at the Indian Institute of Management Sambalpur, in front of a backdrop reading CEO Immersion Programme 2026.',
+    caption: 'CEO Immersion Programme, IIM Sambalpur',
     date: '2026',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-informal-photos',
-    alt: 'Informal photographs of Dr. Biswajit Mohapatra with colleagues, wearing an Intuitive.ai branded top.',
-    caption: 'With colleagues',
-    date: '2026',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-cii-dx-jury-2025',
-    alt: 'Photo collage from the CII DX Awards & Summit 2025, New Delhi, including Dr. Biswajit Mohapatra receiving a jury appreciation certificate for the 7th edition of the Digital Transformation Best Practice Award.',
-    caption: raw('CII DX Awards &amp; Summit, jury recognition, New Delhi'),
-    date: 'December 2025',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-telegraph-infocom-2025',
-    alt: 'The Telegraph newspaper’s coverage of Dr. Biswajit Mohapatra’s keynote at INFOCOM 2025, Calcutta, with the full article and a photo of him presenting.',
-    caption: raw('Keynote coverage in <em>The Telegraph</em>, INFOCOM 2025'),
-    date: 'November 2025',
-    width: 480,
-    height: 794,
-  },
-  {
-    slug: 'gallery-aws-student-day-silveroak-2025',
-    alt: 'Photo collage from AWS Student Community Day at Silver Oak University, Ahmedabad, featuring Dr. Bishwajit Mohapatra speaking and receiving a certificate.',
-    caption: 'AWS Student Community Day, Silver Oak University, Ahmedabad',
-    date: '2025',
-    width: 480,
-    height: 600,
-  },
-  {
-    slug: 'gallery-aws-student-day-parul-2025',
-    alt: 'Photo collage from AWS Student Community Day at Parul University, showing Dr. Bishwajit Mohapatra presenting "The Next Frontier: Innovation, Intelligence and Impact" to a full auditorium.',
-    caption: 'AWS Student Community Day, Parul University',
-    date: '2025',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-gcc-leadership-conclave',
-    alt: 'Dr. Biswajit Mohapatra speaking at the GCC Leadership Conclave, in front of a screen reading "Not Buying AI: Engineering an Intelligence Layer."',
-    caption: 'GCC Leadership Conclave',
-    date: '2025',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-route-amplify-2024',
-    alt: 'Speaker announcement graphic for Route Amplify 2.0, presented by Route Mobile in association with CNBC TV18, naming Dr. Bishwajit Mohapatra, Mumbai.',
-    caption: 'Speaking at Route Amplify 2.0, Mumbai',
-    date: 'September 2024',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-stpi-roundtable',
-    alt: 'Photo collage from a Software Technology Parks of India (STPI) roundtable, showing a lamp-lighting ceremony, a group photo, and a meeting-room discussion.',
-    caption: 'STPI roundtable',
-    date: '2024',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-symbiosis-international-panel',
-    alt: 'Dr. Biswajit Mohapatra on a panel discussion at Symbiosis International (Deemed University), with a full student auditorium in a further photo.',
-    caption: 'Panel discussion, Symbiosis International (Deemed University)',
-    date: '2024',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-global-stem-expo-2024',
-    alt: 'Photo collage from the Global STEM Education Expo 2024, showing Dr. Biswajit Mohapatra speaking, on a panel, and with student attendees.',
-    caption: 'Global STEM Education Expo 2024',
-    date: '2024',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-cii-cio-conclave-2023',
-    alt: 'Dr. Biswajit Mohapatra receiving recognition on stage at the CII CIO Conclave & Awards, New Delhi.',
-    caption: raw('CII CIO Conclave &amp; Awards, New Delhi'),
-    date: 'November 2023',
-    width: 480,
-    height: 360,
-  },
-  {
-    slug: 'gallery-rptech-starnite-awards-2023',
-    alt: 'Photo collage from the RPtech Starnite Awards 2023 at Hotel Le Meridien, New Delhi, including a group photo and award presentations.',
-    caption: 'RPtech Starnite Awards 2023, Hotel Le Meridien',
-    date: 'September 2023',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'photo-14',
-    alt: 'The World CIO 200 Awards certificate presented to Dr. Biswajit Mohapatra by the Global CIO Forum.',
-    caption: 'The World CIO 200 Award, Global CIO Forum',
-    date: 'November 2022',
-    width: 541,
-    height: 700,
-  },
-  {
-    slug: 'photo-15',
-    alt: 'Framed United States Patent 11,150,880 B1, "Automating an Adoption of Cloud Services," naming Dr. Biswajit Mohapatra as a co-inventor, presented as an IBM Honors plaque.',
-    caption: 'US Patent 11,150,880 B1, Automating an Adoption of Cloud Services',
-    date: 'October 2021',
-    width: 568,
-    height: 700,
-  },
-  {
-    slug: 'photo-12',
-    alt: 'Certificate of Honor presented to Dr. Biswajit Mohapatra for a thought leadership talk at the World DevOps Summit.',
-    caption: 'Thought Leadership Certificate of Honor, World DevOps Summit',
-    date: 'May 2020',
-    width: 800,
-    height: 560,
-  },
-  {
-    slug: 'photo-2',
-    alt: 'Photo collage from the DevOps Initiative: A Leader’s Perspective event at Novotel Pune, showing Dr. Biswajit Mohapatra presenting at a whiteboard and with fellow delegates.',
-    caption: raw('&ldquo;DevOps Initiative: A Leader&rsquo;s Perspective,&rdquo; Novotel Pune'),
-    date: 'March 2020',
-    width: 768,
-    height: 959,
-  },
-  {
-    slug: 'photo-10',
-    alt: 'Certificate recognizing Dr. Biswajit Mohapatra as a DevOps Institute Ambassador, with his portrait at the center.',
-    caption: 'Recognized as a DevOps Institute Ambassador',
-    date: 'March 2020',
-    width: 562,
+    width: 1200,
     height: 800,
   },
   {
-    slug: 'photo-1',
-    alt: 'Photo collage from the National Conference on Social Innovation at Pune International Centre, where Dr. Biswajit Mohapatra received the Anjani Mashelkar Inclusive Innovation Award.',
-    caption: 'Anjani Mashelkar Inclusive Innovation Award, National Conference on Social Innovation',
-    date: 'November 2019',
-    width: 768,
-    height: 768,
+    kind: 'photo',
+    slug: 'studio-portrait',
+    alt: 'Studio portrait of Dr. Biswajit Mohapatra in a navy suit and red patterned tie.',
+    caption: 'Portrait',
+    date: DATE_UNKNOWN,
+    width: 796,
+    height: 1200,
   },
   {
-    slug: 'photo-6',
-    alt: 'Dr. Biswajit Mohapatra standing in front of the Anjani Mashelkar Inclusive Innovation Award backdrop at Pune International Centre.',
-    caption: 'At the Anjani Mashelkar Inclusive Innovation Award, Pune International Centre',
-    date: 'November 2019',
-    width: 724,
-    height: 543,
+    kind: 'photo',
+    slug: 'iim-sambalpur-memento-2026',
+    alt: 'Dr. Biswajit Mohapatra receiving a framed memento alongside two colleagues at the IIM Sambalpur CEO Immersion Programme.',
+    caption: 'Receiving a memento, IIM Sambalpur',
+    date: '2026',
+    width: 1200,
+    height: 800,
   },
   {
-    slug: 'photo-4',
-    alt: 'Photo collage from the Pune Agile UnConference 2019 at Hyatt Regency Pune, showing Dr. Biswajit Mohapatra speaking and the speaker plaque presented to him.',
-    caption: 'Pune Agile UnConference 2019 (PAUC19), Hyatt Regency Pune',
-    date: 'August 2019',
-    width: 768,
-    height: 768,
+    kind: 'photo',
+    slug: 'gcc-leadership-conclave',
+    alt: 'Dr. Biswajit Mohapatra on stage at the GCC Leadership Conclave, beside a screen showing a hand reaching toward a point of light.',
+    caption: 'GCC Leadership Conclave',
+    date: DATE_UNKNOWN,
+    width: 1200,
+    height: 900,
+    /* He stands in the right third; centring cropped him against the edge. */
+    focus: '72% 50%',
   },
   {
-    slug: 'photo-3',
-    alt: 'Photo collage from DevOps Institute Partner Days 2019: Dr. Biswajit Mohapatra speaking on stage, sitting on a panel, and with his Partner Days certificate.',
-    caption: 'DevOps Institute Partner Days 2019',
-    date: '2019',
-    width: 600,
-    height: 600,
+    kind: 'photo',
+    slug: 'agricultural-banking-address',
+    alt: 'Dr. Biswajit Mohapatra being welcomed with a bouquet on stage at the College of Agricultural Banking, beneath a backdrop naming him VP and Head of Product and Solutions Engineering at Intuitive.ai.',
+    caption: 'Guest address, College of Agricultural Banking',
+    date: '2026',
+    width: 1200,
+    height: 800,
   },
   {
-    slug: 'photo-8',
-    alt: 'Dr. Biswajit Mohapatra accepting a commemorative wooden plaque from an event host on stage.',
-    caption: 'Receiving a commemorative plaque at a DevOps Institute event',
-    date: '2019',
-    width: 724,
-    height: 543,
+    kind: 'photo',
+    slug: 'open-source-india-2022',
+    alt: 'Dr. Biswajit Mohapatra at the lectern at the 19th edition of Open Source India, NIMHANS Convention Centre, Bengaluru.',
+    caption: 'Open Source India, Bengaluru',
+    date: 'September 2022',
+    width: 900,
+    height: 1200,
   },
   {
-    slug: 'photo-11',
-    alt: 'Photo collage from iTSM Summit India ’19 including a speaker plaque honoring Dr. Biswajit Mohapatra and photographs of him presenting and on a panel.',
-    caption: raw('iTSM Summit India &lsquo;19, organized by NovelVista'),
-    date: '2019',
-    width: 300,
-    height: 300,
+    kind: 'photo',
+    slug: 'robust-to-resilience-talk',
+    alt: 'Dr. Biswajit Mohapatra mid-gesture while presenting a slide titled “Robust to Resilience — Reimagining Digital Transformation.”',
+    caption: raw('&ldquo;Robust to Resilience: Reimagining Digital Transformation&rdquo;'),
+    date: DATE_UNKNOWN,
+    width: 1200,
+    height: 778,
+    focus: '42% 50%',
   },
   {
-    slug: 'gallery-guest-induction-session',
-    alt: 'Dr. Biswajit Mohapatra speaking at a postgraduate induction programme, with a biography slide and an audience of seated students.',
-    caption: 'Guest speaker, postgraduate induction programme',
-    date: '—',
-    width: 480,
-    height: 480,
+    kind: 'photo',
+    slug: 'press-intelligent-by-design',
+    alt: 'Newspaper coverage of a technology keynote by Dr. Biswajit Mohapatra, headlined “The future of today: Intelligent by design and interconnect as default,” with a photograph of him presenting.',
+    caption: 'Press coverage of a technology keynote',
+    date: DATE_UNKNOWN,
+    width: 794,
+    height: 1200,
   },
   {
-    slug: 'gallery-mba-guest-talk',
-    alt: 'Dr. Biswajit Mohapatra giving a guest talk to students, with a slide reading "It’s a wonder what goes into an MBA" visible in the background.',
-    caption: 'Guest talk on an MBA programme',
-    date: '—',
-    width: 480,
-    height: 480,
+    kind: 'photo',
+    slug: 'iim-sambalpur-lamp-lighting-2026',
+    alt: 'Dr. Biswajit Mohapatra lighting a ceremonial lamp to open the CEO Immersion Programme at IIM Sambalpur, with colleagues standing alongside.',
+    caption: 'Lamp lighting, IIM Sambalpur',
+    date: '2026',
+    width: 1200,
+    height: 800,
+    focus: '40% 50%',
   },
   {
-    slug: 'gallery-classroom-guest-lecture',
-    alt: 'Dr. Biswajit Mohapatra giving a guest lecture to a classroom of students, with a group photo afterward.',
-    caption: 'Guest lecture to students',
-    date: '—',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-workshop-session',
-    alt: 'Dr. Biswajit Mohapatra presenting at a student workshop, and a group photo with attendees in front of a timer screen.',
-    caption: 'Student workshop session',
-    date: '—',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-ai-in-action-expo',
-    alt: 'Photo collage from the "AI in Action" zone of a technology expo, including exhibit signage, an audience shot, and a photo with two other attendees.',
-    caption: raw('&ldquo;AI in Action&rdquo; zone, technology expo'),
-    date: '—',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-security-summit-panel',
-    alt: 'Photo collage from a technology security summit, showing a lamp-lighting ceremony, a panel discussion, and a group photo with fellow delegates.',
-    caption: raw('&ldquo;Securing the Future&hellip; Security for Next-Tech Era&rdquo; summit'),
-    date: '—',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-corporate-event',
-    alt: 'Dr. Biswajit Mohapatra at a corporate event, including a ribbon-cutting ceremony and a group photo.',
-    caption: 'At an industry event',
-    date: '—',
-    width: 480,
-    height: 480,
-  },
-  {
-    slug: 'gallery-industry-event-portrait',
-    alt: 'Dr. Biswajit Mohapatra with a fellow attendee at an industry event.',
-    caption: 'With a fellow attendee',
-    date: '—',
-    width: 480,
-    height: 353,
+    kind: 'photo',
+    slug: 'route-mobile-office-visit',
+    alt: 'Dr. Biswajit Mohapatra with six colleagues at the Route Mobile offices, standing in front of the company’s reception signage.',
+    caption: 'At the Route Mobile offices',
+    date: DATE_UNKNOWN,
+    width: 1200,
+    height: 900,
   },
 ];
 
-/** The three the homepage teases, named rather than sliced by index. */
-export const homepagePhotoSlugs = ['photo-1', 'photo-2', 'photo-4'] as const;
+/** Just the stills, for callers that cannot render video. */
+export const photos: readonly Photo[] = galleryItems.filter(
+  (item): item is Photo => item.kind === 'photo',
+);
+
+/*
+ * The three the homepage teases, named rather than sliced by index.
+ *
+ * Stills only: the teaser sits in the homepage's dark gallery band and reuses
+ * photoCard, which has no video branch. The video is one tap away on /gallery/.
+ */
+export const homepagePhotoSlugs = [
+  'passion-vista-cover-2021',
+  'keynote-insights-experiment',
+  'iim-sambalpur-ceo-programme-2026',
+] as const;
 
 export function photosBySlug(slugs: readonly string[]): Photo[] {
   return slugs.map((slug) => {

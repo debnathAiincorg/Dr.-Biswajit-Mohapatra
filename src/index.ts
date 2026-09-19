@@ -17,7 +17,7 @@ export const { data, render } = definePage({
     bodyClass: 'page-home',
     pageCss: 'home',
     ogType: 'profile',
-    preloadImage: '/assets/images/photos/profile-photo.webp',
+    preloadImage: '/assets/images/hero/profile-photo.webp',
   },
 
   render: (_data, { url }) => {
@@ -27,7 +27,7 @@ export const { data, render } = definePage({
 
     return html`  <!-- Hero: full-bleed photo with overlaid nav and copy -->
   <section class="hero-full" id="about" aria-labelledby="hero-title">
-    <picture class="hero-bg"><source type="image/webp" srcset="${url('/assets/images/photos/profile-photo.webp')}"><img src="${url('/assets/images/photos/profile-photo.jpg')}" alt="Dr. Biswajit Mohapatra speaking on stage at a conference, gesturing with both hands against a dark blue backdrop." width="1673" height="793" fetchpriority="high" decoding="async"></picture>
+    <picture class="hero-bg"><source type="image/webp" srcset="${url('/assets/images/hero/profile-photo.webp')}"><img src="${url('/assets/images/hero/profile-photo.jpg')}" alt="Dr. Biswajit Mohapatra speaking on stage at a conference, gesturing with both hands against a dark blue backdrop." width="1673" height="793" fetchpriority="high" decoding="async"></picture>
     <div class="hero-scrim" aria-hidden="true"></div>
     <div class="container hero-full-inner">
       <div class="hero-full-content">
