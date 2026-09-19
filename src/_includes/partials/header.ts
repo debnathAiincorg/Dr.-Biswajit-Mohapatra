@@ -12,7 +12,7 @@ ${indent}<a href="${context.url(item.url)}"${current}>${item.label}</a>`;
 }
 
 export function header(context: PartialContext): Html {
-  const { nav, site, url } = context;
+  const { nav, url } = context;
   /* The homepage (About) stays out of the nav bar itself -- it's reachable
      via the logo and is the root every other destination sits under. `nav`
      still carries it for sitemap.xml, so it's filtered here rather than
@@ -28,7 +28,6 @@ export function header(context: PartialContext): Html {
   <div class="container header-inner">
     <div class="site-brand">
       <a class="logo site-title" href="${url('/')}">Dr. Biswajit <span>Mohapatra</span></a>
-      <span class="site-tagline">${site.tagline}</span>
     </div>
 
     <nav class="nav-links" aria-label="Primary">${inlineLinks}

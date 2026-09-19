@@ -32,10 +32,6 @@ const site: Site = {
     'Dr. Biswajit Mohapatra is VP & Head of Product and Solutions Engineering at Intuitive.ai, a cloud, data and AI strategist.',
   jobTitle: 'VP & Head of Product and Solutions Engineering',
   organization: 'Intuitive.ai',
-  /* What the header and footer print. Styled casing lives here rather than in
-     jobTitle/organization, which feed the Person JSON-LD and keep the
-     organisation's real name. */
-  tagline: 'VP & Head Of Product And Solutions Engineering · Intuitive . Ai',
   locale: 'en_US',
   lang: 'en',
 

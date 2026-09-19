@@ -27,8 +27,6 @@ export interface Site {
   readonly description: string;
   readonly jobTitle: string;
   readonly organization: string;
-  /** Display form of jobTitle and organization, shown under the header wordmark and in the footer. */
-  readonly tagline: string;
   readonly locale: string;
   readonly lang: string;
   readonly linkedin: string;

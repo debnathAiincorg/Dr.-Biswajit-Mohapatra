@@ -158,11 +158,10 @@ export default function (eleventyConfig) {
    *
    * Listed file by file, not by copying the whole `files/` directory: each
    * package ships every weight in every subset (~70 files for Inter alone),
-   * and the site uses five of them. See base/fonts.css for which and why --
+   * and the site uses four of them. See base/fonts.css for which and why --
    * add an entry here and an @font-face there together, never one alone.
    */
   for (const file of [
-    'inter-latin-300-normal.woff2',
     'inter-latin-400-normal.woff2',
     'inter-latin-500-normal.woff2',
     'inter-latin-600-normal.woff2',

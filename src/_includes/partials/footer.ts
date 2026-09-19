@@ -7,7 +7,6 @@ export function footer(site: Site): Html {
   <div class="container footer-inner">
     <div class="footer-text">
       <p class="footer-copy">&copy; ${site.buildYear} ${site.name}. All rights reserved.</p>
-      <p class="footer-credit">${site.tagline}</p>
     </div>
     <div class="footer-socials">
       ${socialBadges(site)}

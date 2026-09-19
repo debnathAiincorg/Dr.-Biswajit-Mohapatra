@@ -96,53 +96,21 @@
 }
 .footer-text { text-align: left; }
 .footer-socials { display: flex; gap: 1rem; flex-shrink: 0; }
-/* The two lines are one lockup, so they are led like one: a single explicit
-   leading for both rather than body's inherited 1.6, which is body-copy
-   leading and too loose for a two-line block. 1.3 is the value .site-tagline
-   already uses for the identical job in the header, so the two lockups on the
-   page are now set the same way.
-
-   This is also what makes the gap legible from the CSS. Half a line's leading
-   sits under the first line and half over the second, so at 1.6 the declared
-   0.4rem below .footer-copy rendered as ~14.9px of visible space -- more than
-   double the number written down. At 1.3 the same 0.4rem reads as ~10.2px,
-   and the block is ~7.7px shorter overall. */
-.footer-copy,
-.footer-credit { line-height: 1.3; }
-.footer-copy { font-size: 0.85rem; color: var(--ink); margin-bottom: 0.4rem; }
-/* balance: on phones the credit wraps, and unbalanced it strands the middot
-   at the end of line one with "Intuitive . Ai" alone beneath it. */
-.footer-credit {
-  font-size: 0.75rem;
-  /* Matches .site-tagline in the header: same string, same subordinate role,
-     so the same weight. See the note there. */
-  font-weight: 300;
-  color: var(--ink-soft);
-  text-wrap: balance;
-  /* Aligns the two lines by their ink, the same correction .site-tagline
-     carries in the header and for the same reason: the layout boxes were
-     already flush (both are block children of .footer-text -- measured
-     Δ 0.00px at every width), but the first glyphs are not. "©" sits
-     0.080em inside its box; "V" starts almost immediately, at 0.022em.
-     At 13.6px and 12px respectively that left the credit line starting
-     0.79px to the left of the copy above it -- measured off the rendered
-     pixels at 10x, 0.751-0.834px across three viewports and three ink
-     thresholds, the spread being the scan resolution.
-
-     A fixed px value rather than em: this is the difference between two
-     bearings at two *fixed* font-sizes, so it tracks neither one. Re-measure
-     if either font-size changes, or if either line's first character does. */
-  text-indent: 0.79px;
-}
+/* Tighter than body's inherited 1.6, which is body-copy leading and reads too
+   loose for a one-line credit block. Was shared with .footer-credit, a second
+   line beneath this one (a job-title/organisation string, removed at the site
+   owner's request); kept explicit at 1.3 rather than dropped now that this is
+   the only line, since 1.6 would visibly loosen this specific line versus the
+   rest of the site's footer text. */
+.footer-copy { font-size: 0.85rem; color: var(--ink); line-height: 1.3; }
 
 @media (max-width: 640px) {
   .footer-inner { flex-direction: column-reverse; text-align: center; }
-  /* Left, not centred: centred lines of unequal length each start at a
-     different x, so the lockup came apart on phones. .footer-inner's
-     align-items still centres the block itself whenever both lines fit on one
-     row; once the credit wraps, the block spans the bar and the lines start at
-     its left edge. With a shared left edge again, the credit's 0.79px ink
-     indent above applies here too. */
+  /* Left, not centred: on the narrowest phones the copyright line can still
+     wrap to two lines of unequal length, and centring those comes apart the
+     same way a two-line lockup with a job-title line beneath it once did
+     (that second line was removed at the site owner's request). .footer-inner's
+     align-items still centres the block itself either way. */
   .footer-text { text-align: left; }
   /* column-reverse lifts the socials above the text, so the cascade swaps to
      keep running top-to-bottom rather than jumping back up the bar. */

@@ -308,10 +308,8 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   under `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
 - **esbuild** bundles `src/assets/css/main.css` (collapsing its `@import` graph)
   and `src/assets/js/main.js` (ES modules into one IIFE), minified in production.
-- **Self-hosted fonts: Inter (300/400/500/600) and Cinzel (400).** Inter sets
-  headings and body sitewide. 300 is used by exactly two elements -- the
-  `.site-tagline` in the header and the `.footer-credit` that prints the same
-  string -- and was added for them; everything else is 400 and up. Cinzel is a serif and is loaded on every page,
+- **Self-hosted fonts: Inter (400/500/600) and Cinzel (400).** Inter sets
+  headings and body sitewide. Cinzel is a serif and is loaded on every page,
   but applied to exactly one element: the `.site-title` wordmark in the header
   (`components/header.css`). **Earlier revisions of this file said "Inter only
   … no serif face loaded on any of the 14 pages". That has been untrue since
@@ -320,9 +318,20 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   sentence originally described, and it was never updated when Cinzel arrived.
   `header.css` is the authority on which element gets the serif.
 
+  > **Inter 300 was dropped (this revision).** It rendered exactly two
+  > elements: the `.site-tagline` in the header and the `.footer-credit` that
+  > printed the same job-title/organisation string beneath the copyright line
+  > in the footer. Both were removed sitewide at the site owner's request, so
+  > nothing on the site sets `font-weight: 300` any more -- the `@font-face`
+  > in `base/fonts.css` and its passthrough-copy entry in `eleventy.config.js`
+  > were removed together with it, per that file's own "add one, add both"
+  > rule. `jobTitle` and `organization` still exist on `site` and still feed
+  > the Person JSON-LD; only the visible, styled-casing `tagline` string and
+  > the two elements that printed it are gone.
+
   > **These came from Google Fonts until 2026-09-16 and no longer do.** Two
   > preconnects plus a render-blocking `<link>` to `fonts.googleapis.com` were
-  > replaced by five woff2 files served from `/assets/fonts/`, declared in
+  > replaced by four woff2 files served from `/assets/fonts/`, declared in
   > `src/assets/css/base/fonts.css` and copied out of the `@fontsource/inter`
   > and `@fontsource/cinzel` devDependencies by `eleventy.config.js`. Same
   > reasoning already recorded for `vendor-lenis.css`: no blocking cross-origin

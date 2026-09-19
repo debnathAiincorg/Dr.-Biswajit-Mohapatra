@@ -31,16 +31,13 @@
     font-family: var(--font-sans);
     font-weight: 500;
     /* The same value components/header.css sets, read from the property it
-       declares on .site-header rather than restated -- .site-tagline derives
-       its own size from that property too, so a literal here would let the
-       homepage wordmark drift out of step with the tagline beneath it. */
+       declares on .site-header rather than restated -- one value, so this
+       wordmark cannot drift out of step with the other header's. */
     font-size: var(--wordmark-fs);
     letter-spacing: 0.02em;
     text-transform: none;
     color: #fff;
   }
-  /* Same white as the hero lede, which sits on this same photograph. */
-  .page-home .site-tagline { color: rgba(255, 255, 255, 0.88); }
   /* The home header is an absolute overlay that scrolls away with the hero,
      so the shared condense-on-scroll would retitle a bar the reader is
      already losing. Held at full height here -- kept equal to header-inner's
