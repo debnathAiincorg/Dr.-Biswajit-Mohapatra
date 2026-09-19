@@ -1,6 +1,46 @@
 # CLAUDE.md
 
+## Current State (read this first)
+
+This file is a chronological build log, not a spec you can read top-to-bottom
+— the sections below record real decisions in the order they were made, and
+several early ones describe a project state that no longer exists. Before
+reading further, here is what is actually true today:
+
+- **The site is real, not fictional.** It is Dr. Biswajit Mohapatra's actual
+  personal/professional site — real name, real career, real photographs. The
+  "Project Goal" section directly below, and the persona-specific parts of
+  "Nav Content Change" (the old nav labels PhD Opportunities, Students,
+  Alumni, Courses), describe a **fictional placeholder persona** ("Dr. Meera
+  Kapoor," a speech scientist at a made-up university) that was built first
+  and then fully replaced — see *No longer placeholder — real content pass*.
+  `PLAN.md` and `SECTIONS.md` document that fictional persona in detail and
+  are themselves marked historical at their own top; they no longer describe
+  the site's content. **"Structural Pattern Observed" and "Fidelity
+  Decisions," by contrast, are not persona-specific** — they audit and react
+  to the reference site indranooyi.com's own design, and their measured
+  values and decisions (container width, type-scale ratios, which of the
+  owner's standing requirements override the reference) still govern the
+  site's CSS today.
+- **It is a 14-page static site**, not a single `index.html`. Each nav
+  destination is its own page, built by **Eleventy from TypeScript templates**
+  — see *Tech Approach*, which is the authority on the build.
+- **The Gallery holds real photographs and one real video** of him, currently
+  15 photographs plus one video — see *Gallery rebuild* and *content/photos.ts*.
+- **Indexing is off by default** (`ALLOW_INDEXING`), and that is a deliberate
+  publishing decision, not a sign the content is unfinished.
+
+What carries forward from the fictional-persona era and is still true: the
+structural homage to indranooyi.com (section order, grid patterns, spacing —
+never its content), the measured design tokens (container width, type scale,
+breakpoints), and the general shape of the Fidelity Decisions (which
+requirements from the site owner override the reference, and which don't).
+
 ## Project Goal
+
+> **Historical — describes the fictional placeholder persona this project
+> started with, fully replaced by real content. See *Current State* above and
+> *No longer placeholder — real content pass* near the end of this file.**
 
 Build a single-file `index.html` homepage for a fictional public figure, **Dr. Meera Kapoor**
 (placeholder name, unchanged from v1), whose **layout, spacing, and typographic proportions**
@@ -160,12 +200,26 @@ those and that instruction still stands.**
 
 ## Nav Content Change (this revision)
 
-The nav is replaced with a 14-item list (About, PhD Opportunities, News, Awards, Education,
-Experience, Publications, Projects, Students, Alumni, Gallery, Courses, Activities, Contact),
-each wired to an in-page anchor. See `SECTIONS.md` for what placeholder content lives at each
-anchor, and `PLAN.md` for the responsive strategy for a 14-item nav (the reference's own nav
-only has to fit 6 items, so its breakpoint behavior can't be copied as-is — new breakpoint
+The nav is replaced with a 14-item list (About, ~~PhD Opportunities~~, News, Awards, Education,
+Experience, Publications, Projects, ~~Students~~, ~~Alumni~~, Gallery, ~~Courses~~, Activities,
+Contact), each wired to an in-page anchor. See `SECTIONS.md` for what placeholder content lives
+at each anchor, and `PLAN.md` for the responsive strategy for a 14-item nav (the reference's own
+nav only has to fit 6 items, so its breakpoint behavior can't be copied as-is — new breakpoint
 chosen and justified in `PLAN.md`).
+
+> **The four struck-through labels above no longer exist.** PhD Opportunities,
+> Students and Alumni were repurposed to Patents, Academic Engagement and
+> Board & Advisory, and Courses to Certifications, when the real content pass
+> retargeted them to a real career with no PhD program, students or courses —
+> see the table in *No longer placeholder — real content pass*. The other ten
+> labels are unchanged. `SECTIONS.md` and `PLAN.md` are historical: both are
+> marked as such at their own top and describe the fictional persona this nav
+> was first built for, not the site's current content. What actually lives at
+> each of the 14 URLs today is each page's own `src/*.ts` file, and
+> `src/_data/nav.ts` is the count and label of record. The nav's breakpoint
+> reasoning in `PLAN.md`, by contrast, is not persona-dependent and still
+> holds — see *Tech Approach* for the current breakpoint value, which moved
+> after `PLAN.md` was written.
 
 ## Multi-Page Architecture (v3)
 
@@ -301,17 +355,31 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
 src/
   _data/           site.ts, nav.ts, buildDate.ts, eleventyComputed.ts
   _includes/
-    lib/           html.ts (escaping), url.ts, types.ts, page.ts (definePage)
+    lib/           html.ts (escaping), url.ts, types.ts, page.ts (definePage),
+                    asset.ts (the module-level `url` binding), proof-picture.ts
+                    (WebP-sibling lookup for proof images)
     layouts/       base.ts — the document shell
-    partials/      head.ts, header.ts, footer.ts, linkedin-badge.ts
-    components/    row-list.ts, list-page.ts, card-grid.ts, panel.ts
-    content/       photos.ts, lab-notes.ts — content used by more than one page
-  assets/          css/, js/ (both bundled by esbuild), images/, icons/, vendor/
+    partials/      head.ts, header.ts, footer.ts, social-badges.ts
+    components/    row-list.ts, list-page.ts, card-grid.ts
+    content/       photos.ts, lab-notes.ts, sources.ts (the external-proof
+                    registry `scripts/check-links.mjs` walks) — content used
+                    by more than one page
+  assets/          css/, js/ (both bundled by esbuild), images/, video/,
+                    icons/, vendor/
   *.ts             one file per page
 scripts/           dev tooling, never shipped
-image-src/         photo masters, never served
+image-src/         source masters for the images and video above, not a
+                    complete archive — see image-src/README.md
 dist/              build output (gitignored)
 ```
+
+> **`panel.ts` never existed as a component file, and the "panel" visual
+> pattern it would have named is now fully dead.** No page in the current
+> build renders `class="panel"` — verified against `dist/`. `/news/` moved to
+> the same `row-list` shape as every other list page; nothing replaced PhD
+> Opportunities' panel when it became Patents. Only the CSS survives
+> (`.panel-inner h2` rules in `base/tokens.css` and `base/typography.css`),
+> unused by any current template.
 
 ### How a page is written
 
@@ -622,12 +690,19 @@ layout.
 
 ## Constraints
 
+> **The next two bullets are v1–v2 constraints, superseded by the real content
+> pass** (see *No longer placeholder — real content pass* below). Every page
+> now carries Dr. Mohapatra's real, sourced biography, and every gallery
+> photograph is a real photograph of him — neither is fictional or a
+> placehold.co image any more. The first bullet is unaffected: it was always
+> about not copying **indranooyi.com**'s own content, which still holds.
+
 - **No real content from the source site**: no real names, bios, quotes, headlines, article/
   paper titles, captions, dates tied to real events, or images pulled from indranooyi.com.
-- All names/titles/captions/course names/paper titles must read as plainly fictional/
-  placeholder, on every page.
-- All images must be placeholder services (placehold.co or equivalent), except the one real
-  image explicitly requested for the About/hero portrait.
+- ~~All names/titles/captions/course names/paper titles must read as plainly fictional/
+  placeholder, on every page.~~ Superseded — see banner above.
+- ~~All images must be placeholder services (placehold.co or equivalent), except the one real
+  image explicitly requested for the About/hero portrait.~~ Superseded — see banner above.
 - Structural/layout and numeric-spacing similarity is the goal; visual asset and color-theme
   similarity is not (see Fidelity Decisions).
 - Multi-page deliverable: the 14 nav destinations plus `/404.html`, an `/about.html` redirect
@@ -663,12 +738,17 @@ observer. A framework would add a build step, a toolchain to maintain, and a
 JS bundle to download, in exchange for nothing this site needs. Plain
 HTML/CSS/JS remains correct, and a typical page still loads in a few hundred
 KB. **The "whole site loads in ~290KB" figure this line used to carry was
-never re-measured after the gallery grew from 8 photographs to 38.** `dist/`
-now totals ~14MB, almost entirely images: 8.7MB of proof/certificate scans and
-4.2MB of photographs. That is a *repository* figure, not a page-weight one —
-every image is `loading="lazy"` and no single page requests more than a
-fraction of it — but the two numbers are not interchangeable and this line
-previously implied they were. The CSS and JS bundles together are ~33KB.
+never re-measured after the gallery grew from 8 photographs to 38, and the
+figure that replaced it is stale too** — re-measured after the 2026-09-19
+gallery rebuild: `dist/` now totals **~25MB**, split as ~14MB of images
+(9.1MB of proof/certificate scans, ~4.4MB of gallery/hero/publications
+photographs) and **~10MB of video**, the one addition that pushed the total
+well past the 14MB this line previously gave. As before, this is a
+*repository* figure, not a page-weight one: every image is `loading="lazy"`,
+the video's `preload="none"` means its 10MB is fetched only if someone opens
+it, and no single page requests more than a fraction of the total — but the
+two numbers are not interchangeable and this line has twice implied they
+were. The CSS and JS bundles together are still ~36KB.
 
 **Repository layout.** *(Superseded — the published tree is now `dist/`, built
 by Eleventy and gitignored, and GitHub Pages deploys the build artifact rather
@@ -709,18 +789,25 @@ where `pageCss` is set in a page's front matter.
 `<picture>`. **The single `images/photos/` folder described here was split by
 purpose on 2026-09-19** — see *Gallery rebuild* at the end of this file. The
 optimised pairs now live in `src/assets/images/{gallery,hero,publications,
-proof,social}/` and are passthrough-copied under `dist/assets/images/`; the
-masters stay in `image-src/`, outside the build entirely. This took the site from 5.9MB of
-images to ~320KB. The set is defined once in `src/_includes/content/photos.ts`
-— captions, alt text and dimensions — and both the Gallery page and the
-homepage teaser render from it, so a corrected caption is a one-line edit.
+proof,logos,social}/`, plus `src/assets/video/` for the Gallery's one video,
+and are passthrough-copied under `dist/assets/`; the masters stay in
+`image-src/`, outside the build entirely. This took the site from 5.9MB of
+images to ~320KB — a figure from before the video and the proof-image pass
+both landed, so it no longer describes total image weight; see *Production
+Readiness Pass* below for a current figure. The set is defined once in
+`src/_includes/content/photos.ts` — captions, alt text and dimensions — and
+both the Gallery page and the homepage teaser render from it, so a corrected
+caption is a one-line edit.
 
 `Photo 7.png` was deleted: it was byte-identical to `Photo 6.png` (verified by
 md5), so the homepage gallery had been rendering the same photograph twice
 under two different captions. The gallery was 8 unique photographs at the time
-of that fix. It later grew to 38, and **is now 14 photographs plus one video**
-— the whole set was replaced on 2026-09-19 (see *Gallery rebuild* below).
-`content/photos.ts` is the count of record.
+of that fix. It later grew to 38, and — after the whole set was replaced on
+2026-09-19 (see *Gallery rebuild* below) plus one photograph restored the same
+day (see *The lightbox opened top-left* below) — **is now 15 photographs plus
+one video**. `content/photos.ts` is the count of record: count its entries
+rather than trusting this number if the two of you keep working on the Gallery
+after this file was last edited.
 
 **SEO.** Per-page canonical, Open Graph and Twitter tags; JSON-LD `@graph`
 (WebSite + Person + per-page WebPage/CollectionPage/ProfilePage/ContactPage +
@@ -870,7 +957,10 @@ labels and URLs:
 
 Contact (`/contact/`) no longer shows an email or office address — no public
 professional email exists in the source material, so it points to LinkedIn
-only. Gallery grew from 8 to 38 photographs (added award/certificate images
+only. Its nav label, page title and `<h1>` also read **"Social"**, not
+"Contact" — undocumented until now, but consistent and deliberate throughout
+`src/contact.ts` and `src/_data/nav.ts`; the URL and filename stayed
+`/contact/` and `contact.ts`. Gallery grew from 8 to 38 photographs (added award/certificate images
 alongside the original event photos). Every other page (About, News, Awards,
 Education, Experience, Publications, Projects, Activities) was rewritten in
 place with real, dated, sourced content — nothing in `dr/` was fabricated or

@@ -1,5 +1,22 @@
 # SECTIONS.md
 
+> **Historical — superseded.** This maps the site's 14 pages to the fictional
+> "Dr. Meera Kapoor / Speech Lab" persona (`CLAUDE.md` → "Project Goal"). That
+> persona and this content plan were fully replaced by Dr. Biswajit
+> Mohapatra's real, sourced career — see `CLAUDE.md` → "No longer placeholder
+> — real content pass" for what actually lives at each URL now, including the
+> four pages renamed in the process (PhD Opportunities → Patents, Students →
+> Academic Engagement, Alumni → Board & Advisory, Courses → Certifications).
+> Each page's own `src/*.ts` file is the content of record. Of the
+> visual-system section below, two of the three shared component families are
+> still how the real pages are built, filled with real content now:
+> `row-list` (list-row pages) and `card-grid` (Gallery, Projects, homepage
+> teasers). **The third, the callout-panel pattern, is not** — verified
+> against the current build: no page renders `class="panel"` any more.
+> `/news/` moved to the same `row-list` shape as every other list page, and
+> nothing replaced PhD Opportunities' panel when it became Patents. Only the
+> `.panel-inner` CSS rule survives, and nothing in the current build emits it.
+
 **v3 update: this file's content mapping is unchanged.** The only thing that changed is
 *delivery* — each row below used to be an in-page anchor section on one `index.html`; each is
 now its own standalone page (see the "File" column added below and `PLAN.md` for the full

@@ -1,8 +1,16 @@
 # CHECKLIST.md — Post-Build Verification (5 passes)
 
-Run after `index.html` is rebuilt, each pass checking something different against the live
-reference site. Filled in with actual results after the build; this is the rubric, agreed
-before building starts.
+> **Historical — superseded.** Written for the original single-file
+> `index.html` build, against the fictional persona described in
+> `CLAUDE.md`'s "Project Goal" (see `CLAUDE.md` → "Current State" for what's
+> true now). It predates the multi-page conversion, the Eleventy rebuild, and
+> the real-content pass, so its nav item list (PhD Opportunities, Students,
+> Alumni, Courses) names pages that were later renamed to Patents, Academic
+> Engagement, Board & Advisory and Certifications, and its checks all target
+> "index.html" and "the live reference site" rather than the 14-page build
+> that exists today. It was never re-run against the current site, and none
+> of its boxes are checked. Left as a record of the original verification
+> rubric, not a pending task list.
 
 ## Pass 1 — Layout structure
 - [ ] Section order top-to-bottom matches the intended pattern (nav → About/hero → PhD

@@ -1,5 +1,26 @@
 # PLAN.md — v3
 
+> **Historical — superseded.** This is the build plan for the v3 multi-page
+> conversion, written when the site still carried the fictional "Dr. Meera
+> Kapoor / Speech Lab" persona described in `CLAUDE.md`'s "Project Goal". Two
+> things below no longer describe the site:
+>
+> - **The persona and per-page content are fictional here and real on the
+>   live site.** `CLAUDE.md`'s "No longer placeholder — real content pass"
+>   replaced this plan's fictional academic content with Dr. Biswajit
+>   Mohapatra's real, sourced career, and renamed four pages in the process
+>   (PhD Opportunities → Patents, Students → Academic Engagement, Alumni →
+>   Board & Advisory, Courses → Certifications).
+> - **The build mechanism has changed twice since.** This plan describes
+>   generating static `.html` files from a Node script; the site is now built
+>   by Eleventy from TypeScript templates (`CLAUDE.md` → "Tech Approach").
+>
+> What's still accurate: the *reasoning* behind decisions that don't depend on
+> persona or build mechanism — the nav breakpoint derivation, and the design
+> token changes adopted from the reference-site re-audit. `CLAUDE.md` is the
+> authority on current values where the two disagree; several of this file's
+> numbers are explicitly marked superseded inline below.
+
 Everything below "Nav Strategy — 14 items" is the v2 plan and still applies (design tokens,
 component styles, per-section content mechanics are unchanged, per `CLAUDE.md`). This v3
 section on top covers the new work: converting the single `index.html` into 14 files.

@@ -1,7 +1,11 @@
 # Proof links, gallery repair, organisation logos, professionalism pass
 
 **Date:** 2026-08-31
-**Status:** design, awaiting implementation plan
+**Status:** implemented (verified against `dist/`; the specific gallery
+photographs this fixed — `photo-8`, `photo-5` and others named below — were
+themselves replaced wholesale by the 2026-09-19 Gallery rebuild, see
+`CLAUDE.md` → "Gallery rebuild"; the logos, proof-image and patent work below
+is unaffected and still stands)
 **Scope:** `src/**`, `scripts/**`, `dr/` (read-only source), `image-src/` (new masters)
 
 ---

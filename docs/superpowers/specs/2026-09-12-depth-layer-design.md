@@ -1,7 +1,12 @@
 # Depth layer: 3D motion, elevation, and the path-prefix repair
 
 **Date:** 2026-09-12
-**Status:** design, approved in chat
+**Status:** implemented 2026-09-12, then **partially reverted 2026-09-14** —
+the 3D parts described in §4 and §5 (hero parallax, card tilt, the
+cursor-tracked sheen, the entrance hinge) were removed at the site owner's
+request; the 2D elevation (§5's header/card shadows) and the path-prefix
+repair (§7) were kept and still stand. See `CLAUDE.md` → "Depth Layer (v6,
+2026-09-12) — 3D removed 2026-09-14" for the current state.
 **Scope:** `src/assets/css/**`, `src/assets/js/**`, `src/_includes/components/row-list.ts`,
 `src/_includes/content/lab-notes.ts`, `src/activities.ts`, `CLAUDE.md`
 

@@ -75,12 +75,13 @@ SITE_URL=https://example.com npm run build
 SITE_URL=https://user.github.io PATH_PREFIX=/repo-name/ npm run build
 ```
 
-> **Indexing is switched off.** Every page ships `noindex` and `robots.txt`
-> disallows all crawling, because the written content is still placeholder
-> while it sits alongside a real person's name, photographs and LinkedIn link.
-> Set `ALLOW_INDEXING=true` once the real biography is in place — canonicals,
-> Open Graph, structured data and the sitemap are already correct and need no
-> other change.
+> **Indexing is switched off by default.** Every page ships `noindex` and
+> `robots.txt` disallows all crawling unless `ALLOW_INDEXING=true` is set at
+> build time. The site's content is real, not placeholder — sourced from the
+> site owner's own LinkedIn export and prior website copy — so this is a
+> separate, deliberate publishing decision for the site owner to make, not a
+> sign anything is unfinished. Canonicals, Open Graph, structured data and the
+> sitemap are already correct either way and need no other change.
 
 ## Structure
 
@@ -88,20 +89,24 @@ SITE_URL=https://user.github.io PATH_PREFIX=/repo-name/ npm run build
 src/
   _data/           site config, nav, computed structured data (.ts)
   _includes/
-    lib/           html escaping, url filter, shared types, definePage
+    lib/           html escaping, url filter, shared types, definePage,
+                   proof-picture (WebP-sibling lookup for proof images)
     layouts/       base.ts -- the document shell
-    partials/      head, header, footer, linkedin badge
-    components/    row-list, list-page, card-grid, panel
-    content/       photo set and lab news, shared between pages
+    partials/      head, header, footer, social badges
+    components/    row-list, list-page (a row-list wrapper), card-grid
+    content/       gallery items and lab news, shared between pages
   assets/
     css/           main.css imports base/, components/, layout/, utils/
       pages/       page-specific styles, loaded only where needed
     js/            main.js imports modules/ (plain JS, not typechecked)
-    images/        optimised WebP + JPEG pairs
+    images/        optimised WebP + JPEG pairs, split by purpose:
+                   gallery/, hero/, publications/, proof/, logos/, social/
+    video/         the Gallery's one video, plus its two poster frames
     icons/         favicon set
   *.ts             one file per page (front matter + render)
 scripts/           dev tooling, not shipped
-image-src/         original photo masters, never deployed
+image-src/         source masters for the images and video above -- not a
+                   complete archive; see image-src/README.md
 dist/              build output (gitignored)
 ```
 
@@ -119,3 +124,8 @@ defined once in `src/_data/nav.ts` and drive the header, the compact menu and
   rather than living in a dashboard; update that value at domain cutover.
 - **Any other static host** — build command `npm run build`, output `dist`,
   and set `SITE_URL` to the origin it serves from.
+
+The repo carries configs for all three of the above, but as of the last
+verification only one is actually live — see *Deploy pipeline ownership* in
+`CLAUDE.md` for which one, and why the other two are not yet wired up the way
+their own config implies.
