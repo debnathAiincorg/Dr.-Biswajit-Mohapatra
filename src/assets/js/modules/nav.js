@@ -1,34 +1,77 @@
-/* Compact-menu disclosure and current-page marking. */
+/* Off-canvas navigation drawer and current-page marking. */
+
+import { lenis } from './smooth-scroll.js';
+
+const FOCUSABLE = 'a[href], button:not([disabled])';
 
 export function initMobileMenu() {
   const burger = document.getElementById('burgerBtn');
-  const panel = document.getElementById('mobilePanel');
-  if (!burger || !panel) return;
+  const drawer = document.getElementById('navDrawer');
+  const scrim = document.getElementById('navScrim');
+  const closeBtn = document.getElementById('navDrawerClose');
+  if (!burger || !drawer || !scrim || !closeBtn) return;
 
-  const setState = (isOpen) => {
-    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    /* aria-expanded alone announces collapsed/expanded but leaves the label
-       reading "Open navigation menu" while the menu is open. */
-    burger.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+  const isOpen = () => drawer.classList.contains('is-open');
+
+  const setOpen = (open) => {
+    drawer.classList.toggle('is-open', open);
+    scrim.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    /* The page behind a modal drawer should not scroll. Lenis drives the
+       page's scroll itself, so it is paused too; overflow alone would not
+       stop it from consuming the wheel. */
+    document.documentElement.classList.toggle('nav-open', open);
+    if (lenis) {
+      if (open) lenis.stop();
+      else lenis.start();
+    }
   };
 
-  const close = () => {
-    panel.classList.remove('is-open');
-    setState(false);
+  const open = () => {
+    setOpen(true);
+    /* Focus moves into the dialog. preventScroll keeps the browser from
+       nudging the off-screen drawer into view before its slide begins. */
+    closeBtn.focus({ preventScroll: true });
   };
 
-  burger.addEventListener('click', () => setState(panel.classList.toggle('is-open')));
+  /* Focus returns to the burger, the control that opened the drawer, unless
+     the drawer is closing because a link was followed. */
+  const close = (restoreFocus = true) => {
+    if (!isOpen()) return;
+    setOpen(false);
+    if (restoreFocus) burger.focus({ preventScroll: true });
+  };
 
-  panel.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', close);
+  burger.addEventListener('click', () => (isOpen() ? close() : open()));
+  closeBtn.addEventListener('click', () => close());
+  scrim.addEventListener('click', () => close());
+
+  drawer.querySelectorAll('.nav-drawer-links a').forEach((link) => {
+    link.addEventListener('click', () => close(false));
   });
 
-  /* Escape closes the panel and returns focus to the control that opened it --
-     expected of any disclosure that covers the page. */
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+    if (!isOpen()) return;
+    if (e.key === 'Escape') {
       close();
-      burger.focus();
+      return;
+    }
+    /* Tab cycles within the drawer while it is open, as aria-modal promises. */
+    if (e.key === 'Tab') {
+      const items = [...drawer.querySelectorAll(FOCUSABLE)];
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!first || !last) return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!drawer.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 }
@@ -44,7 +87,7 @@ export function initMobileMenu() {
  */
 export function markCurrentNavLink() {
   const here = window.location.pathname.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
-  document.querySelectorAll('.nav-links a, .mobile-panel a').forEach((link) => {
+  document.querySelectorAll('.nav-drawer-links a').forEach((link) => {
     const href = link.getAttribute('href');
     if (!href || /^([a-z]+:)?\/\//i.test(href)) return;
     const target = href.split('#')[0].replace(/index\.html$/, '').replace(/\/+$/, '') || '/';

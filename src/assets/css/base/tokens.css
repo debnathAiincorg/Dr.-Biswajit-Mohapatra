@@ -27,7 +27,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     box-shadow: none !important;
   }
   .social-badge:hover, .social-badge:focus-visible,
-  .nav-links a:hover, .nav-links a:focus-visible {
+  .nav-drawer-close:hover, .nav-drawer-close:focus-visible {
     transform: none !important;
   }
   .row-list li:hover .row-title,

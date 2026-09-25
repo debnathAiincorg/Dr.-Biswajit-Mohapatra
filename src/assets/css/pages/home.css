@@ -47,10 +47,6 @@
     padding-top: 1.03rem;
     padding-bottom: 1.03rem;
   }
-  .page-home .nav-links a { color: #fff; }
-  .page-home .nav-links a::after { background: #fff; }
-  .page-home .nav-links a:hover, .page-home .nav-links a:focus-visible { background-color: rgba(255, 255, 255, 0.16); }
-  .page-home .nav-links a[aria-current="page"] { color: var(--terracotta-light); }
   /* The overlay header sits on the hero photograph, so the wordmark hover and
      anything else resolving --hover-accent needs the light terracotta -- the
      default shade is tuned for cream and measures far too dark on the photo. */

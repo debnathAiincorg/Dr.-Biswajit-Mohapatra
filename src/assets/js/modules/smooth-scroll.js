@@ -14,11 +14,15 @@
  * around. syncTouch is left at its default (false), which keeps touch
  * scrolling native on mobile.
  */
+/* The running instance, or null when Lenis is absent or skipped. Exported so
+   the navigation drawer can pause page scrolling while it is open. */
+export let lenis = null;
+
 export function initSmoothScroll() {
   try {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (typeof window.Lenis !== 'undefined' && !reduced) {
-      new window.Lenis({ autoRaf: true });
+      lenis = new window.Lenis({ autoRaf: true });
     }
   } catch { /* scroll feel is optional; never fatal */ }
 }
