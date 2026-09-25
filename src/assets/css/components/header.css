@@ -5,7 +5,9 @@
      pages/home.css restates the same size for the overlay header's own
      .logo rule -- one value, so the two headers' wordmarks cannot drift
      apart from each other across viewport widths. */
-  --wordmark-fs: clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem);
+  /* Scaled by 1.035 (+3.5%) at every width, at the site owner's request;
+     the clamp inside is the original curve, untouched. */
+  --wordmark-fs: calc(1.035 * clamp(1.4rem, calc(1.4rem + (100vw - 1250px) * 0.0366), 2.2rem));
   position: sticky;
   top: 0;
   z-index: 500;
@@ -382,13 +384,16 @@
    common laptop widths (1280px+) at 100% zoom. Below this, tightening further
    would mean shrinking nav font below ~0.68rem or dropping/abbreviating nav
    labels, which starts trading off legibility rather than just spacing. */
-@media (max-width: 1249px) {
-  .nav-links, .header-actions .social-badge { display: none; }
-  .burger { display: flex; }
-  .mobile-panel { display: flex; }
-  /* The nav links this delay was meant to trail are hidden here. */
-  .header-actions > * { animation-delay: 170ms; }
-}
+/* The burger menu is now used at every width, at the site owner's request:
+   the inline row is hidden everywhere and the header carries only the
+   wordmark and the burger. This rule used to sit inside
+   @media (max-width: 1249px); the reasoning above records why that was the
+   crossover while the inline row still showed on wide screens. */
+.nav-links, .header-actions .social-badge { display: none; }
+.burger { display: flex; }
+.mobile-panel { display: flex; }
+/* The nav links this delay was meant to trail are hidden. */
+.header-actions > * { animation-delay: 170ms; }
 /* Where the full nav row first appears it has ~9px to spare in total, so it
    cannot take the 3.25vw inset above until ~1290px. Across this band the inset
    starts from the 1.8vw the row fits at 1250px and takes half of every extra

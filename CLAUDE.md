@@ -350,6 +350,15 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   over; at 1250px and above the full row shows. Measured crossover: burger at
   1024px, full nav at 1280px.
 
+  > **Superseded 2026-09-25: the burger menu is now used at every width.** At
+  > the site owner's request the inline nav row is hidden at all sizes and the
+  > header shows only the wordmark and the burger. The rule that used to sit
+  > inside `@media (max-width: 1249px)` in `header.css` is now unconditional,
+  > the `<noscript>` fallback in `partials/header.ts` likewise, and `nav.js`
+  > lost its close-on-widen handler, since there is no longer a width at which
+  > the panel is hidden. The wordmark's `--wordmark-fs` was scaled by 1.035 in
+  > the same change. The breakpoint history below is kept as a record.
+
   > Earlier revisions of this file said 1560px. That number is stale — it came
   > from the v3 nav strategy in `PLAN.md`, before two tightening passes on nav
   > font-size, gaps and logo sizing brought the true minimum down to ~1209px

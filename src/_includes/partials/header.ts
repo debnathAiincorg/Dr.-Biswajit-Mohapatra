@@ -44,7 +44,7 @@ export function header(context: PartialContext): Html {
   </nav>
 </header>
 
-<noscript><style>@media (max-width: 1249px) {
+<noscript><style>
   .burger { display: none; }
   .mobile-panel {
     display: flex;
@@ -55,6 +55,6 @@ export function header(context: PartialContext): Html {
     padding: 0.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem;
     border-top-width: 1px;
   }
-}</style></noscript>
+</style></noscript>
 `;
 }
