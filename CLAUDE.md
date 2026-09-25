@@ -360,8 +360,11 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   > `position: fixed`. `nav.js` handles open/close, Escape, scrim clicks,
   > keeping Tab inside the drawer and returning focus to the burger, and pauses
   > Lenis (exported from `smooth-scroll.js`) while it is open. The wordmark's
-  > `--wordmark-fs` was scaled by 1.035 in the same round. The breakpoint
-  > history below is kept as a record.
+  > `--wordmark-fs` was enlarged over the same round, in four steps (+3.5%,
+  > +2%, +3%, +5%), to 1.1418x its original clamp curve, and capped at `6.4vw`
+  > so it still fits beside the burger on phones narrower than ~400px. The
+  > comment on `--wordmark-fs` in `header.css` is the authority on its size.
+  > The breakpoint history below is kept as a record.
 
   > Earlier revisions of this file said 1560px. That number is stale — it came
   > from the v3 nav strategy in `PLAN.md`, before two tightening passes on nav
