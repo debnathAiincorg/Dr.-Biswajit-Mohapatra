@@ -4,12 +4,38 @@ import { lenis } from './smooth-scroll.js';
 
 const FOCUSABLE = 'a[href], button:not([disabled])';
 
+/*
+ * Smooth wheel scrolling for the drawer's link list, which scrolls on its own
+ * inside the fixed drawer. A second Lenis instance scoped to that element:
+ * the page's instance is paused while the drawer is open, and the list's
+ * data-lenis-prevent keeps the page's instance from claiming its wheel events
+ * either way. Lenis skips that attribute on its own wrapper, so it does not
+ * stop this one. Touch stays native, as it does for the page -- the
+ * browser's own momentum scrolling is already fluid on phones and tablets.
+ * Same guards as the page: absent Lenis or reduced motion means plain native
+ * scrolling, and a failure here is never fatal.
+ */
+function initDrawerScroll(list) {
+  try {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (typeof window.Lenis === 'undefined' || reduced) return null;
+    const scroller = new window.Lenis({ wrapper: list, content: list, autoRaf: true });
+    scroller.stop();
+    return scroller;
+  } catch {
+    return null;
+  }
+}
+
 export function initMobileMenu() {
   const burger = document.getElementById('burgerBtn');
   const drawer = document.getElementById('navDrawer');
   const scrim = document.getElementById('navScrim');
   const closeBtn = document.getElementById('navDrawerClose');
-  if (!burger || !drawer || !scrim || !closeBtn) return;
+  const list = drawer?.querySelector('.nav-drawer-links');
+  if (!burger || !drawer || !scrim || !closeBtn || !list) return;
+
+  const listScroll = initDrawerScroll(list);
 
   const isOpen = () => drawer.classList.contains('is-open');
 
@@ -24,6 +50,12 @@ export function initMobileMenu() {
     if (lenis) {
       if (open) lenis.stop();
       else lenis.start();
+    }
+    /* The list's own scroller runs only while the drawer is open. start()
+       also resyncs it to the list's current position. */
+    if (listScroll) {
+      if (open) listScroll.start();
+      else listScroll.stop();
     }
   };
 

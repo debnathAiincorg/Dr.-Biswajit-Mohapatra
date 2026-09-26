@@ -371,6 +371,11 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   > Awards, Patents, Publications, Board & Advisory, Academic Engagement,
   > News, Projects, Activities, Education, Experience, Certifications,
   > Gallery, Social. Keep that order when editing the nav.
+  > The link list also has its own Lenis instance (`initDrawerScroll` in
+  > `nav.js`, wrapper = `.nav-drawer-links`) for smooth wheel scrolling; it
+  > runs only while the drawer is open, touch stays native, and the list's
+  > `data-lenis-prevent` is still needed -- it keeps the *page's* instance off
+  > the list, and Lenis ignores the attribute on its own wrapper.
   > The breakpoint history below is kept as a record.
 
   > Earlier revisions of this file said 1560px. That number is stale — it came
