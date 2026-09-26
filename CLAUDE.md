@@ -364,6 +364,13 @@ byte-identical across four build configurations (dev, production, `PATH_PREFIX`,
   > +2%, +3%, +5%), to 1.1418x its original clamp curve, and capped at `6.4vw`
   > so it still fits beside the burger on phones narrower than ~400px. The
   > comment on `--wordmark-fs` in `header.css` is the authority on its size.
+  > On 2026-09-26 the drawer links gained a thin themed scrollbar (the row
+  > hover -- tinted fill, left accent bar, sliding arrow -- was briefly
+  > removed and then restored at the owner's request; keep it), and
+  > `_data/nav.ts` was reordered to the site owner's exact drawer order:
+  > Awards, Patents, Publications, Board & Advisory, Academic Engagement,
+  > News, Projects, Activities, Education, Experience, Certifications,
+  > Gallery, Social. Keep that order when editing the nav.
   > The breakpoint history below is kept as a record.
 
   > Earlier revisions of this file said 1560px. That number is stale — it came
